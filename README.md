@@ -148,7 +148,7 @@ python make_stats.py --dirs results/round1/real results/ts --metric metric   --h
 ```bibtex
 @article{skrtrl,
   title  = {Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks},
-  author = {TODO},
+  author = {Junfei Yi and Yuxiang Wang},
   note   = {Under review},
   year   = {2026}
 }

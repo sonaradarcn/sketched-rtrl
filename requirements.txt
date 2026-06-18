@@ -1,0 +1,5 @@
+# Core dependencies for SK-RTRL. Paper used the pinned versions in the comments.
+torch>=2.3        # 2.3.0 with CUDA 12.1 in the paper; CPU build also works for tests/small runs
+numpy>=1.26       # 1.26.4
+scipy>=1.11       # Wilcoxon signed-rank in make_stats.py
+matplotlib>=3.8   # 3.9 in the paper; only needed for the make_*.py figure scripts

@@ -1,0 +1,19 @@
+# Experiment outputs — regenerate with the commands in README.md
+results/
+
+# Python caches / build
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+build/
+dist/
+
+# Server / local orchestration scripts (contain rented-GPU endpoints; not for distribution)
+*.sh
+*.ps1
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp

@@ -318,7 +318,14 @@ class RealSeriesTask(TimeSeriesTask):
 
 
 class SunspotTask(RealSeriesTask):
-    """Monthly smoothed Sunspot number (real data; data/sunspot.txt)."""
+    """Monthly *mean total* sunspot number, SILSO version 2.0 (real data; data/sunspot.txt).
+
+    This is the SILSO ``SN_m_tot_V2.0`` product (one raw monthly mean per line, 3329 values
+    starting 1749-01), NOT the 13-month smoothed ``SN_ms_tot_V2.0`` series. Verified against
+    the SILSO distribution: the first twelve values are 96.7, 104.3, 116.7, 92.8, 141.7, 139.2,
+    158.0, 110.5, 126.5, 125.8, 264.3, 142.0, which is SN_m_tot for 1749-01..1749-12; the
+    smoothed product is undefined for those first six months and reads 135.9 at 1749-07.
+    """
     fname = "sunspot.txt"
 
 

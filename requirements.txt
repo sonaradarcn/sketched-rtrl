@@ -1,5 +1,18 @@
-# Core dependencies for SK-RTRL. Paper used the pinned versions in the comments.
-torch>=2.3        # 2.3.0 with CUDA 12.1 in the paper; CPU build also works for tests/small runs
-numpy>=1.26       # 1.26.4
-scipy>=1.11       # Wilcoxon signed-rank in make_stats.py
-matplotlib>=3.8   # 3.9 in the paper; only needed for the make_*.py figure scripts
+# SK-RTRL — pinned *paper* environment (the toolchain that produced the reported results).
+# Python 3.10, CUDA 12.1.  See REPRODUCIBILITY.md ("Environments") for the separate, newer
+# environment used for the 2026-08 revision re-measurements (results/revise_repro/,
+# results/revise_timing/, results/revise_kernel/).
+#
+# Install:
+#   pip install -r requirements.txt
+#   # torch CUDA build:
+#   pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+torch==2.3.0
+numpy==1.26.4
+scipy>=1.11          # Wilcoxon signed-rank / bootstrap in make_stats.py
+                     # (not version-pinned in the original runs; >=1.11 is the tested floor)
+matplotlib==3.9.0    # figure scripts only (make_*.py); not needed to run any experiment
+
+# Looser, still-supported floors if you only want to run the code rather than reproduce
+# the exact reported numbers:
+#   torch>=2.3  numpy>=1.26  scipy>=1.11  matplotlib>=3.8

@@ -9,15 +9,19 @@ sketch error yields, at no extra asymptotic cost, a running scalar **certificate
 `eₜ = ρ̄ₜ·eₜ₋₁ + ηₜ` that upper-bounds the gradient bias at every step — turning an approximate online
 gradient into one whose error is known as it is computed.
 
-This repository contains the reference implementation and the scripts that reproduce every figure
-and table in the paper.
+This repository contains the reference implementation, the scripts that reproduce every figure
+and table in the paper, **and the raw result records those figures and tables were computed from**
+(`results/`, see below), so every reported number can be re-derived without re-running anything.
 
 > **Paper:** *Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks*
 > (under review). The citation will be finalized on publication.
 
+See [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) for the full protocol: both environments, the
+released result trees, and the exact command for every experiment in the paper.
+
 ## Requirements
 
-- Python 3.12
+- Python ≥ 3.10 (the paper runs used 3.10; see `REPRODUCIBILITY.md`, "Environments")
 - PyTorch 2.3 (CUDA 12.1) — a single 12 GB GPU is sufficient; the unit tests and small runs also
   work on CPU
 - NumPy, SciPy, Matplotlib
@@ -35,25 +39,56 @@ deterministically from a seed.
 ```
 skrtrl/             library: cells, algorithms (SK-RTRL / exact RTRL / baselines),
                     tasks, training loop, RL envs, diagonal-exact cells
+skrtrl/algos.py     the kernel of record (eager rank-r rotation, O(n²r²) per step)
+skrtrl/algos_amortised.py   amortised-rotation kernel of §4.3 (deferred rotations, O(n²r) per step)
 skrtrl/data/        real benchmark series: sunspot.txt (SILSO monthly), laser.txt (Santa Fe set A)
 run_m3.py           gradient fidelity + online time-series (cosine vs exact shadow, NMSE; --horizon/--causal)
 run_arch.py         forecasting-architecture baselines (GRU/LSTM via TBPTT, ESN ridge readout)
 run_adaptive.py     certificate-guided adaptive-rank controller + fixed-r baselines (--ctrl eta|e_t|oracle)
 run_m5.py           online RL (T-maze actor-critic)
 run_m0_profile.py   memory/time profile across n
-run_cor3_timing.py  factored-exact (r=n) vs textbook-exact timing
+run_cor3_timing.py  factored-exact (r=n) vs textbook-exact timing (original round-1 measurement)
+run_cor3_timing_revise.py     hardened re-measurement behind Table 8 (CUDA events, 20 warmup, 5 repeats)
+run_amortised_kernel_bench.py naive vs amortised kernel (svd / randproj pre-projection modes)
 make_figures.py     regenerate the core paper figures from results/*/*.json
 make_round1_figures.py   horizon / fidelity-vs-error / adaptive-trajectory / memory-time / scaling
 make_stats.py       paired bootstrap CI + Wilcoxon signed-rank + Holm + Cohen's d_z for the tables
+make_kernel_table.py          renders results/revise_kernel/*.json into SUMMARY.md
+make_revise_repro_report.py   builds results/revise_repro/COMPARISON.{md,json}
 tests/              numerics unit tests (exact RTRL ≡ BPTT; SK-RTRL(r=n) ≡ exact; certificate validity)
-results/            one JSON per run (git-ignored; created when you run experiments)
+tests/test_amortised_kernel.py  A1–A10 equivalence of the amortised kernel vs the kernel of record
+results/            the released raw result records — one JSON per run (see below)
 ```
+
+## Released results
+
+`results/` ships with the code, so every number in the paper can be re-derived without re-running
+anything. Each run JSON has the same four top-level keys: `args` (the run's full argument
+namespace), `records` (the per-step log), `wall_s`, and `peak_MB`
+(`torch.cuda.max_memory_allocated()`).
+
+| Tree | Contents | Backs |
+|---|---|---|
+| `results/round1/` | 517 JSON + `STATS_gradcos.*` / `STATS_nmse.*` | the round-1 campaign: `horizon/`, `real/`, `ablate_rank/`, `ablate_norm/`, `adapt_ablate/`, `arch/`, `traj/` |
+| `results/membench/` | 16 JSON | the clean shadow-OFF memory/time sweep behind the scaling and Pareto figures |
+| `results/revise_timing/` | 2 JSON | the Table 8 re-measurement (Cor. 3 factored-exact vs textbook exact), incl. the `rel_err_grad` field quoted in §6.6 |
+| `results/revise_kernel/` | 3 JSON + `SUMMARY.md` + `equivalence_test.txt` | the §4.3 naive-vs-amortised kernel benchmark |
+| `results/revise_repro/` | 22 JSON + 5 logs + `COMPARISON.{md,json}` | the 2026-08 independent re-run of the E6 rank×clip ablation and the memory benchmark on a newer toolchain |
+
+`results/round1/` + `results/membench/` = **533 raw JSON records**. Any other run tree you create
+(scratch sweeps, figure output) is git-ignored.
+
+> The round-1 campaign was dispatched to rented GPUs by a set of `launch_*.sh` / `run_*.sh` /
+> `run_*_local.ps1` wrappers. Those are **not published**: they embed rented-instance hostnames,
+> ports and working directories — environment credentials with no scientific content. Each is a
+> thin loop around the `python run_*.py …` commands listed below, which fully describe what was run.
 
 ## Quick start — numerical correctness (run first)
 
 ```bash
-python -m tests.test_numerics   # exact RTRL ≡ BPTT (4e-16); SK-RTRL(r=n) ≡ exact RTRL (1.6e-15); certificate: 0 violations
-python -m tests.test_m5_traces  # diagonal-cell (LRU/RTU) eligibility traces vs autograd
+python -m tests.test_numerics         # exact RTRL ≡ BPTT (4e-16); SK-RTRL(r=n) ≡ exact RTRL (1.6e-15); certificate: 0 violations
+python -m tests.test_m5_traces        # diagonal-cell (LRU/RTU) eligibility traces vs autograd
+python -m tests.test_amortised_kernel # amortised-rotation kernel ≡ kernel of record (A1–A10)
 ```
 
 A first real run (gradient fidelity on the copy task):
@@ -65,7 +100,9 @@ python run_m3.py --task copy --algo skrtrl-r16 --seed 0 --steps 20000 --n 64 --o
 ## Reproducing the paper
 
 Each block writes one JSON per run into `results/…`. A rerun skips a run whose output already
-exists, so the loops are restart-safe and can be split across workers by seed.
+exists, so the loops are restart-safe and can be split across workers by seed. **Because the
+released `results/` tree is already populated, delete the target directory (or redirect it with
+`--outdir`) before re-running, or every run will be skipped as already done.**
 
 ```bash
 # Gradient fidelity (diagnostic tasks, 3 seeds, exact shadow)
@@ -104,11 +141,16 @@ for t in mackeyglass lorenz copy; do for s in 0 1 2 3 4; do
 
 # Memory/time scaling and Corollary-3 timing
 python run_m0_profile.py                       # peak memory + ms/step across n in {64..512}
-python run_cor3_timing.py                      # factored-exact vs textbook-exact across n
+python run_cor3_timing.py                      # factored-exact vs textbook-exact across n (round-1)
+python run_cor3_timing_revise.py               # hardened re-measurement -> results/revise_timing/
 
 # Clean (shadow-OFF) memory/time benchmark (n in {128,256,384,512})
 for n in 128 256 384 512; do for a in exact snap1 skrtrl-r4 skrtrl-r16; do
   python run_m3.py --task anbn --algo $a --seed 0 --n $n --steps 1500 --shadow 0 --outdir results/membench --tag n$n; done; done
+
+# Amortised-rotation kernel benchmark (§4.3), both pre-projection modes
+python run_amortised_kernel_bench.py --mode svd      --out results/revise_kernel/kernel_bench_svd.json
+python run_amortised_kernel_bench.py --mode randproj --out results/revise_kernel/kernel_bench_randproj.json
 
 # Online RL case study (iso-width n=64, 3 seeds)
 for s in 0 1 2; do for len in 10 20 40; do for a in rtu lru snap1 skrtrl-r16 exact tbptt; do
@@ -123,6 +165,8 @@ python make_round1_figures.py                  # horizon NMSE, fidelity-vs-error
                                                #   memory-time pareto, scaling
 python make_m3_report.py results/ts            # time-series NMSE table (mean ± std)
 python make_m5_report.py results/m5iso         # RL success-rate table
+python make_kernel_table.py                    # results/revise_kernel/SUMMARY.md (§4.3 kernel table)
+python make_revise_repro_report.py             # results/revise_repro/COMPARISON.{md,json}
 # Paired statistics for the time-series tables (bootstrap CI + Wilcoxon + Holm + Cohen's d_z)
 python make_stats.py --dirs results/round1/real results/ts --metric grad_cos --higher_better 1 --out results/round1/STATS_gradcos
 python make_stats.py --dirs results/round1/real results/ts --metric metric   --higher_better 0 --out results/round1/STATS_nmse
@@ -130,8 +174,14 @@ python make_stats.py --dirs results/round1/real results/ts --metric metric   --h
 
 ## Data sources
 
-- `skrtrl/data/sunspot.txt` — monthly mean total sunspot number, [SILSO](https://www.sidc.be/SILSO/),
-  Royal Observatory of Belgium.
+- `skrtrl/data/sunspot.txt` — monthly **mean total** sunspot number, [SILSO](https://www.sidc.be/SILSO/),
+  Royal Observatory of Belgium. Product `SN_m_tot_V2.0` (series column of
+  <https://www.sidc.be/SILSO/INFO/snmtotcsv.php>), one raw monthly mean per line, 3329 values
+  covering 1749-01 through 2026-05. It is **not** the 13-month smoothed product `SN_ms_tot_V2.0`:
+  the first twelve values here are 96.7/104.3/116.7/92.8/141.7/139.2/158.0/110.5/126.5/125.8/
+  264.3/142.0, which is SN_m_tot for 1749-01..1749-12, whereas SN_ms_tot is undefined (`-1.0`)
+  for the first six months and reads 135.9 at 1749-07. The mean absolute month-to-month change
+  is 19.2 (max 156.5), far larger than any 13-month moving average could produce.
 - `skrtrl/data/laser.txt` — far-infrared laser intensity, Santa Fe time-series competition (data set A).
 
 ## Notes
@@ -142,6 +192,11 @@ python make_stats.py --dirs results/round1/real results/ts --metric metric   --h
   unit variance, so MSE ≈ NMSE).
 - The exact shadow (used for the gradient cosine) is enabled for `n ≤ 256`; beyond that only memory
   and NMSE are recorded.
+
+## License
+
+Code and result records: MIT (see [`LICENSE`](LICENSE)). The two series under `skrtrl/data/` are
+third-party data redistributed under their own terms — see the note at the end of `LICENSE`.
 
 ## Citation
 

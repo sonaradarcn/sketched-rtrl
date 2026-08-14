@@ -1,9 +1,15 @@
 """R2b: certificate-guided adaptive-rank SK-RTRL.
 
-A controller reads the normalized certificate c_t = e_t / (||S+LR^T||_F + eps)
-every K steps and grows/shrinks the sketch rank r:
+A controller reads a normalized signal c_t every K steps and grows/shrinks the sketch rank r:
   if c_t > tau_high and r < r_max:      r <- min(2r, r_max)
   elif c_t < tau_low for M checks and r > r_min:  r <- max(r//2, r_min)
+
+--ctrl selects the signal, and the default is the one the paper proposes:
+  eta     (default) c_t = eta_t / (||S+LR^T||_F + eps), the per-step DISCARDED MASS
+  e_t               c_t = e_t   / (||S+LR^T||_F + eps), the compounded certificate; this is
+                    the naive variant the paper compares against, and it over-provisions
+                    because e_t is dominated by the conservative rho_bar accumulation
+  oracle            c_t = ||E_t||_F / (...), hindsight, available only via the exact shadow
 
 Because the per-step truncation already keeps the top-r columns and records the
 discarded mass in eta_t (hence e_t), shrinking is certificate-safe by construction;

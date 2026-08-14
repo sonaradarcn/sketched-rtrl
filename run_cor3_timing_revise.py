@@ -84,6 +84,12 @@ def main():
     args = ap.parse_args()
 
     dev_idx = torch.cuda.current_device()
+    # The protocol is fp32 with TF32 matmuls disabled. Enforce it here rather than trusting
+    # the ambient state -- the env record below then reports what was actually in force.
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
+    torch.set_float32_matmul_precision("highest")
+
     env = {
         "gpu": torch.cuda.get_device_name(dev_idx),
         "gpu_total_GB": round(torch.cuda.get_device_properties(dev_idx).total_memory / 2 ** 30, 1),

@@ -9,26 +9,28 @@ R1-2  Any two curves/series differ in AT LEAST TWO of {colour, line style, marke
       grey-scale print and for dichromatic readers.  Bar charts additionally carry hatches.
 R1-9  fig_memory_time_pareto: annotations are placed with explicit per-point alignment and
       the axes are padded, so no label crosses the frame or another label.
-R2-3  Everything is written as a true vector PDF (no rasterised panels), with >=8 pt text.
+R2-3  Everything is written as a true vector PDF (no rasterised panels), drawn at the size it
+      is printed at so the type lands at 6.2-7.5 pt on the page instead of the 3-5 pt that
+      down-scaling used to produce.
 
 Data sources.  Nothing is fabricated: a figure whose input tree is absent is SKIPPED
 loudly and no file is written for it, so a run that finishes is not the same as a run that
 produced every figure -- read the summary printed at the end.  Paths are relative to the
-repository root; "released" marks the trees that ship with this repository.
+repository root.
 
-  fig_pilot_residual      results/m1_spectrum_*.json                       released
-  fig_fidelity_bars       results/m3/*.json                                released
-  fig_rinterp_rotation    results/{m3,m31,m32}/*.json                      m3 released
-  fig_cert_c2sweep        results/c2sweep/*.json                           NOT released
-  fig_adaptive_trajectory results/round1/traj/rotation_adaptive-eta_s0_traj.json  released
-  fig_horizon_nmse        results/round1/horizon + results/ts              released
-  fig_fidelity_vs_error   results/round1/real    + results/ts              released
-  fig_scaling             results/{m3,scale,scale256} + results/membench   m3, membench released
-  fig_memory_time_pareto  results/membench                                 released
-  fig_rl_curves           results/m5iso                                    NOT released
+  fig_pilot_residual      results/m1_spectrum_*.json
+  fig_fidelity_bars       results/m3/*.json
+  fig_rinterp_rotation    results/m3/*.json  (also reads results/m31, m32 if present)
+  fig_cert_c2sweep        results/c2sweep/*.json
+  fig_adaptive_trajectory results/round1/traj/rotation_adaptive-eta_s0_traj.json
+  fig_horizon_nmse        results/round1/horizon + results/ts
+  fig_fidelity_vs_error   results/round1/real    + results/ts
+  fig_scaling             results/{m3,scale,scale256} + results/membench
+  fig_memory_time_pareto  results/membench
+  fig_rl_curves           results/m5iso
 
-See REPRODUCIBILITY.md ("Released result trees") for why the two unreleased trees are held
-back and what they contain.
+Every tree above ships with this repository, so a clean clone regenerates all ten figures.
+See REPRODUCIBILITY.md ("Released result trees") for what is deliberately left out.
 
 Usage:  python make_paper_figures.py [--root <repo root>] [--out <dir>] [--gray <dir>]
         Defaults: root = this file's directory, out = results/figures/.

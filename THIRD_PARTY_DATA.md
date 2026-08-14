@@ -35,11 +35,17 @@ months and reads 135.9 at 1749-07. The mean absolute month-to-month change here 
 |---|---|
 | Series | Far-infrared laser intensity, chaotic regime |
 | Source | Data set A of the Santa Fe time-series prediction competition (Weigend & Gershenfeld, eds., *Time Series Prediction*, Addison-Wesley, 1994); measurements by U. Hübner et al. |
+| Retrieved | 2026-06, from a mirror of the competition archive; the original competition server is no longer maintained |
 | Contents here | The 1000-point training segment, one integer per line |
-| Bytes / SHA-256 | 4138 / `e064ec29e31632d2237b161bfcf363506a4deb157f45de360895d5be04b52e86` |
-| Terms | The competition data have circulated for three decades as a standard public benchmark and are mirrored in many packages, but we are not aware of an explicit redistribution licence attached to them, and the original competition server is no longer maintained. The copy here is provided for reproduction of the results in the accompanying paper. |
+| Bytes / SHA-256 | 3138 / `01cdac6311bfb4d283c2ff9634a44c96ae1fa5c852fc62415fafbf5ea012327a` |
+| Terms | **No explicit redistribution licence is known to us.** The competition data have circulated for three decades as a standard public benchmark and are mirrored in many packages, but we have not located a licence text attached to them. The copy here is provided so that the results in the accompanying paper can be reproduced, and it is not offered under any licence we can name. Treat it as third-party material with undetermined redistribution terms rather than as licensed data. |
 
 **If you are the rights holder** for either series and object to redistribution, open an issue and
 the file will be removed; `skrtrl/tasks.py` already fails loudly on a missing file, so the code
-keeps working from a locally supplied copy. The SHA-256 values above let anyone verify that a copy
-obtained elsewhere is byte-identical to the one used for the paper.
+keeps working from a locally supplied copy dropped at the same path.
+
+**On the checksums.** Both figures above are of the exact bytes git stores and checks out, which
+is LF-terminated: `.gitattributes` marks `skrtrl/data/*.txt` as `-text` so no platform rewrites
+the line endings and the hashes hold on Windows, macOS and Linux alike. If you obtained a copy
+elsewhere and the hash differs, normalise its line endings to LF before concluding the contents
+differ.

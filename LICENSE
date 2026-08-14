@@ -30,4 +30,5 @@ one's exact product, source, retrieval date, SHA-256 and terms; in summary:
   SILSO, Royal Observatory of Belgium, Brussels (https://www.sidc.be/SILSO/).
   Redistributed under the SILSO terms; please cite SILSO if you use it.
 * `skrtrl/data/laser.txt` — far-infrared laser intensity, data set A of the
-  Santa Fe time-series prediction competition.
+  Santa Fe time-series prediction competition. No explicit redistribution
+  licence is known to us; see THIRD_PARTY_DATA.md.

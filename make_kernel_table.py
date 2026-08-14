@@ -103,8 +103,10 @@ def main():
    S_t + L_t R_t^T, ghat_t, eta_t and e_t step by step: worst relative deviation
    < 4e-14 in float64 (T = 300) and ~1e-6 in float32, with no drift over time.
    The certificate stays valid (0 violations) and the Cor.-3 endpoint (r = n) is
-   still exactly RTRL. So the paper's "in exact arithmetic the two kernels return
-   the same factors" is now backed by code.
+   still exactly RTRL. So the paper's claim that the two kernels agree in exact
+   arithmetic is backed by code -- what is reproduced is the pair (L_t R_t^T, ghat_t)
+   and the certificate quantities; the individual factors agree up to the orthogonal
+   gauge of the basis, which is what the equivalence test checks.
 
 2. **End-to-end, the change is invisible in the released configuration.** With the
    default `mode="svd"` the step is dominated by the *full* n x n SVD used for the
@@ -141,7 +143,9 @@ def main():
 7. **The r = n endpoint does not reach O(n^3).** At r = c = n the buffer width is
    Theta(K n) and the Gram bookkeeping is Theta(K^2 n^2) per step, so K = Theta(n)
    is not affordable. Measured: n = 64, r = 64 gives 0.78x; n = 256, r = 256 gives
-   1.31x -- a constant-factor gain, not the O(n^4) -> O(n^3) of Table 2's last row.
+   1.31x -- a constant-factor gain, not the O(n^4) -> O(n^3) that an earlier draft
+   claimed for the exact endpoint and that the revision withdrew. Table 2's last row
+   is O(n^4) in both columns.
 
 8. **Memory is a wash** (0.90-1.19x of the naive kernel in table 3): the transient
    O(n^2 r) block buffer replaces the naive kernel's dense P x c append, P x c QR

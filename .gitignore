@@ -7,6 +7,7 @@ results/*
 !results/m3/
 !results/m5iso/
 !results/c2sweep/
+!results/c2/
 !results/scale/
 !results/scale256/
 !results/revise_timing/
@@ -16,6 +17,7 @@ results/*
 !results/m0_profile.json
 !results/cor3_timing.json
 !results/m1_spectrum_*.json
+!results/TIMESERIES_TABLES.md
 
 # Python caches / build
 __pycache__/

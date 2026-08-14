@@ -12,10 +12,20 @@ def make_algo(name, cell, batch, **kw):
         return ExactRTRL(cell, batch)
     if name == "snap1":
         return SnAp1(cell, batch)
+    # "am-" prefix selects the amortised-rotation kernel (skrtrl.algos_amortised);
+    # it is mathematically equivalent to the kernel of record, see
+    # tests/test_amortised_kernel.py.  E.g. "am-skrtrl-r16", "am-skrtrl-rp16".
+    amortised = name.startswith("am-")
+    if amortised:
+        name = name[len("am-"):]
     if name.startswith("skrtrl"):
         mode = "randproj" if name.startswith("skrtrl-rp") else "svd"
         rpart = name.split("-rp")[1] if mode == "randproj" else (name.split("-r")[1] if "-r" in name else "")
         r = int(rpart) if rpart else kw.get("r", 16)
+        if amortised:
+            from .algos_amortised import SKRTRLAmortised
+            return SKRTRLAmortised(cell, batch, r=r, mode=mode,
+                                   collapse_every=kw.get("collapse_every"))
         return SKRTRL(cell, batch, r=r, mode=mode)
     if name in ("uoro", "kfrtrl", "eprop", "rflo"):
         from .baselines import make_baseline

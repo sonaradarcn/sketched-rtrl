@@ -261,6 +261,78 @@ def _grayscale_legend(ax, **kw):
 
 
 # --------------------------------------------------------------------------------------
+# Legends live OUTSIDE the plotting area (revision: in-axes keys covered the data).
+#
+# Every data figure of the manuscript now puts its key beneath the axes rather than inside
+# them.  `legend_below` anchors the key in FIGURE coordinates just under the tight bounding
+# box of the axes -- which already contains the tick labels and the x-axis label -- so the
+# key cannot overlap a curve, a marker or an error bar by construction.  Because the figures
+# are saved with bbox_inches='tight', the exported PDF simply grows downwards by the height
+# of the key: the plotting rectangle keeps its full size (it is never squeezed) and the
+# print width, hence the 6.8-7.5 pt paper type size, is unchanged.
+# --------------------------------------------------------------------------------------
+LEGEND_ISSUES = []
+
+
+def _fig_bbox(fig, artists):
+    """Union of the tight bounding boxes of `artists`, in figure coordinates."""
+    from matplotlib.transforms import Bbox
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    bbs = [a.get_tightbbox(r) for a in artists]
+    bbs = [b for b in bbs if b is not None]
+    return Bbox.union(bbs).transformed(fig.transFigure.inverted())
+
+
+def _check_legend_outside(fig, name, leg, axes):
+    """Hard check: the key must clear every axes rectangle and fit the figure width."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    lb = leg.get_window_extent(r)
+    bad = []
+    for ax in axes:
+        if lb.overlaps(ax.get_window_extent()):
+            bad.append("key overlaps the plotting rectangle")
+    fw = fig.get_size_inches()[0] * fig.dpi
+    if lb.width > fw + 1.0:
+        bad.append("key is %.0f px wide vs a %.0f px figure (would widen the figure)"
+                   % (lb.width, fw))
+    if bad:
+        LEGEND_ISSUES.append((name, bad))
+        print("  !! %s legend check FAILED: %s" % (name, "; ".join(bad)))
+    return not bad
+
+
+def legend_below(fig, axes, handles, labels, ncol, name, fontsize=6.4, pad=0.035,
+                 x=None, y=None, **kw):
+    """Draw a legend fully outside the plotting area, centred beneath `axes`."""
+    if not isinstance(axes, (list, tuple)):
+        axes = [axes]
+    axes = list(axes)
+    bb = _fig_bbox(fig, axes)
+    kw.setdefault("frameon", False)
+    kw.setdefault("handlelength", 2.4)
+    kw.setdefault("columnspacing", 1.0)
+    kw.setdefault("handletextpad", 0.45)
+    leg = fig.legend(handles, labels, loc="upper center",
+                     bbox_to_anchor=(0.5 * (bb.x0 + bb.x1) if x is None else x,
+                                     bb.y0 - pad if y is None else y),
+                     bbox_transform=fig.transFigure, ncol=ncol, fontsize=fontsize, **kw)
+    _check_legend_outside(fig, name, leg, axes)
+    return leg
+
+
+def _merged_handles(axes):
+    """Handles/labels of `axes` in order, de-duplicated by label."""
+    h, l = [], []
+    for ax in axes:
+        for hh, ll in zip(*ax.get_legend_handles_labels()):
+            if ll not in l:
+                h.append(hh); l.append(ll)
+    return h, l
+
+
+# --------------------------------------------------------------------------------------
 # Fig 3  fig_pilot_residual
 # --------------------------------------------------------------------------------------
 def fig_pilot_residual():
@@ -289,15 +361,17 @@ def fig_pilot_residual():
     axL.set_ylabel(r"$\|J-S\|_F\,/\,\|J\|_F$")
     axL.set_title("Off-diagonal residual mass fraction")
     axL.set_ylim(0, 1)
-    # lower-LEFT: every residual trace stays above 0.4, so this corner is the empty one
-    _grayscale_legend(axL, fontsize=6.4, loc="lower left")
     axR.set_xlabel("retained rank $k$")
     axR.set_ylabel("cumulative singular mass")
     axR.set_title("Residual is approximately low rank")
     axR.set_xscale("log", base=2)
     axR.set_ylim(0, 1.02)
-    _grayscale_legend(axR, fontsize=6.4, loc="lower right")
     fig.tight_layout()
+    # Both panels share the same four task series, so a single key beneath the pair
+    # replaces the two in-axes legends that used to sit on the data.
+    h, l = _merged_handles([axL, axR])
+    legend_below(fig, [axL, axR], h, l, ncol=4, name="fig_pilot_residual", fontsize=6.6,
+                 handlelength=3.0)
     _save(fig, "fig_pilot_residual")
 
 
@@ -440,8 +514,12 @@ def fig_rinterp(task="rotation"):
     ax.set_xlabel(r"sketch rank $r$")
     ax.set_ylabel("gradient cosine vs exact")
     ax.set_title("Rank interpolation (rotation)")
-    _grayscale_legend(ax, fontsize=7.5, loc="lower right")
     fig.tight_layout()
+    # The interpolation curve sweeps the whole panel, so the key (which used to sit in the
+    # lower-right corner, directly on top of the rising branch) goes underneath the axes.
+    h, l = ax.get_legend_handles_labels()
+    legend_below(fig, ax, h, l, ncol=2, name="fig_rinterp_%s" % task, fontsize=6.2,
+                 handlelength=1.8, columnspacing=0.8, handletextpad=0.35)
     _save(fig, "fig_rinterp_%s" % task)
 
 
@@ -480,9 +558,12 @@ def fig_cert_c2sweep():
     # make the bound diverge (Sec. 7.4).  State the two regimes instead of an iff.
     ax.set_title(r"Certified contraction ($\bar\rho_t<1$): bound stays tight;" "\n"
                  r"sustained $\bar\rho_t\geq 1$: bound inflates")
-    # tightness rises monotonically with rho-bar, so the lower-right corner is the free one
-    _grayscale_legend(ax, fontsize=6.4, loc="lower right")
     fig.tight_layout()
+    # The three sweeps run diagonally across the panel and the old lower-right key sat on
+    # top of all three, so the key now goes beneath the axes.
+    h, l = ax.get_legend_handles_labels()
+    legend_below(fig, ax, h, l, ncol=3, name="fig_cert_c2sweep", fontsize=6.4,
+                 handlelength=2.2, columnspacing=0.8, handletextpad=0.35)
     _save(fig, "fig_cert_c2sweep")
 
 
@@ -633,7 +714,6 @@ def fig_scaling():
     axL.set_title("Fidelity is width-invariant")
     axL.set_xscale("log", base=2)
     axL.set_ylim(0, 1.08)
-    _grayscale_legend(axL, fontsize=7.5, loc="center right")
     for meth in ["exact", "skrtrl-r16", "skrtrl-r4", "snap1"]:
         if meth in mem:
             ns = sorted(mem[meth])
@@ -650,11 +730,24 @@ def fig_scaling():
     axR.set_title(r"Memory: exact $O(n^3)$ vs SK-RTRL $O(n^2 r)$")
     axR.set_yscale("log")
     axR.set_xscale("log", base=2)
-    # head-room above the 12 GB line so the legend never sits on top of a curve
+    # Head-room above the 12 GB line for its in-place annotation only.  This used to be a
+    # 22x stretch, needed solely to keep the in-axes upper-left key off the curves; with the
+    # key moved outside the axes the panel no longer has to waste that vertical space.
     lo, hi = axR.get_ylim()
-    axR.set_ylim(lo, max(hi, 12288) * 22)
-    _grayscale_legend(axR, fontsize=6.6, loc="upper left", ncol=2, columnspacing=1.0)
+    axR.set_ylim(lo, max(hi, 12288) * 4.0)
     fig.tight_layout()
+    # One key per panel (the panels show different method sets), both on a common baseline
+    # beneath the two axes.
+    bbL, bbR = _fig_bbox(fig, [axL]), _fig_bbox(fig, [axR])
+    ybot = min(bbL.y0, bbR.y0) - 0.045
+    hL, lL = axL.get_legend_handles_labels()
+    hR, lR = axR.get_legend_handles_labels()
+    legend_below(fig, axL, hL, lL, ncol=3, name="fig_scaling (left)", fontsize=6.6,
+                 handlelength=2.4, columnspacing=0.9, handletextpad=0.4,
+                 x=0.5 * (bbL.x0 + bbL.x1), y=ybot)
+    legend_below(fig, axR, hR, lR, ncol=4, name="fig_scaling (right)", fontsize=6.6,
+                 handlelength=2.4, columnspacing=0.9, handletextpad=0.4,
+                 x=0.5 * (bbR.x0 + bbR.x1), y=ybot)
     _save(fig, "fig_scaling")
 
 
@@ -818,8 +911,14 @@ def main():
     fig_rl_curves()
 
     print("\n%d figures written: %s" % (len(WROTE), ", ".join(WROTE)))
+    if LEGEND_ISSUES:
+        print("%d LEGEND PLACEMENT FAILURES:" % len(LEGEND_ISSUES))
+        for n, why in LEGEND_ISSUES:
+            print("   -", n, ":", "; ".join(why))
+    else:
+        print("  legend check OK: every key sits outside the plotting rectangle "
+              "and inside the figure width")
     if SKIPPED:
-        print("%d SKIPPED (input missing -- nothing fabricated):" % len(SKIPPED))
         for n, w in SKIPPED:
             print("   -", n, ":", w)
 

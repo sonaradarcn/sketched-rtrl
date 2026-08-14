@@ -1,0 +1,69 @@
+{
+ "env": {
+  "gpu": "NVIDIA GeForce RTX 3080",
+  "gpu_total_GB": 20.0,
+  "gpu_capability": "8.6",
+  "cuda_visible_devices": "1",
+  "torch": "2.6.0+cu124",
+  "cuda": "12.4",
+  "cudnn": 90100,
+  "tf32_matmul": false,
+  "tf32_cudnn": true,
+  "float32_matmul_precision": "highest",
+  "dtype": "float32",
+  "batch": 4,
+  "n_in": 8,
+  "steps_per_measure": 20,
+  "warmup": 10,
+  "repeats": 3,
+  "timer": "torch.cuda.Event",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python": "3.10.20"
+ },
+ "rows": [
+  {
+   "n": 256,
+   "exact_ms": 2.567,
+   "exact_ms_std": 0.0025,
+   "exact_MB": 543.0,
+   "factored_ms": 268.996,
+   "factored_ms_std": 7.565,
+   "factored_MB": 1886.6,
+   "speedup": 0.01,
+   "rel_err_grad": 9.87611997516069e-07
+  },
+  {
+   "n": 320,
+   "exact_ms": 6.807,
+   "exact_ms_std": 0.0135,
+   "exact_MB": 1041.5,
+   "factored_ms": 453.627,
+   "factored_ms_std": 7.94,
+   "factored_MB": 3638.3,
+   "speedup": 0.015,
+   "rel_err_grad": 9.89313321042573e-07
+  },
+  {
+   "n": 384,
+   "exact_ms": 12.105,
+   "exact_ms_std": 0.246,
+   "exact_MB": 1784.3,
+   "factored_ms": 724.21,
+   "factored_ms_std": 2.3991,
+   "factored_MB": 6240.8,
+   "speedup": 0.017,
+   "rel_err_grad": 1.131121734943008e-06
+  },
+  {
+   "n": 512,
+   "exact_ms": 37.616,
+   "exact_ms_std": 0.0185,
+   "exact_MB": 4189.2,
+   "factored_ms": 1600.857,
+   "factored_ms_std": 1.2408,
+   "factored_MB": 14673.7,
+   "speedup": 0.023,
+   "rel_err_grad": 1.2783332294930005e-06
+  }
+ ]
+}

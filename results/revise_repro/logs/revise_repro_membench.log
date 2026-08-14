@@ -1,0 +1,29 @@
+﻿[anbn/exact/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_exact_s0_n128.json (5s, 150MB)
+[anbn/snap1/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_snap1_s0_n128.json (6s, 20MB)
+[anbn/skrtrl-r4/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r4_s0_n128.json (186s, 36MB)
+[anbn/skrtrl-r16/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r16_s0_n128.json (198s, 55MB)
+[anbn/exact/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_exact_s0_n256.json (12s, 1062MB)
+[anbn/snap1/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_snap1_s0_n256.json (6s, 30MB)
+[anbn/skrtrl-r4/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r4_s0_n256.json (397s, 93MB)
+[anbn/skrtrl-r16/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r16_s0_n256.json (431s, 167MB)
+[anbn/exact/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_exact_s0_n384.json (42s, 3520MB)
+[anbn/snap1/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_snap1_s0_n384.json (7s, 46MB)
+[anbn/skrtrl-r4/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r4_s0_n384.json (631s, 188MB)
+[anbn/skrtrl-r16/s0] step 0 metric 0.0000 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r16_s0_n384.json (657s, 352MB)
+[anbn/exact/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_exact_s0_n512.json (120s, 8293MB)
+[anbn/snap1/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_snap1_s0_n512.json (6s, 70MB)
+[anbn/skrtrl-r4/s0] step 0 metric 0.1250 cos None

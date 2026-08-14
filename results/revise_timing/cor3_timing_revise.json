@@ -1,0 +1,102 @@
+{
+ "env": {
+  "gpu": "NVIDIA GeForce RTX 3080",
+  "gpu_total_GB": 20.0,
+  "gpu_capability": "8.6",
+  "cuda_visible_devices": "0",
+  "torch": "2.6.0+cu124",
+  "cuda": "12.4",
+  "cudnn": 90100,
+  "tf32_matmul": false,
+  "tf32_cudnn": true,
+  "float32_matmul_precision": "highest",
+  "dtype": "float32",
+  "batch": 4,
+  "n_in": 8,
+  "steps_per_measure": 50,
+  "warmup": 20,
+  "repeats": 5,
+  "timer": "torch.cuda.Event",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python": "3.10.20"
+ },
+ "rows": [
+  {
+   "n": 32,
+   "exact_ms": 0.701,
+   "exact_ms_std": 0.0641,
+   "exact_MB": 9.5,
+   "factored_ms": 12.583,
+   "factored_ms_std": 0.2581,
+   "factored_MB": 12.9,
+   "speedup": 0.056,
+   "rel_err_grad": 4.7647591827626457e-07
+  },
+  {
+   "n": 48,
+   "exact_ms": 0.667,
+   "exact_ms_std": 0.0159,
+   "exact_MB": 12.3,
+   "factored_ms": 20.085,
+   "factored_ms_std": 0.2149,
+   "factored_MB": 22.9,
+   "speedup": 0.033,
+   "rel_err_grad": 4.6539989284610783e-07
+  },
+  {
+   "n": 64,
+   "exact_ms": 0.659,
+   "exact_ms_std": 0.0012,
+   "exact_MB": 17.5,
+   "factored_ms": 26.808,
+   "factored_ms_std": 0.2069,
+   "factored_MB": 41.3,
+   "speedup": 0.025,
+   "rel_err_grad": 5.3385986120702e-07
+  },
+  {
+   "n": 96,
+   "exact_ms": 0.67,
+   "exact_ms_std": 0.0153,
+   "exact_MB": 38.1,
+   "factored_ms": 42.814,
+   "factored_ms_std": 1.0776,
+   "factored_MB": 114.6,
+   "speedup": 0.016,
+   "rel_err_grad": 6.843696951364109e-07
+  },
+  {
+   "n": 128,
+   "exact_ms": 0.665,
+   "exact_ms_std": 0.0036,
+   "exact_MB": 77.4,
+   "factored_ms": 67.009,
+   "factored_ms_std": 0.921,
+   "factored_MB": 252.6,
+   "speedup": 0.01,
+   "rel_err_grad": 7.375423365374445e-07
+  },
+  {
+   "n": 160,
+   "exact_ms": 0.698,
+   "exact_ms_std": 0.0075,
+   "exact_MB": 141.4,
+   "factored_ms": 94.192,
+   "factored_ms_std": 0.9452,
+   "factored_MB": 477.6,
+   "speedup": 0.007,
+   "rel_err_grad": 8.66251696152176e-07
+  },
+  {
+   "n": 192,
+   "exact_ms": 1.161,
+   "exact_ms_std": 0.0039,
+   "exact_MB": 237.9,
+   "factored_ms": 133.45,
+   "factored_ms_std": 0.9459,
+   "factored_MB": 814.9,
+   "speedup": 0.009,
+   "rel_err_grad": 7.868038665037602e-07
+  }
+ ]
+}

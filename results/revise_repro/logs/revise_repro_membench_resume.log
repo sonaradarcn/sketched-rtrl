@@ -1,0 +1,19 @@
+﻿exists, skip: results/revise_repro/membench/anbn_exact_s0_n128.json
+exists, skip: results/revise_repro/membench/anbn_snap1_s0_n128.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r4_s0_n128.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r16_s0_n128.json
+exists, skip: results/revise_repro/membench/anbn_exact_s0_n256.json
+exists, skip: results/revise_repro/membench/anbn_snap1_s0_n256.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r4_s0_n256.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r16_s0_n256.json
+exists, skip: results/revise_repro/membench/anbn_exact_s0_n384.json
+exists, skip: results/revise_repro/membench/anbn_snap1_s0_n384.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r4_s0_n384.json
+exists, skip: results/revise_repro/membench/anbn_skrtrl-r16_s0_n384.json
+exists, skip: results/revise_repro/membench/anbn_exact_s0_n512.json
+exists, skip: results/revise_repro/membench/anbn_snap1_s0_n512.json
+[anbn/skrtrl-r4/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r4_s0_n512.json (995s, 321MB)
+[anbn/skrtrl-r16/s0] step 0 metric 0.1250 cos None
+saved results/revise_repro/membench/anbn_skrtrl-r16_s0_n512.json (958s, 614MB)
+MEMBENCH REPRO DONE

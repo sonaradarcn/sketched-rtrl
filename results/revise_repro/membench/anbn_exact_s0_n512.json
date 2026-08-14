@@ -1,0 +1,55 @@
+{
+ "args": {
+  "task": "anbn",
+  "algo": "exact",
+  "steps": 1500,
+  "n": 512,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 0,
+  "log_every": 250,
+  "shadow": 0,
+  "tbptt_k": 25,
+  "device": "cuda",
+  "outdir": "results/revise_repro/membench",
+  "tag": "n512",
+  "clip": 0.0,
+  "horizon": 1,
+  "causal": 0,
+  "washout": 200
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.125,
+   "grad_cos": null
+  },
+  {
+   "step": 250,
+   "metric": 0.778125,
+   "grad_cos": null
+  },
+  {
+   "step": 500,
+   "metric": 0.8875,
+   "grad_cos": null
+  },
+  {
+   "step": 750,
+   "metric": 0.755625,
+   "grad_cos": null
+  },
+  {
+   "step": 1000,
+   "metric": 0.733125,
+   "grad_cos": null
+  },
+  {
+   "step": 1250,
+   "metric": 0.775625,
+   "grad_cos": null
+  }
+ ],
+ "wall_s": 119.76248383522034,
+ "peak_MB": 8293.48876953125
+}

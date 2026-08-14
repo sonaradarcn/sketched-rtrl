@@ -1,0 +1,22 @@
+﻿[lorenz/skrtrl-r8/s0] step 0 metric 2.5562 cos None
+[lorenz/skrtrl-r8/s0] step 2000 metric 0.0081 cos None
+[lorenz/skrtrl-r8/s0] step 4000 metric 0.0038 cos None
+[lorenz/skrtrl-r8/s0] step 6000 metric 0.0052 cos None
+[lorenz/skrtrl-r8/s0] step 8000 metric 0.0030 cos None
+[lorenz/skrtrl-r8/s0] step 10000 metric 0.0052 cos None
+[lorenz/skrtrl-r8/s0] step 12000 metric 0.0025 cos None
+[lorenz/skrtrl-r8/s0] step 14000 metric 0.0034 cos None
+saved results/revise_repro/e6_clip/lorenz_skrtrl-r8_s0_clip0.json (1334s, 24MB)
+[lorenz/skrtrl-r8/s1] step 0 metric 3.0731 cos None
+[lorenz/skrtrl-r8/s1] step 2000 metric 0.0051 cos None
+[lorenz/skrtrl-r8/s1] step 4000 metric 0.0038 cos None
+[lorenz/skrtrl-r8/s1] step 6000 metric 0.0062 cos None
+[lorenz/skrtrl-r8/s1] step 8000 metric 0.0048 cos None
+[lorenz/skrtrl-r8/s1] step 10000 metric 0.0334 cos None
+[lorenz/skrtrl-r8/s1] step 12000 metric 0.0069 cos None
+[lorenz/skrtrl-r8/s1] step 14000 metric 0.0069 cos None
+saved results/revise_repro/e6_clip/lorenz_skrtrl-r8_s1_clip0.json (1520s, 24MB)
+[lorenz/skrtrl-r8/s2] step 0 metric 2.7894 cos None
+[lorenz/skrtrl-r8/s2] step 2000 metric 0.0042 cos None
+[lorenz/skrtrl-r8/s2] step 4000 metric 0.0027 cos None
+[lorenz/skrtrl-r8/s2] step 6000 metric 0.0034 cos None

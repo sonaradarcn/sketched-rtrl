@@ -284,19 +284,26 @@ def _fig_bbox(fig, artists):
     return Bbox.union(bbs).transformed(fig.transFigure.inverted())
 
 
-def _check_legend_outside(fig, name, leg, axes):
-    """Hard check: the key must clear every axes rectangle and fit the figure width."""
+def _check_legend_outside(fig, name, leg, axes, host):
+    """Hard checks on an externalised key.
+
+    1. it must clear every plotting rectangle (that is the whole point);
+    2. it must stay inside the horizontal span of the axes it belongs to.  Because the
+       figures are saved with bbox_inches='tight', a key that stuck out sideways would
+       widen the exported PDF, and since the .tex fixes the printed width the whole figure
+       would then be scaled down -- shrinking the 6.8-7.5 pt type it took a revision to fix.
+    """
     fig.canvas.draw()
     r = fig.canvas.get_renderer()
     lb = leg.get_window_extent(r)
+    hb = host.transformed(fig.transFigure)          # host span back to display coords
     bad = []
     for ax in axes:
         if lb.overlaps(ax.get_window_extent()):
             bad.append("key overlaps the plotting rectangle")
-    fw = fig.get_size_inches()[0] * fig.dpi
-    if lb.width > fw + 1.0:
-        bad.append("key is %.0f px wide vs a %.0f px figure (would widen the figure)"
-                   % (lb.width, fw))
+    if lb.x0 < hb.x0 - 1.0 or lb.x1 > hb.x1 + 1.0:
+        bad.append("key spans %.0f-%.0f px outside the %.0f-%.0f px axes span "
+                   "(would widen the exported figure)" % (lb.x0, lb.x1, hb.x0, hb.x1))
     if bad:
         LEGEND_ISSUES.append((name, bad))
         print("  !! %s legend check FAILED: %s" % (name, "; ".join(bad)))
@@ -318,7 +325,7 @@ def legend_below(fig, axes, handles, labels, ncol, name, fontsize=6.4, pad=0.035
                      bbox_to_anchor=(0.5 * (bb.x0 + bb.x1) if x is None else x,
                                      bb.y0 - pad if y is None else y),
                      bbox_transform=fig.transFigure, ncol=ncol, fontsize=fontsize, **kw)
-    _check_legend_outside(fig, name, leg, axes)
+    _check_legend_outside(fig, name, leg, axes, bb)
     return leg
 
 
@@ -742,11 +749,11 @@ def fig_scaling():
     ybot = min(bbL.y0, bbR.y0) - 0.045
     hL, lL = axL.get_legend_handles_labels()
     hR, lR = axR.get_legend_handles_labels()
-    legend_below(fig, axL, hL, lL, ncol=3, name="fig_scaling (left)", fontsize=6.6,
-                 handlelength=2.4, columnspacing=0.9, handletextpad=0.4,
+    legend_below(fig, axL, hL, lL, ncol=3, name="fig_scaling (left)", fontsize=6.2,
+                 handlelength=2.0, columnspacing=0.6, handletextpad=0.35,
                  x=0.5 * (bbL.x0 + bbL.x1), y=ybot)
-    legend_below(fig, axR, hR, lR, ncol=4, name="fig_scaling (right)", fontsize=6.6,
-                 handlelength=2.4, columnspacing=0.9, handletextpad=0.4,
+    legend_below(fig, axR, hR, lR, ncol=4, name="fig_scaling (right)", fontsize=6.2,
+                 handlelength=2.0, columnspacing=0.6, handletextpad=0.35,
                  x=0.5 * (bbR.x0 + bbR.x1), y=ybot)
     _save(fig, "fig_scaling")
 

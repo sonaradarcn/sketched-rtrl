@@ -1,6 +1,6 @@
 # Revision re-run vs. original raw data vs. manuscript
 
-Original JSONs: `code/results/`. Re-runs: `results/revise_repro/` (local 2 x RTX 3080, Python 3.10.20, torch 2.6.0+cu124).
+Original JSONs: `results/` (round-1 campaign). Re-runs: `results/revise_repro/` (local 2 x RTX 3080, Python 3.10.20, torch 2.6.0+cu124).
 
 
 ## E6 rank x spectral clip -- Lorenz, SK-RTRL r=8, n=64, batch 8, 15000 steps

@@ -10,7 +10,7 @@ and therefore print numbers a little different from the tables):
 
   * per run, the reported value is the mean of the LAST FIVE logged records of the field
     (`metric` for NMSE, `grad_cos` for the gradient cosine);
-  * across seeds, mean +- POPULATION standard deviation (ddof = 0);
+  * across seeds, mean +/- POPULATION standard deviation (ddof = 0);
   * the "grad cosine" column is a single number per method: the same per-run last-five mean,
     averaged over every run of the block, i.e. over all seeds and all systems at once.
 
@@ -22,6 +22,7 @@ Usage:  python make_timeseries_tables.py [--out results/TIMESERIES_TABLES.md]
 """
 import argparse
 import glob
+import io
 import json
 import math
 import os
@@ -105,10 +106,10 @@ def build(directory, tasks, published, title, headers):
                 cells.append("--")
                 continue
             m, sd = _mean_popstd(vals)
-            cells.append("%.4f ± %.4f (%d)" % (m, sd, len(vals)))
+            cells.append("%.4f +/- %.4f (%d)" % (m, sd, len(vals)))
             pm, ps = pub_cells[i]
             if abs(round(m, 4) - pm) > 1.1e-4 or abs(round(sd, 4) - ps) > 1.1e-4:
-                bad.append("%s/%s: %.4f±%.4f vs published %.4f±%.4f" % (task, algo, m, sd, pm, ps))
+                bad.append("%s/%s: %.4f+/-%.4f vs published %.4f+/-%.4f" % (task, algo, m, sd, pm, ps))
         if pub_cos is None:
             cells.append("--")
         else:
@@ -127,17 +128,19 @@ def main():
     ap.add_argument("--out", default=os.path.join("results", "TIMESERIES_TABLES.md"))
     args = ap.parse_args()
     t6, bad6 = build(TS_DIR, TS_TASKS, PUBLISHED_TS,
-                     "## Table 6 — online next-step prediction on chaotic systems",
+                     "## Table 6 - online next-step prediction on chaotic systems",
                      ["Henon NMSE", "Mackey-Glass NMSE", "Lorenz NMSE"])
     t7, bad7 = build(REAL_DIR, REAL_TASKS, PUBLISHED_REAL,
-                     "## Table 7 — Sunspot and Santa Fe laser",
+                     "## Table 7 - Sunspot and Santa Fe laser",
                      ["Sunspot NMSE", "Laser NMSE"])
     body = ("# Time-series tables rebuilt from the released raw runs\n\n"
-            "Per run: mean of the last five logged records. Across seeds: mean ± population\n"
-            "standard deviation; the seed count is in parentheses. The grad-cosine column is the\n"
-            "mean over every logged cosine of every seed and system in the block.\n\n" + t6 + "\n" + t7)
+            "Per run: mean of the last five logged records. Across seeds: mean +/- population\n"
+            "standard deviation; the seed count is in parentheses. The grad-cosine column applies\n"
+            "the same per-run value over all seeds and all systems of the block at once.\n\n"
+            + t6 + "\n" + t7)
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
-    open(args.out, "w").write(body)
+    with io.open(args.out, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(body)
     print(body)
     bad = bad6 + bad7
     if bad:

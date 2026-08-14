@@ -1,7 +1,10 @@
 """Equivalence tests for the amortised-rotation kernel (paper Sec. 4.3).
 
-Claim under test: "In exact arithmetic the two kernels return the same factors
-L_t, R_t, since deferring the rotations only re-associates the same products."
+Claim under test: in exact arithmetic the two kernels represent the same estimate, since
+deferring the rotations only re-associates the same products. What is asserted below is the
+reconstructed product L_t R_t^T, the full estimate, the gradient read-out and the certificate
+quantities -- the individual factors are defined only up to the orthogonal gauge of the basis,
+so A5 checks orthonormality rather than factor equality.
 
 Checked here, step by step, against the kernel of record (skrtrl.algos.SKRTRL):
   A1  reconstruction L_t R_t^T          (basis-convention independent)

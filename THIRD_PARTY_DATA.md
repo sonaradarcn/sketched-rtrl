@@ -44,8 +44,9 @@ months and reads 135.9 at 1749-07. The mean absolute month-to-month change here 
 the file will be removed; `skrtrl/tasks.py` already fails loudly on a missing file, so the code
 keeps working from a locally supplied copy dropped at the same path.
 
-**On the checksums.** Both figures above are of the exact bytes git stores and checks out, which
-is LF-terminated: `.gitattributes` marks `skrtrl/data/*.txt` as `-text` so no platform rewrites
-the line endings and the hashes hold on Windows, macOS and Linux alike. If you obtained a copy
-elsewhere and the hash differs, normalise its line endings to LF before concluding the contents
-differ.
+**On the checksums.** Both figures above are of the exact bytes git stores and checks out:
+`.gitattributes` marks `skrtrl/data/*.txt` as `-text`, so no platform rewrites the line endings
+and the hashes hold on Windows, macOS and Linux alike. Lines are separated by LF; `laser.txt`
+ends with a final LF and `sunspot.txt` does not, which is why its byte count is 3328 separators
+for 3329 values. If you obtained a copy elsewhere and the hash differs, check the line endings
+and the trailing newline before concluding that the contents differ.

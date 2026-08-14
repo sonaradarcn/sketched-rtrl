@@ -14,9 +14,9 @@ figures and tables, **and the raw result records behind most of them** (`results
 The released trees cover Tables 3, 4, 6, 7, 8 and 9, the amortised-kernel benchmark and all
 eight numbered data figures (2, 5, 6, 7, 8, 9, 10, 11 — ten figure files, since two are
 multi-panel), so those numbers can be recomputed without re-running anything. Figures 1, 3 and 4
-are hand-drawn schematics and contain no measured data. Two run
-trees are *not* released — the Table 5 adaptive-vs-fixed-rank runs and a clip-0.9 stability
-sweep; the table below says exactly what is and is not there. The figure scripts skip a figure
+are hand-drawn schematics and contain no measured data. Two run trees are *not* released — the
+Table 5 adaptive-vs-fixed-rank runs and a set of longer-horizon diagnostic reruns; the table
+below says exactly what is and is not there. The figure scripts skip a figure
 whose input tree is absent and say so, rather than drawing a partial panel silently.
 
 > **Paper:** *Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks*
@@ -133,9 +133,10 @@ this tree with nothing missing. Any run tree you create yourself (scratch sweeps
 is git-ignored.
 
 > The round-1 campaign was dispatched to rented GPUs by a set of `launch_*.sh` / `run_*.sh` /
-> `run_*_local.ps1` wrappers. Those are **not published**: they embed rented-instance hostnames,
-> ports and working directories — environment credentials with no scientific content. Each is a
-> thin loop around the `python run_*.py …` commands listed below, which fully describe what was run.
+> `run_*_local.ps1` wrappers. Those are **not published**: they hard-code machine-specific
+> endpoints, ports and working directories, which carry no scientific content and would only
+> mislead. Each is a thin loop around the `python run_*.py …` commands listed below, which fully
+> describe what was run.
 
 ## Quick start — numerical correctness (run first)
 
@@ -281,9 +282,11 @@ population standard deviation. `make_m3_report.py` and `make_ts_report.py` are o
 aids on a 20%-tail mean and a sample standard deviation, so their numbers differ slightly from
 the tables by construction — do not read them as table reproductions.
 
-`make_kernel_table.py`, `make_revise_repro_report.py` and the two `make_stats.py` calls rewrite
-files that are committed here, so `git status` staying clean after running them is itself a check
-that the committed reports match the committed raw records. `make_figures.py` and
+`make_kernel_table.py`, `make_revise_repro_report.py`, `make_timeseries_tables.py` and the two
+`make_stats.py` calls rewrite files that are committed here, so `git status` staying clean after
+running them is itself a check that the committed reports match the committed raw records. This
+holds on any platform: `.gitattributes` normalises tracked text to LF, and the report writers
+emit UTF-8 with LF newlines explicitly. `make_figures.py` and
 `make_round1_figures.py` are earlier, plainer entry points kept for reference;
 `make_paper_figures.py` is the one that produced the figures in the manuscript.
 

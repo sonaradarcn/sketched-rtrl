@@ -69,7 +69,7 @@ def main():
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--log_every", type=int, default=250)
-    ap.add_argument("--shadow", type=int, default=1)   # exact shadow for grad-cosine (n<=128)
+    ap.add_argument("--shadow", type=int, default=1)   # exact shadow for grad-cosine (n<=256)
     ap.add_argument("--tbptt_k", type=int, default=25)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--outdir", default="results/m3")

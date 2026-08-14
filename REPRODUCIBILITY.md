@@ -89,7 +89,7 @@ table. What is in it:
 | `results/m3/` | 202 JSON | diagnostic-task gradient fidelity: Table 3 and Fig. 5 |
 | `results/membench/` | 16 JSON | the clean shadow-OFF memory/time sweep behind Fig. 9 and the scaling/Pareto figures |
 | `results/m5iso/` | 54 JSON | the online T-maze study: Table 9 and Fig. 11 |
-| `results/c2sweep/` | 12 JSON | the certificate validity/tightness sweep: Table 4 and Fig. 6 |
+| `results/c2sweep/`, `results/c2/` | 12 + 18 JSON | the two halves of the spectral-clip certificate sweep: 1192 + 2148 = 3340 logged points with zero violations (§6.5, §7.4, §8). `c2sweep` alone gives Table 4 and Fig. 6 |
 | `results/scale/`, `results/scale256/` | 23 + 24 JSON | the n=128 / n=256 fidelity points of Fig. 9 (left) |
 | `results/m1_spectrum_*.json` | 4 JSON | the residual-spectrum pilot of Fig. 2 |
 | `results/scale_large.json` | 1 JSON | the extended width sweep n ∈ {384, 512, 768, 1024} quoted in §4.2 |
@@ -149,9 +149,9 @@ schemas. Every released script reads the shape it needs and ignores the rest.
 ## Remote orchestration scripts
 
 The round-1 campaign was dispatched to five rented GPUs by a set of `launch_*.sh` / `run_*.sh` /
-`run_*_local.ps1` wrappers. Those wrappers are **not published**: they embed rented-instance
-hostnames, ports and working directories, i.e. environment credentials with no scientific
-content. Each one is a thin loop around the `python run_*.py …` commands listed below, which are
+`run_*_local.ps1` wrappers. Those wrappers are **not published**: they hard-code machine-specific
+endpoints, ports and working directories, which carry no scientific content and would only
+mislead a reader trying to re-run anything. Each one is a thin loop around the `python run_*.py …` commands listed below, which are
 the complete and sufficient description of what was run.
 
 ## Numerical correctness (run first)

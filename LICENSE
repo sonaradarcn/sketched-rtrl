@@ -23,7 +23,8 @@ SOFTWARE.
 ---
 
 The two real benchmark series redistributed under `skrtrl/data/` are third-party
-data and are not covered by the licence above:
+data and are not covered by the licence above. THIRD_PARTY_DATA.md records each
+one's exact product, source, retrieval date, SHA-256 and terms; in summary:
 
 * `skrtrl/data/sunspot.txt` — monthly mean total sunspot number (SN_m_tot_V2.0),
   SILSO, Royal Observatory of Belgium, Brussels (https://www.sidc.be/SILSO/).

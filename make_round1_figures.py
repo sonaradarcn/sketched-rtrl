@@ -5,10 +5,14 @@ F2  grad-cosine <-> NMSE scatter    (fidelity is not the same as task error)
 F3  adaptive-rank trajectory        (r_t, eta_t, e_t, rho_hat, rho_bar over time)
 F4  memory-time Pareto              (peak MB vs wall-clock, per method)
 
-Each figure is written as vector PDF + 300-dpi PNG to paper/figures/ and is skipped
-(with a printed note) when its inputs are absent, so no placeholder/fabricated data is
-ever drawn. Inputs are read from a local merged tree (collect_round1.sh pulls the
-per-server results/round1/* and results/ts/* into these dirs first).
+Each figure is written as vector PDF + 300-dpi PNG into --out (default results/figures/)
+and is skipped (with a printed note) when its inputs are absent, so no placeholder or
+fabricated data is ever drawn.  A run that finishes is therefore not the same as a run
+that produced every figure: read the skip notes.
+
+Inputs are the released result trees under results/.  The paper's figures are produced by
+make_paper_figures.py, which applies the manuscript's print sizes and colour-blind-safe
+style; this script is the plainer round-1 version kept for reference.
 """
 import argparse, glob, json, os, re
 import numpy as np
@@ -17,7 +21,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 FNAME = re.compile(r"^(?P<task>[a-z0-9]+)_(?P<method>[a-z0-9\-]+)_s(?P<seed>\d+)(?:_.*)?\.json$")
-OUT = "../paper/figures"   # run from code/; writes to the paper's figures dir
+OUT = "results/figures"    # overridden by --out; kept inside the repository
 
 
 def _last(recs, field, tail=5):
@@ -243,6 +247,7 @@ def fig_scaling_clean(fid_dirs, mem_dir):
 
 
 def main():
+    global OUT
     ap = argparse.ArgumentParser()
     ap.add_argument("--horizon_dirs", nargs="+",
                     default=["results/round1/horizon", "results/ts"])
@@ -251,7 +256,9 @@ def main():
     ap.add_argument("--pareto_dirs", nargs="+",
                     default=["results/membench"])
     ap.add_argument("--traj", default="results/round1/traj/rotation_adaptive-eta_s0_traj.json")
+    ap.add_argument("--out", default=OUT, help="directory to write the figures into")
     args = ap.parse_args()
+    OUT = args.out
     fig_horizon(_scan(args.horizon_dirs))
     fig_scatter(_scan(args.scatter_dirs))
     fig_pareto(_scan(args.pareto_dirs))

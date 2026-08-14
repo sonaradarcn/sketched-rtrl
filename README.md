@@ -9,9 +9,13 @@ sketch error yields, at no extra asymptotic cost, a running scalar **certificate
 `eₜ = ρ̄ₜ·eₜ₋₁ + ηₜ` that upper-bounds the gradient bias at every step — turning an approximate online
 gradient into one whose error is known as it is computed.
 
-This repository contains the reference implementation, the scripts that reproduce every figure
-and table in the paper, **and the raw result records those figures and tables were computed from**
-(`results/`, see below), so every reported number can be re-derived without re-running anything.
+This repository contains the reference implementation, the scripts that produce the paper's
+figures and tables, **and the raw result records behind most of them** (`results/`, see below).
+The released trees cover Tables 3, 4, 6, 7, 8, 9, the amortised-kernel benchmark and Figures 2,
+5, 7, 8, 9, 10 and 11, so those numbers can be recomputed without re-running anything. Two run
+trees are *not* released — the Table 5 adaptive-vs-fixed-rank runs and a clip-0.9 stability
+sweep; the table below says exactly what is and is not there. The figure scripts skip a figure
+whose input tree is absent and say so, rather than drawing a partial panel silently.
 
 > **Paper:** *Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks*
 > (under review). The citation will be finalized on publication.
@@ -27,12 +31,18 @@ released result trees, and the exact command for every experiment in the paper.
 - NumPy, SciPy, Matplotlib
 
 ```bash
+pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cu121   # CUDA 12.1 build
 pip install -r requirements.txt
 ```
 
-Exact versions used for the paper: `torch==2.3.0` (CUDA 12.1), `numpy==1.26.4`, `matplotlib==3.9`,
-and SciPy (paired Wilcoxon signed-rank). All data is synthetic or standard public series generated
-deterministically from a seed.
+Installing `requirements.txt` on its own gives you `torch==2.3.0` from PyPI, which is not the
+CUDA 12.1 build the paper ran on; take the first line above if you want that build.
+
+Versions used for the paper: `torch==2.3.0` (CUDA 12.1), `numpy==1.26.4`, `matplotlib==3.9.0`,
+and SciPy for the paired Wilcoxon signed-rank test. SciPy is the one dependency that is *not*
+pinned to the original version: it was not recorded at run time, so `requirements.txt` carries a
+tested floor (`scipy>=1.11`) instead of a false pin. All data is synthetic or standard public
+series generated deterministically from a seed.
 
 ## Repository layout
 
@@ -40,7 +50,12 @@ deterministically from a seed.
 skrtrl/             library: cells, algorithms (SK-RTRL / exact RTRL / baselines),
                     tasks, training loop, RL envs, diagonal-exact cells
 skrtrl/algos.py     the kernel of record (eager rank-r rotation, O(n²r²) per step)
-skrtrl/algos_amortised.py   amortised-rotation kernel of §4.3 (deferred rotations, O(n²r) per step)
+skrtrl/algos_amortised.py   amortised-rotation kernel of §4.3 (deferred rotations). Its rotation
+                    term is O(n²r) amortised only under the append budget c=Θ(r) with r=O(√n)
+                    (or a constant budget c=O(1)); the shipped kernel caps the deferred width at
+                    w ≤ 5r, so it runs at K=O(1) and the released configuration is still
+                    O(n³+n²r²) per step, as §4.2 and Table 2 state. It is an equivalent kernel,
+                    not a lower-order one — see results/revise_kernel/SUMMARY.md
 skrtrl/data/        real benchmark series: sunspot.txt (SILSO monthly), laser.txt (Santa Fe set A)
 run_m3.py           gradient fidelity + online time-series (cosine vs exact shadow, NMSE; --horizon/--causal)
 run_arch.py         forecasting-architecture baselines (GRU/LSTM via TBPTT, ESN ridge readout)
@@ -50,7 +65,11 @@ run_m0_profile.py   memory/time profile across n
 run_cor3_timing.py  factored-exact (r=n) vs textbook-exact timing (original round-1 measurement)
 run_cor3_timing_revise.py     hardened re-measurement behind Table 8 (CUDA events, 20 warmup, 5 repeats)
 run_amortised_kernel_bench.py naive vs amortised kernel (svd / randproj pre-projection modes)
-make_figures.py     regenerate the core paper figures from results/*/*.json
+make_paper_figures.py    the single script behind the paper's data figures: one
+                    colour-blind-safe style, print-size axes, a hard check that any two
+                    methods differ in >=2 visual attributes, and a loud skip when an input
+                    tree is missing
+make_figures.py     older/plainer figure entry point, kept for reference
 make_round1_figures.py   horizon / fidelity-vs-error / adaptive-trajectory / memory-time / scaling
 make_stats.py       paired bootstrap CI + Wilcoxon signed-rank + Holm + Cohen's d_z for the tables
 make_kernel_table.py          renders results/revise_kernel/*.json into SUMMARY.md
@@ -62,21 +81,41 @@ results/            the released raw result records — one JSON per run (see be
 
 ## Released results
 
-`results/` ships with the code, so every number in the paper can be re-derived without re-running
-anything. Each run JSON has the same four top-level keys: `args` (the run's full argument
-namespace), `records` (the per-step log), `wall_s`, and `peak_MB`
-(`torch.cuda.max_memory_allocated()`).
+Most run JSONs have four top-level keys: `args` (the run's full argument namespace), `records`
+(the per-step log), `wall_s`, and `peak_MB` (`torch.cuda.max_memory_allocated()`). Three groups
+differ, and the plotting/report scripts handle all of them:
+
+- the `run_arch.py` baselines in `results/round1/arch/` carry `final_nmse` instead of `peak_MB`
+  (and `esn_res` as well, for the ESN runs), because they are CPU/ridge runs with no CUDA peak;
+- the `run_adaptive.py` runs in `results/round1/adapt_ablate/` and `results/round1/traj/` add
+  `avg_rank`, `cert_violations` and `cert_checks_with_shadow`;
+- the runs logged without a CUDA device (`tbptt` in `results/ts/`, the T-maze runs) have no
+  `peak_MB`, and the report/benchmark files listed below are not run records at all.
 
 | Tree | Contents | Backs |
 |---|---|---|
-| `results/round1/` | 517 JSON + `STATS_gradcos.*` / `STATS_nmse.*` | the round-1 campaign: `horizon/`, `real/`, `ablate_rank/`, `ablate_norm/`, `adapt_ablate/`, `arch/`, `traj/` |
+| `results/round1/` | 515 run JSON + `STATS_gradcos.{md,json}` / `STATS_nmse.{md,json}` | the round-1 campaign: `horizon/`, `real/`, `ablate_rank/`, `ablate_norm/`, `adapt_ablate/`, `arch/`, `traj/` |
+| `results/ts/` | 240 JSON | the chaotic time-series campaign (Table 6) and, with `round1/real`, the paired statistics |
+| `results/m3/` | 202 JSON | the diagnostic-task gradient fidelity of Table 3 and Fig. 5 |
 | `results/membench/` | 16 JSON | the clean shadow-OFF memory/time sweep behind the scaling and Pareto figures |
+| `results/m5iso/` | 54 JSON | the online T-maze study of Table 9 and Fig. 11 (3 seeds x 3 corridors x 6 methods) |
+| `results/c2sweep/` | 12 JSON | the certificate validity/tightness sweep of Table 4 and Fig. 6 |
+| `results/scale/`, `results/scale256/` | 23 + 24 JSON | the n=128 / n=256 fidelity points of the scaling figure |
+| `results/m1_spectrum_*.json` | 4 JSON | the residual-spectrum pilot of Fig. 2 |
+| `results/scale_large.json` | 1 JSON | the extended width sweep (n = 384..1024) quoted in §4.2 |
+| `results/m0_profile.json`, `results/cor3_timing.json` | 2 JSON | the round-1 memory/time profile and the original Cor.-3 timing |
 | `results/revise_timing/` | 2 JSON | the Table 8 re-measurement (Cor. 3 factored-exact vs textbook exact), incl. the `rel_err_grad` field quoted in §6.6 |
 | `results/revise_kernel/` | 3 JSON + `SUMMARY.md` + `equivalence_test.txt` | the §4.3 naive-vs-amortised kernel benchmark |
 | `results/revise_repro/` | 22 JSON + 5 logs + `COMPARISON.{md,json}` | the 2026-08 independent re-run of the E6 rank×clip ablation and the memory benchmark on a newer toolchain |
 
-`results/round1/` + `results/membench/` = **533 raw JSON records**. Any other run tree you create
-(scratch sweeps, figure output) is git-ignored.
+`results/round1/` + `results/membench/` = **533 JSON files** (531 run records plus the two
+aggregate `STATS_*.json`), the figure quoted in the response letter.
+
+**Not released.** Two run trees are held back: the Table 5 adaptive-vs-fixed-rank runs, and a
+clip-0.9 stability sweep that no table or figure reports. Everything else the paper reports is
+backed by a tree above, and `python make_paper_figures.py` rebuilds all ten data figures from
+this tree with nothing missing. Any run tree you create yourself (scratch sweeps, figure output)
+is git-ignored.
 
 > The round-1 campaign was dispatched to rented GPUs by a set of `launch_*.sh` / `run_*.sh` /
 > `run_*_local.ps1` wrappers. Those are **not published**: they embed rented-instance hostnames,
@@ -105,18 +144,25 @@ released `results/` tree is already populated, delete the target directory (or r
 `--outdir`) before re-running, or every run will be skipped as already done.**
 
 ```bash
-# Gradient fidelity (diagnostic tasks, 3 seeds, exact shadow)
-for t in copy adding rotation anbn; do for a in exact skrtrl-r4 skrtrl-r16 skrtrl-r64 snap1 uoro kfrtrl rflo tbptt; do for s in 0 1 2; do
+# Gradient fidelity (diagnostic tasks, 5 seeds, exact shadow) -> Table 3, Fig. 5
+for t in copy adding rotation anbn; do for a in exact skrtrl-r4 skrtrl-r16 skrtrl-r64 snap1 uoro kfrtrl rflo tbptt; do for s in 0 1 2 3 4; do
   python run_m3.py --task $t --algo $a --seed $s --steps 20000 --n 64 --outdir results/m3; done; done; done
+# Four of the released runs (copy/adding x kfrtrl/uoro, seed 0) were logged in an earlier pass
+# at --steps 8000; they are kept because Table 3 averages the tail of the logged cosine, which
+# has plateaued well before then. `python make_fidelity_bars.py` recomputes all 24 cells of
+# Table 3 from results/m3 and fails if any of them disagrees with the published value.
 
 # Online chaotic time-series (Henon / Mackey-Glass / Lorenz, 10 seeds)
 for t in henon mackeyglass lorenz; do for a in exact skrtrl-r4 skrtrl-r16 snap1 uoro kfrtrl rflo; do for s in 0 1 2 3 4 5 6 7 8 9; do
   python run_m3.py --task $t --algo $a --seed $s --steps 15000 --n 64 --shadow 1 --outdir results/ts; done; done; done
 # (skrtrl-r32 and tbptt at 5 seeds: same loop with `for s in 0 1 2 3 4` and those algos)
 
-# Real benchmarks: Sunspot + Santa Fe laser (10 seeds, causal normalization)
+# Real benchmarks: Sunspot + Santa Fe laser (10 seeds, causal normalization) -> Table 7
 for t in sunspot laser; do for a in exact skrtrl-r4 skrtrl-r16 snap1 uoro rflo; do for s in 0 1 2 3 4 5 6 7 8 9; do
   python run_m3.py --task $t --algo $a --seed $s --steps 15000 --n 64 --shadow 1 --causal 1 --outdir results/round1/real --tag real; done; done; done
+# KF-RTRL is in Table 7 at 5 seeds (it is the one method not run to 10 there):
+for t in sunspot laser; do for s in 0 1 2 3 4; do
+  python run_m3.py --task $t --algo kfrtrl --seed $s --steps 15000 --n 64 --shadow 1 --causal 1 --outdir results/round1/real --tag real; done; done
 
 # Multi-step horizons h in {5,10,25}
 for t in henon mackeyglass lorenz; do for h in 5 10 25; do for a in exact snap1 skrtrl-r4 skrtrl-r16 rflo; do for s in 0 1 2 3 4; do
@@ -130,19 +176,24 @@ for t in henon mackeyglass lorenz sunspot laser; do for arch in gru lstm esn; do
 for t in rotation anbn; do for c in eta e_t oracle; do for s in 0 1 2; do
   python run_adaptive.py --task $t --ctrl $c --seed $s --steps 20000 --n 64 --shadow 1 --outdir results/round1/adapt_ablate --tag e5; done; done; done
 
-# Certificate validity/tightness sweep (spectral clip)
-for clip in 0.2 0.35 0.5 0.7 0.9; do for t in adding anbn rotrecall24; do
+# Certificate validity/tightness sweep (spectral clip) -> Table 4, Fig. 6
+# Twelve runs: the five (rho_bar, tightness) points of Table 4 are read off these, across tasks.
+for clip in 0.2 0.35 0.5 0.7; do for t in adding anbn rotrecall24; do
   python run_m3.py --task $t --algo skrtrl-r16 --seed 0 --steps 25000 --clip $clip --outdir results/c2sweep --tag clip$clip; done; done
+python c2sweep_points.py results/c2sweep     # prints rho_bar / rho_hat / tightness per run
 
-# Certificate-guided adaptive rank (vs fixed r), 5 seeds
-for t in mackeyglass lorenz copy; do for s in 0 1 2 3 4; do
-  python run_adaptive.py --task $t --seed $s --steps 15000 --n 64 --r_min 4 --r_max 32 --outdir results/adaptive
-  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --steps 15000 --fixed_r $fr --outdir results/adaptive; done; done; done
+# Certificate-guided adaptive rank vs fixed r (Table 5). These runs are NOT in the released
+# tree; the command is listed so the block can be reproduced from scratch.
+for t in rotation anbn; do for s in 0 1 2 3 4; do
+  python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
+  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
 
 # Memory/time scaling and Corollary-3 timing
 python run_m0_profile.py                       # peak memory + ms/step across n in {64..512}
 python run_cor3_timing.py                      # factored-exact vs textbook-exact across n (round-1)
-python run_cor3_timing_revise.py               # hardened re-measurement -> results/revise_timing/
+# Hardened re-measurement behind Table 8: two invocations, small and large widths.
+python run_cor3_timing_revise.py
+python run_cor3_timing_revise.py --ns 256,320,384,512 --steps 20 --warmup 10 --repeats 3   --out results/revise_timing/cor3_timing_revise_large.json
 
 # Clean (shadow-OFF) memory/time benchmark (n in {128,256,384,512})
 for n in 128 256 384 512; do for a in exact snap1 skrtrl-r4 skrtrl-r16; do
@@ -152,25 +203,36 @@ for n in 128 256 384 512; do for a in exact snap1 skrtrl-r4 skrtrl-r16; do
 python run_amortised_kernel_bench.py --mode svd      --out results/revise_kernel/kernel_bench_svd.json
 python run_amortised_kernel_bench.py --mode randproj --out results/revise_kernel/kernel_bench_randproj.json
 
-# Online RL case study (iso-width n=64, 3 seeds)
-for s in 0 1 2; do for len in 10 20 40; do for a in rtu lru snap1 skrtrl-r16 exact tbptt; do
-  python run_m5.py --env_len $len --algo $a --seed $s --n 64 --outdir results/m5iso; done; done; done
+# Online RL case study (iso-width n=64, 3 seeds) -> Table 9, Fig. 11.
+# The step budget grows with the corridor; run_m5.py's default (300k) is not the protocol.
+for s in 0 1 2; do for a in rtu lru snap1 skrtrl-r16 exact tbptt; do
+  python run_m5.py --env_len 10 --steps 60000  --algo $a --seed $s --n 64 --outdir results/m5iso
+  python run_m5.py --env_len 20 --steps 100000 --algo $a --seed $s --n 64 --outdir results/m5iso
+  python run_m5.py --env_len 40 --steps 150000 --algo $a --seed $s --n 64 --outdir results/m5iso; done; done
 ```
 
 ## Figures and statistics
 
+All of these run on the released tree as cloned; none of them needs a GPU.
+
 ```bash
-python make_figures.py results                 # fidelity bars, rank-interpolation, certificate, curves
-python make_round1_figures.py                  # horizon NMSE, fidelity-vs-error, adaptive trajectory,
-                                               #   memory-time pareto, scaling
+python make_paper_figures.py                   # all ten data figures -> results/figures/
+python make_fidelity_bars.py                   # Fig. 5 (left) alone, with the Table 3 cross-check
 python make_m3_report.py results/ts            # time-series NMSE table (mean ± std)
-python make_m5_report.py results/m5iso         # RL success-rate table
+python make_m5_report.py results/m5iso         # RL success-rate table (Table 9)
+python c2sweep_points.py results/c2sweep       # certificate tightness points (Table 4)
 python make_kernel_table.py                    # results/revise_kernel/SUMMARY.md (§4.3 kernel table)
 python make_revise_repro_report.py             # results/revise_repro/COMPARISON.{md,json}
 # Paired statistics for the time-series tables (bootstrap CI + Wilcoxon + Holm + Cohen's d_z)
 python make_stats.py --dirs results/round1/real results/ts --metric grad_cos --higher_better 1 --out results/round1/STATS_gradcos
 python make_stats.py --dirs results/round1/real results/ts --metric metric   --higher_better 0 --out results/round1/STATS_nmse
 ```
+
+`make_kernel_table.py`, `make_revise_repro_report.py` and the two `make_stats.py` calls rewrite
+files that are committed here, so `git status` staying clean after running them is itself a check
+that the committed reports match the committed raw records. `make_figures.py` and
+`make_round1_figures.py` are earlier, plainer entry points kept for reference;
+`make_paper_figures.py` is the one that produced the figures in the manuscript.
 
 ## Data sources
 
@@ -196,7 +258,9 @@ python make_stats.py --dirs results/round1/real results/ts --metric metric   --h
 ## License
 
 Code and result records: MIT (see [`LICENSE`](LICENSE)). The two series under `skrtrl/data/` are
-third-party data redistributed under their own terms — see the note at the end of `LICENSE`.
+third-party data redistributed under their own terms — see
+[`THIRD_PARTY_DATA.md`](THIRD_PARTY_DATA.md) for each one's product, source, retrieval date,
+SHA-256 and terms.
 
 ## Citation
 

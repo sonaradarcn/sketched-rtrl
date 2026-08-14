@@ -59,7 +59,8 @@ def main():
                      f"{ms([r['succ'] for r in rs])} | {s2t_str} ({len(s2t)}/{len(rs)}) |")
     out = "\n".join(lines) + "\n"
     os.makedirs("results", exist_ok=True)
-    open(f"results/REPORT_{os.path.basename(d_)}.md", "w").write(out)
+    open(f"results/REPORT_{os.path.basename(d_)}.md", "w", encoding="utf-8",
+         newline="\n").write(out)
     print(out)
 
 

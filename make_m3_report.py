@@ -53,7 +53,8 @@ def main():
                      f"{ms([r['cos'] for r in rs])} | {et} | {tE} | {tight} |")
     out = "\n".join(lines) + "\n"
     os.makedirs("results", exist_ok=True)
-    open(f"results/REPORT_{os.path.basename(d_)}.md", "w").write(out)
+    open(f"results/REPORT_{os.path.basename(d_)}.md", "w", encoding="utf-8",
+         newline="\n").write(out)
     print(out)
 
 

@@ -153,9 +153,9 @@ def main():
     res = compare(table, args.ref, args.others, bool(args.higher_better))
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     json.dump({"ref": args.ref, "metric": args.metric, "result": res},
-              open(args.out + ".json", "w"), indent=1)
+              open(args.out + ".json", "w", encoding="utf-8", newline="\n"), indent=1)
     md = to_markdown(res, args.ref, args.metric, bool(args.higher_better))
-    open(args.out + ".md", "w").write(md)
+    open(args.out + ".md", "w", encoding="utf-8", newline="\n").write(md)
     print("wrote", args.out + ".md", "and", args.out + ".json")
     print(f"tasks with comparisons: {sum(1 for v in res.values() if v)}")
 

@@ -151,7 +151,7 @@ def main():
    O(n^2 r) block buffer replaces the naive kernel's dense P x c append, P x c QR
    workspace and P x (r+c) concatenation.
 """)
-    open(out, "w", encoding="utf-8").write("\n".join(L) + "\n")
+    open(out, "w", encoding="utf-8", newline="\n").write("\n".join(L) + "\n")
     print("wrote", out)
 
 

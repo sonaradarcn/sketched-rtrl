@@ -80,7 +80,9 @@ def fmt(v, nd=4):
 def main():
     e6, mem = e6_rows(), mem_rows()
     os.makedirs(REPRO, exist_ok=True)
-    json.dump({"e6_clip": e6, "membench": mem}, open(os.path.join(REPRO, "COMPARISON.json"), "w"), indent=1)
+    json.dump({"e6_clip": e6, "membench": mem},
+              open(os.path.join(REPRO, "COMPARISON.json"), "w", encoding="utf-8", newline="\n"),
+              indent=1)
 
     L = []
     L.append("# Revision re-run vs. original raw data vs. manuscript\n")
@@ -130,10 +132,11 @@ def main():
                              "max_post": post[-1], "n_gt_002": nex, "median_post": med})
                 L.append(f"| {clip} | {s} | {src} | {last:.4f} | {post[-1]:.4f} | {nex} | {med:.4f} |")
     json.dump({"e6_clip": e6, "membench": mem, "e6_stability": stab},
-              open(os.path.join(REPRO, "COMPARISON.json"), "w"), indent=1)
+              open(os.path.join(REPRO, "COMPARISON.json"), "w", encoding="utf-8", newline="\n"),
+              indent=1)
 
     out = os.path.join(REPRO, "COMPARISON.md")
-    with open(out, "w", encoding="utf-8") as f:
+    with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(L) + "\n")
     print("\n".join(L))
     print("\nwrote", out)

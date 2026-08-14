@@ -204,9 +204,10 @@ for t in adding anbn rotrecall; do for a in skrtrl-r4 skrtrl-r16 snap1; do for s
   python run_m3.py --task $t --algo $a --seed $s --steps 30000 --clip 0.9 --outdir results/c2; done; done; done
 
 # Certificate-guided adaptive rank vs fixed r (tab:adaptive). NOT in the released tree.
+# --steps 12000 must be passed: run_adaptive.py's default is 20000, which is not the protocol.
 for t in rotation anbn; do for s in 0 1 2 3 4; do
-  python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
-  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
+  python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
+  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
 
 # Memory/time scaling and Corollary-3 timing
 python run_m0_profile.py                       # peak memory + ms/step across n in {64..512}

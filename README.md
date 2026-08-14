@@ -205,9 +205,10 @@ python c2sweep_points.py results/c2sweep     # prints rho_bar / rho_hat / tightn
 
 # Certificate-guided adaptive rank vs fixed r (Table 5). These runs are NOT in the released
 # tree; the command is listed so the block can be reproduced from scratch.
+# Note --steps 12000: run_adaptive.py defaults to 20000, which is NOT the Table 5 budget.
 for t in rotation anbn; do for s in 0 1 2 3 4; do
-  python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
-  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
+  python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
+  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
 
 # Residual-spectrum pilot (Fig. 2)
 for t in copy adding rotation anbn; do python run_m1_spectrum.py --task $t; done

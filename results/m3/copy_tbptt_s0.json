@@ -1,0 +1,143 @@
+{
+ "args": {
+  "task": "copy",
+  "algo": "tbptt",
+  "steps": 8000,
+  "n": 64,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 0,
+  "log_every": 250,
+  "shadow": 1,
+  "tbptt_k": 25,
+  "device": "cuda",
+  "outdir": "results/m3"
+ },
+ "records": [
+  {
+   "step": 250,
+   "metric": 0.115
+  },
+  {
+   "step": 500,
+   "metric": 0.1125
+  },
+  {
+   "step": 750,
+   "metric": 0.12166666666666667
+  },
+  {
+   "step": 1000,
+   "metric": 0.1325
+  },
+  {
+   "step": 1250,
+   "metric": 0.127
+  },
+  {
+   "step": 1500,
+   "metric": 0.1275
+  },
+  {
+   "step": 1750,
+   "metric": 0.12785714285714286
+  },
+  {
+   "step": 2000,
+   "metric": 0.13125
+  },
+  {
+   "step": 2250,
+   "metric": 0.13625
+  },
+  {
+   "step": 2500,
+   "metric": 0.13875
+  },
+  {
+   "step": 2750,
+   "metric": 0.134375
+  },
+  {
+   "step": 3000,
+   "metric": 0.13
+  },
+  {
+   "step": 3250,
+   "metric": 0.134375
+  },
+  {
+   "step": 3500,
+   "metric": 0.134375
+  },
+  {
+   "step": 3750,
+   "metric": 0.138125
+  },
+  {
+   "step": 4000,
+   "metric": 0.138125
+  },
+  {
+   "step": 4250,
+   "metric": 0.13
+  },
+  {
+   "step": 4500,
+   "metric": 0.13
+  },
+  {
+   "step": 4750,
+   "metric": 0.13375
+  },
+  {
+   "step": 5000,
+   "metric": 0.135
+  },
+  {
+   "step": 5250,
+   "metric": 0.135625
+  },
+  {
+   "step": 5500,
+   "metric": 0.13875
+  },
+  {
+   "step": 5750,
+   "metric": 0.136875
+  },
+  {
+   "step": 6000,
+   "metric": 0.131875
+  },
+  {
+   "step": 6250,
+   "metric": 0.1325
+  },
+  {
+   "step": 6500,
+   "metric": 0.1325
+  },
+  {
+   "step": 6750,
+   "metric": 0.1325
+  },
+  {
+   "step": 7000,
+   "metric": 0.130625
+  },
+  {
+   "step": 7250,
+   "metric": 0.12875
+  },
+  {
+   "step": 7500,
+   "metric": 0.1225
+  },
+  {
+   "step": 7750,
+   "metric": 0.12125
+  }
+ ],
+ "wall_s": 6.063400506973267
+}

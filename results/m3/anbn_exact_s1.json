@@ -1,0 +1,419 @@
+{
+ "args": {
+  "task": "anbn",
+  "algo": "exact",
+  "steps": 20000,
+  "n": 64,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 1,
+  "log_every": 250,
+  "shadow": 1,
+  "tbptt_k": 25,
+  "device": "cuda",
+  "outdir": "results/m3"
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.0,
+   "grad_cos": null
+  },
+  {
+   "step": 250,
+   "metric": 0.78,
+   "grad_cos": null
+  },
+  {
+   "step": 500,
+   "metric": 0.87875,
+   "grad_cos": null
+  },
+  {
+   "step": 750,
+   "metric": 0.878125,
+   "grad_cos": null
+  },
+  {
+   "step": 1000,
+   "metric": 0.89375,
+   "grad_cos": null
+  },
+  {
+   "step": 1250,
+   "metric": 0.893125,
+   "grad_cos": null
+  },
+  {
+   "step": 1500,
+   "metric": 0.89,
+   "grad_cos": null
+  },
+  {
+   "step": 1750,
+   "metric": 0.891875,
+   "grad_cos": null
+  },
+  {
+   "step": 2000,
+   "metric": 0.8775,
+   "grad_cos": null
+  },
+  {
+   "step": 2250,
+   "metric": 0.885625,
+   "grad_cos": null
+  },
+  {
+   "step": 2500,
+   "metric": 0.885625,
+   "grad_cos": null
+  },
+  {
+   "step": 2750,
+   "metric": 0.881875,
+   "grad_cos": null
+  },
+  {
+   "step": 3000,
+   "metric": 0.888125,
+   "grad_cos": null
+  },
+  {
+   "step": 3250,
+   "metric": 0.89,
+   "grad_cos": null
+  },
+  {
+   "step": 3500,
+   "metric": 0.88,
+   "grad_cos": null
+  },
+  {
+   "step": 3750,
+   "metric": 0.89,
+   "grad_cos": null
+  },
+  {
+   "step": 4000,
+   "metric": 0.894375,
+   "grad_cos": null
+  },
+  {
+   "step": 4250,
+   "metric": 0.885625,
+   "grad_cos": null
+  },
+  {
+   "step": 4500,
+   "metric": 0.88125,
+   "grad_cos": null
+  },
+  {
+   "step": 4750,
+   "metric": 0.899375,
+   "grad_cos": null
+  },
+  {
+   "step": 5000,
+   "metric": 0.871875,
+   "grad_cos": null
+  },
+  {
+   "step": 5250,
+   "metric": 0.88375,
+   "grad_cos": null
+  },
+  {
+   "step": 5500,
+   "metric": 0.885625,
+   "grad_cos": null
+  },
+  {
+   "step": 5750,
+   "metric": 0.89625,
+   "grad_cos": null
+  },
+  {
+   "step": 6000,
+   "metric": 0.90875,
+   "grad_cos": null
+  },
+  {
+   "step": 6250,
+   "metric": 0.89375,
+   "grad_cos": null
+  },
+  {
+   "step": 6500,
+   "metric": 0.9025,
+   "grad_cos": null
+  },
+  {
+   "step": 6750,
+   "metric": 0.901875,
+   "grad_cos": null
+  },
+  {
+   "step": 7000,
+   "metric": 0.91625,
+   "grad_cos": null
+  },
+  {
+   "step": 7250,
+   "metric": 0.90875,
+   "grad_cos": null
+  },
+  {
+   "step": 7500,
+   "metric": 0.906875,
+   "grad_cos": null
+  },
+  {
+   "step": 7750,
+   "metric": 0.923125,
+   "grad_cos": null
+  },
+  {
+   "step": 8000,
+   "metric": 0.91125,
+   "grad_cos": null
+  },
+  {
+   "step": 8250,
+   "metric": 0.92,
+   "grad_cos": null
+  },
+  {
+   "step": 8500,
+   "metric": 0.92375,
+   "grad_cos": null
+  },
+  {
+   "step": 8750,
+   "metric": 0.89625,
+   "grad_cos": null
+  },
+  {
+   "step": 9000,
+   "metric": 0.90625,
+   "grad_cos": null
+  },
+  {
+   "step": 9250,
+   "metric": 0.91,
+   "grad_cos": null
+  },
+  {
+   "step": 9500,
+   "metric": 0.9225,
+   "grad_cos": null
+  },
+  {
+   "step": 9750,
+   "metric": 0.925,
+   "grad_cos": null
+  },
+  {
+   "step": 10000,
+   "metric": 0.935625,
+   "grad_cos": null
+  },
+  {
+   "step": 10250,
+   "metric": 0.928125,
+   "grad_cos": null
+  },
+  {
+   "step": 10500,
+   "metric": 0.92625,
+   "grad_cos": null
+  },
+  {
+   "step": 10750,
+   "metric": 0.91875,
+   "grad_cos": null
+  },
+  {
+   "step": 11000,
+   "metric": 0.936875,
+   "grad_cos": null
+  },
+  {
+   "step": 11250,
+   "metric": 0.93375,
+   "grad_cos": null
+  },
+  {
+   "step": 11500,
+   "metric": 0.935,
+   "grad_cos": null
+  },
+  {
+   "step": 11750,
+   "metric": 0.935,
+   "grad_cos": null
+  },
+  {
+   "step": 12000,
+   "metric": 0.93375,
+   "grad_cos": null
+  },
+  {
+   "step": 12250,
+   "metric": 0.939375,
+   "grad_cos": null
+  },
+  {
+   "step": 12500,
+   "metric": 0.930625,
+   "grad_cos": null
+  },
+  {
+   "step": 12750,
+   "metric": 0.939375,
+   "grad_cos": null
+  },
+  {
+   "step": 13000,
+   "metric": 0.94,
+   "grad_cos": null
+  },
+  {
+   "step": 13250,
+   "metric": 0.94125,
+   "grad_cos": null
+  },
+  {
+   "step": 13500,
+   "metric": 0.9375,
+   "grad_cos": null
+  },
+  {
+   "step": 13750,
+   "metric": 0.9325,
+   "grad_cos": null
+  },
+  {
+   "step": 14000,
+   "metric": 0.93375,
+   "grad_cos": null
+  },
+  {
+   "step": 14250,
+   "metric": 0.93625,
+   "grad_cos": null
+  },
+  {
+   "step": 14500,
+   "metric": 0.9375,
+   "grad_cos": null
+  },
+  {
+   "step": 14750,
+   "metric": 0.93125,
+   "grad_cos": null
+  },
+  {
+   "step": 15000,
+   "metric": 0.945625,
+   "grad_cos": null
+  },
+  {
+   "step": 15250,
+   "metric": 0.94,
+   "grad_cos": null
+  },
+  {
+   "step": 15500,
+   "metric": 0.945,
+   "grad_cos": null
+  },
+  {
+   "step": 15750,
+   "metric": 0.93,
+   "grad_cos": null
+  },
+  {
+   "step": 16000,
+   "metric": 0.944375,
+   "grad_cos": null
+  },
+  {
+   "step": 16250,
+   "metric": 0.94,
+   "grad_cos": null
+  },
+  {
+   "step": 16500,
+   "metric": 0.931875,
+   "grad_cos": null
+  },
+  {
+   "step": 16750,
+   "metric": 0.918125,
+   "grad_cos": null
+  },
+  {
+   "step": 17000,
+   "metric": 0.9375,
+   "grad_cos": null
+  },
+  {
+   "step": 17250,
+   "metric": 0.94125,
+   "grad_cos": null
+  },
+  {
+   "step": 17500,
+   "metric": 0.94,
+   "grad_cos": null
+  },
+  {
+   "step": 17750,
+   "metric": 0.936875,
+   "grad_cos": null
+  },
+  {
+   "step": 18000,
+   "metric": 0.95125,
+   "grad_cos": null
+  },
+  {
+   "step": 18250,
+   "metric": 0.948125,
+   "grad_cos": null
+  },
+  {
+   "step": 18500,
+   "metric": 0.953125,
+   "grad_cos": null
+  },
+  {
+   "step": 18750,
+   "metric": 0.93,
+   "grad_cos": null
+  },
+  {
+   "step": 19000,
+   "metric": 0.9325,
+   "grad_cos": null
+  },
+  {
+   "step": 19250,
+   "metric": 0.941875,
+   "grad_cos": null
+  },
+  {
+   "step": 19500,
+   "metric": 0.92625,
+   "grad_cos": null
+  },
+  {
+   "step": 19750,
+   "metric": 0.94625,
+   "grad_cos": null
+  }
+ ],
+ "wall_s": 67.25049257278442
+}

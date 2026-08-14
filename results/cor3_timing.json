@@ -1,0 +1,58 @@
+[
+ {
+  "n": 32,
+  "exact_ms": 1.836,
+  "exact_MB": 9.4,
+  "factored_ms": 11.853,
+  "factored_MB": 12.9,
+  "speedup": 0.15
+ },
+ {
+  "n": 48,
+  "exact_ms": 0.403,
+  "exact_MB": 12.2,
+  "factored_ms": 14.133,
+  "factored_MB": 22.8,
+  "speedup": 0.03
+ },
+ {
+  "n": 64,
+  "exact_ms": 0.438,
+  "exact_MB": 17.4,
+  "factored_ms": 20.216,
+  "factored_MB": 41.2,
+  "speedup": 0.02
+ },
+ {
+  "n": 96,
+  "exact_ms": 0.418,
+  "exact_MB": 38.0,
+  "factored_ms": 36.294,
+  "factored_MB": 114.5,
+  "speedup": 0.01
+ },
+ {
+  "n": 128,
+  "exact_ms": 0.595,
+  "exact_MB": 77.2,
+  "factored_ms": 60.135,
+  "factored_MB": 252.3,
+  "speedup": 0.01
+ },
+ {
+  "n": 160,
+  "exact_ms": 1.831,
+  "exact_MB": 141.1,
+  "factored_ms": 102.545,
+  "factored_MB": 477.2,
+  "speedup": 0.02
+ },
+ {
+  "n": 192,
+  "exact_ms": 2.871,
+  "exact_MB": 236.5,
+  "factored_ms": 164.838,
+  "factored_MB": 813.3,
+  "speedup": 0.02
+ }
+]

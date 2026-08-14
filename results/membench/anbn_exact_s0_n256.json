@@ -1,0 +1,55 @@
+{
+ "args": {
+  "task": "anbn",
+  "algo": "exact",
+  "steps": 1500,
+  "n": 256,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 0,
+  "log_every": 250,
+  "shadow": 0,
+  "tbptt_k": 25,
+  "device": "cuda",
+  "outdir": "results/membench",
+  "tag": "n256",
+  "clip": 0.0,
+  "horizon": 1,
+  "causal": 0,
+  "washout": 200
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.0,
+   "grad_cos": null
+  },
+  {
+   "step": 250,
+   "metric": 0.83875,
+   "grad_cos": null
+  },
+  {
+   "step": 500,
+   "metric": 0.89125,
+   "grad_cos": null
+  },
+  {
+   "step": 750,
+   "metric": 0.89375,
+   "grad_cos": null
+  },
+  {
+   "step": 1000,
+   "metric": 0.871875,
+   "grad_cos": null
+  },
+  {
+   "step": 1250,
+   "metric": 0.879375,
+   "grad_cos": null
+  }
+ ],
+ "wall_s": 11.29010796546936,
+ "peak_MB": 1061.62158203125
+}

@@ -1,0 +1,33 @@
+{
+ "args": {
+  "task": "sunspot",
+  "arch": "esn",
+  "steps": 15000,
+  "n": 64,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 2,
+  "log_every": 250,
+  "tbptt_k": 25,
+  "horizon": 1,
+  "causal": 1,
+  "washout": 200,
+  "device": "cuda",
+  "outdir": "results/round1/arch",
+  "tag": "arch",
+  "esn_res": 200,
+  "esn_rho": 0.95,
+  "esn_in_scale": 1.0,
+  "esn_leak": 0.3,
+  "esn_ridge": 0.001
+ },
+ "records": [
+  {
+   "step": 15000,
+   "metric": 0.1480225920677185
+  }
+ ],
+ "final_nmse": 0.1480225920677185,
+ "wall_s": 34.33235168457031,
+ "esn_res": 200
+}

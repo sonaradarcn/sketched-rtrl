@@ -1,5 +1,11 @@
-# Experiment outputs — regenerate with the commands in README.md
-results/
+# Experiment outputs. Scratch/working run trees are ignored; the trees that back the
+# paper's tables and figures are published (see REPRODUCIBILITY.md, "Released result trees").
+results/*
+!results/round1/
+!results/membench/
+!results/revise_timing/
+!results/revise_kernel/
+!results/revise_repro/
 
 # Python caches / build
 __pycache__/

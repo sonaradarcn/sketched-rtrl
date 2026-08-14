@@ -1,0 +1,325 @@
+{
+ "args": {
+  "task": "henon",
+  "algo": "rflo",
+  "steps": 15000,
+  "n": 64,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 4,
+  "log_every": 250,
+  "shadow": 0,
+  "tbptt_k": 25,
+  "device": "cuda",
+  "outdir": "results/round1/horizon",
+  "tag": "h25",
+  "clip": 0.0,
+  "horizon": 25,
+  "causal": 0,
+  "washout": 200
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.8730801343917847,
+   "grad_cos": null
+  },
+  {
+   "step": 250,
+   "metric": 1.00566390350461,
+   "grad_cos": null
+  },
+  {
+   "step": 500,
+   "metric": 1.0078968980163336,
+   "grad_cos": null
+  },
+  {
+   "step": 750,
+   "metric": 1.0132674539089204,
+   "grad_cos": null
+  },
+  {
+   "step": 1000,
+   "metric": 0.9936918169260025,
+   "grad_cos": null
+  },
+  {
+   "step": 1250,
+   "metric": 0.9798042459785938,
+   "grad_cos": null
+  },
+  {
+   "step": 1500,
+   "metric": 0.9972226462513208,
+   "grad_cos": null
+  },
+  {
+   "step": 1750,
+   "metric": 1.001828563809395,
+   "grad_cos": null
+  },
+  {
+   "step": 2000,
+   "metric": 1.0245596674084663,
+   "grad_cos": null
+  },
+  {
+   "step": 2250,
+   "metric": 1.0114240737259388,
+   "grad_cos": null
+  },
+  {
+   "step": 2500,
+   "metric": 1.0230033060908317,
+   "grad_cos": null
+  },
+  {
+   "step": 2750,
+   "metric": 1.0231938415020705,
+   "grad_cos": null
+  },
+  {
+   "step": 3000,
+   "metric": 0.9710336716473102,
+   "grad_cos": null
+  },
+  {
+   "step": 3250,
+   "metric": 0.977971386089921,
+   "grad_cos": null
+  },
+  {
+   "step": 3500,
+   "metric": 0.9923342659324408,
+   "grad_cos": null
+  },
+  {
+   "step": 3750,
+   "metric": 1.0153559498488902,
+   "grad_cos": null
+  },
+  {
+   "step": 4000,
+   "metric": 0.979431669563055,
+   "grad_cos": null
+  },
+  {
+   "step": 4250,
+   "metric": 1.010772427469492,
+   "grad_cos": null
+  },
+  {
+   "step": 4500,
+   "metric": 0.9897185071185232,
+   "grad_cos": null
+  },
+  {
+   "step": 4750,
+   "metric": 0.9962764331698417,
+   "grad_cos": null
+  },
+  {
+   "step": 5000,
+   "metric": 0.9855318102240562,
+   "grad_cos": null
+  },
+  {
+   "step": 5250,
+   "metric": 1.0029553182423114,
+   "grad_cos": null
+  },
+  {
+   "step": 5500,
+   "metric": 1.012956507280469,
+   "grad_cos": null
+  },
+  {
+   "step": 5750,
+   "metric": 0.9882801166176796,
+   "grad_cos": null
+  },
+  {
+   "step": 6000,
+   "metric": 1.02232225805521,
+   "grad_cos": null
+  },
+  {
+   "step": 6250,
+   "metric": 0.9893082354962826,
+   "grad_cos": null
+  },
+  {
+   "step": 6500,
+   "metric": 1.0186358906328679,
+   "grad_cos": null
+  },
+  {
+   "step": 6750,
+   "metric": 0.9948845241218806,
+   "grad_cos": null
+  },
+  {
+   "step": 7000,
+   "metric": 0.9910642835497856,
+   "grad_cos": null
+  },
+  {
+   "step": 7250,
+   "metric": 0.9846249527484179,
+   "grad_cos": null
+  },
+  {
+   "step": 7500,
+   "metric": 1.0123336128145457,
+   "grad_cos": null
+  },
+  {
+   "step": 7750,
+   "metric": 0.9871786576509476,
+   "grad_cos": null
+  },
+  {
+   "step": 8000,
+   "metric": 1.0012171510607004,
+   "grad_cos": null
+  },
+  {
+   "step": 8250,
+   "metric": 0.9953937741369009,
+   "grad_cos": null
+  },
+  {
+   "step": 8500,
+   "metric": 1.0106431196630001,
+   "grad_cos": null
+  },
+  {
+   "step": 8750,
+   "metric": 1.0121988394111394,
+   "grad_cos": null
+  },
+  {
+   "step": 9000,
+   "metric": 1.0014397439360618,
+   "grad_cos": null
+  },
+  {
+   "step": 9250,
+   "metric": 0.981008585691452,
+   "grad_cos": null
+  },
+  {
+   "step": 9500,
+   "metric": 1.0059726172685624,
+   "grad_cos": null
+  },
+  {
+   "step": 9750,
+   "metric": 0.9983972968161106,
+   "grad_cos": null
+  },
+  {
+   "step": 10000,
+   "metric": 0.9921136306971312,
+   "grad_cos": null
+  },
+  {
+   "step": 10250,
+   "metric": 0.9917739887535572,
+   "grad_cos": null
+  },
+  {
+   "step": 10500,
+   "metric": 1.0253221216797828,
+   "grad_cos": null
+  },
+  {
+   "step": 10750,
+   "metric": 1.0025550377368928,
+   "grad_cos": null
+  },
+  {
+   "step": 11000,
+   "metric": 0.9860060568153858,
+   "grad_cos": null
+  },
+  {
+   "step": 11250,
+   "metric": 1.0121942690759897,
+   "grad_cos": null
+  },
+  {
+   "step": 11500,
+   "metric": 1.0030952212959527,
+   "grad_cos": null
+  },
+  {
+   "step": 11750,
+   "metric": 0.9962670122087002,
+   "grad_cos": null
+  },
+  {
+   "step": 12000,
+   "metric": 1.0204977975040674,
+   "grad_cos": null
+  },
+  {
+   "step": 12250,
+   "metric": 0.9923367954045534,
+   "grad_cos": null
+  },
+  {
+   "step": 12500,
+   "metric": 0.9822003924101591,
+   "grad_cos": null
+  },
+  {
+   "step": 12750,
+   "metric": 0.9889030446857214,
+   "grad_cos": null
+  },
+  {
+   "step": 13000,
+   "metric": 1.0181013445556164,
+   "grad_cos": null
+  },
+  {
+   "step": 13250,
+   "metric": 1.0028834299743175,
+   "grad_cos": null
+  },
+  {
+   "step": 13500,
+   "metric": 1.007000453621149,
+   "grad_cos": null
+  },
+  {
+   "step": 13750,
+   "metric": 1.017217617034912,
+   "grad_cos": null
+  },
+  {
+   "step": 14000,
+   "metric": 1.0081343791633843,
+   "grad_cos": null
+  },
+  {
+   "step": 14250,
+   "metric": 0.9747355318814516,
+   "grad_cos": null
+  },
+  {
+   "step": 14500,
+   "metric": 0.9992352360486985,
+   "grad_cos": null
+  },
+  {
+   "step": 14750,
+   "metric": 1.0064032836258412,
+   "grad_cos": null
+  }
+ ],
+ "wall_s": 35.48373603820801,
+ "peak_MB": 17.5986328125
+}

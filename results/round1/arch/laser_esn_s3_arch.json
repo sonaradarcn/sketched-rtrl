@@ -1,0 +1,33 @@
+{
+ "args": {
+  "task": "laser",
+  "arch": "esn",
+  "steps": 15000,
+  "n": 64,
+  "batch": 8,
+  "lr": 0.001,
+  "seed": 3,
+  "log_every": 250,
+  "tbptt_k": 25,
+  "horizon": 1,
+  "causal": 1,
+  "washout": 200,
+  "device": "cuda",
+  "outdir": "results/round1/arch",
+  "tag": "arch",
+  "esn_res": 200,
+  "esn_rho": 0.95,
+  "esn_in_scale": 1.0,
+  "esn_leak": 0.3,
+  "esn_ridge": 0.001
+ },
+ "records": [
+  {
+   "step": 15000,
+   "metric": 0.6541060209274292
+  }
+ ],
+ "final_nmse": 0.6541060209274292,
+ "wall_s": 6.037535667419434,
+ "esn_res": 200
+}

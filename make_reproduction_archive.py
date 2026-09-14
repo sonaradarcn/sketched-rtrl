@@ -9,13 +9,21 @@ straight into the zip's top level -- no loose copy is left in the repo.
 What goes in (see paper/revise_r2/PACKAGING_CHECKLIST.md section 2.2(e) and
 section 5 item 4 for the underlying "formal vs. smoke/probe/dev" call):
 
-  1. results/r2/<FORMAL_DIRS>/*.json  -- every json in the 12 directories that
+  1. results/r2/<FORMAL_DIRS>/*.json  -- every json in the 13 directories that
      correspond to a named, report-backed R2 experiment (d1_spectrum,
      d2_noreset, d2_clip, d3_diag, d3_oat, d4_tune, d4_stage2, d4_eval,
-     d4_holdout, d5_gated, rl, e4b). Excludes the smoke/probe/dev/timing/
-     svd_equiv directories sitting alongside them (a5_*, a8_*, a9_*, a11_*,
-     a13_*, d1_probe, d1_smoke, d1_timing, figs_dev, smoke*, rl_clip05,
+     d4_holdout, d5_gated, rl, rl_clip05, e4b). Excludes the smoke/probe/dev/
+     timing/svd_equiv directories sitting alongside them (a5_*, a8_*, a9_*,
+     a11_*, a13_*, d1_probe, d1_smoke, d1_timing, figs_dev, smoke*,
      svd_equiv, timing).
+     rl_clip05 was reclassified from "excluded variant" to formal on
+     2026-09-15: RL_SUMMARY.md and RL_SPECTRUM_SUMMARY.md are both generated
+     from results/r2/rl PLUS results/r2/rl_clip05, and the clip-0.5 numbers
+     they carry are quoted in the manuscript (secs/D_rlcase.tex, the
+     "$0.945\\pm0.038$ of steps at clip $0.5$" sentence) and in the
+     supplement (secs/S7_diagnostics.tex, secs/S8_scaling_rl.tex). Shipping
+     those summaries without the clip-0.5 runs left half the underlying data
+     for reported numbers out of the archive.
   2. results/r2/*.md  -- every top-level summary report (D2_SUMMARY*.md,
      D3_SUMMARY*.md, D4_TABLES.md, D4_STATS.md, D5_SUMMARY.md,
      HOLDOUT_SUMMARY.md, D4_SELECT_stage1(.prev/.prev2)/stage2.md,
@@ -54,7 +62,7 @@ DEFAULT_OUT = REPO_ROOT.parent / "paper" / "revise_r2" / "reproduction_archive_r
 FORMAL_DIRS = [
     "d1_spectrum", "d2_noreset", "d2_clip", "d3_diag", "d3_oat",
     "d4_tune", "d4_stage2", "d4_eval", "d4_holdout", "d5_gated",
-    "rl", "e4b",
+    "rl", "rl_clip05", "e4b",
 ]
 
 # Table/figure mapping for the manifest narrative only -- sourced 2026-09-14
@@ -100,7 +108,7 @@ DIR_PAPER_MAP = {
         "D4 unified-protocol main evaluation (10 seeds, tuned LR). "
         "Tables 3/6/7 replacements: tab:r2fidelity, tab:r2timeseries, "
         "tab:r2realts, tab:r2lr, tab:r2stats/r2stats2/r2stats3 "
-        "(secs/tab_r2_*.tex, secs/Z_suppstats.tex); "
+        "(secs/tab_r2_*.tex, secs/S1_suppstats.tex); "
         "Fig. fig_fidelity_bars, fig_horizon_nmse, fig_fidelity_vs_error, "
         "fig_scaling, fig_memory_time_pareto."
     ),
@@ -114,17 +122,28 @@ DIR_PAPER_MAP = {
         "(secs/6_experiments.tex), tab:app-gated-sizes (secs/E_gated_appendix.tex)."
     ),
     "rl": (
-        "RL case study (T-maze). Table tab:rl, Fig. fig_rl_curves "
-        "(secs/D_rlcase.tex). NOTE: as of 2026-09-14, secs/D_rlcase.tex is "
-        "present but is NOT \\input by main_cas.tex (see PACKAGING_CHECKLIST.md "
-        "section 2.2a) -- its place in the final paper (main body vs. "
-        "supplement) is still pending a decision."
+        "RL case study (T-maze), unclipped arm. Table tab:rl, Fig. "
+        "fig_rl_curves (secs/D_rlcase.tex, \\input at "
+        "secs/6_experiments.tex:654); residual spectrum in "
+        "secs/S7_diagnostics.tex (Fig. fig_r2_spectrum_rl), memory--time and "
+        "full case study in secs/S8_scaling_rl.tex. Backs RL_SUMMARY.md and "
+        "RL_SPECTRUM_SUMMARY.md together with rl_clip05."
+    ),
+    "rl_clip05": (
+        "RL case study (T-maze), clip-0.5 operating point -- the arm that "
+        "makes the certificate informative. Quoted in secs/D_rlcase.tex "
+        "(the $0.945\\pm0.038$-of-steps sentence), secs/S7_diagnostics.tex "
+        "(clip-$0.5$ row of the RL spectrum table) and "
+        "secs/S8_scaling_rl.tex. Aggregated jointly with rl into "
+        "RL_SUMMARY.md and RL_SPECTRUM_SUMMARY.md."
     ),
     "e4b": (
         "D4b common-trajectory estimator comparison (passive trackers sharing "
-        "one exact-RTRL trajectory). No \\input/\\Cref site found under "
-        "paper/secs/*.tex as of 2026-09-14 -- appears to be supplementary "
-        "data not yet wired into main_cas.tex; scope TBD."
+        "one exact-RTRL trajectory), reported in E4B_SUMMARY.md. Cited from "
+        "secs/6_experiments.tex:69 (the common-trajectory control is "
+        "consistent with the tuned-run ranking), with the protocol in "
+        "secs/C_protocol.tex:83 and secs/S2_environment.tex:37 and the "
+        "seed count in secs/S9_discussion.tex:299."
     ),
 }
 
@@ -219,8 +238,11 @@ def build_manifest(dir_entries, top_md, job_files, out_path: Path) -> str:
     lines.append("")
     lines.append(
         "`svd_driver_equivalence.md` (A1 -- SVD-driver equivalence regression, "
-        "`skrtrl/algos.py::_robust_svd`, referenced from `secs/4_method.tex` "
-        "and `secs/A_proofs.tex`) is included in this set."
+        "`skrtrl/algos.py::_robust_svd`, backing the QR-based `gesvd` driver "
+        "sentence in `secs/4_method.tex` and `secs/S4_method_details.tex`) is "
+        "included in this set. `RL_SUMMARY.md` and `RL_SPECTRUM_SUMMARY.md` "
+        "aggregate `rl` + `rl_clip05`; `E4B_SUMMARY.md` reports the `e4b` "
+        "common-trajectory control."
     )
     lines.append("")
     lines.append("## 3. Job launch scripts (`jobs/*.txt`, formal subset)")
@@ -261,7 +283,9 @@ def build_manifest(dir_entries, top_md, job_files, out_path: Path) -> str:
         "Smoke/probe/dev/timing/svd_equiv directories are intentionally left "
         "out of this archive: `a5_cpu`, `a5_tbptt`, `a8_smoke`, `a9_smoke`, "
         "`a11_smoke`, `a13_probe`, `d1_probe`, `d1_smoke`, `d1_timing`, "
-        "`figs_dev`, `smoke`, `smoke_queue`, `rl_clip05`, `svd_equiv`, `timing`."
+        "`figs_dev`, `smoke`, `smoke_queue`, `svd_equiv`, `timing`. "
+        "`rl_clip05` is NOT excluded: it is the clip-0.5 arm of the RL case "
+        "study and is archived as a formal directory (see section 1)."
     )
     lines.append("")
     lines.append(f"Archive built to: `{out_path}`")

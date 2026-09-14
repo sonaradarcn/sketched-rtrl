@@ -41,6 +41,7 @@ SHEET = [
     ("fig_r2_cert_stage", "R2, restyled (not yet cited)", "2 x 4", "below axes"),
     ("fig_r2_adaptive_diag", "R2, restyled", "1 x 2", "below axes"),
     ("fig_r2_adaptive_oat", "R2, restyled (axes transposed)", "1 x 5", "below axes"),
+    ("fig_r2_spectrum_rl", "R2, supplement S7", "1 x 2", "below axes"),
 ]
 
 ROLE_COLOUR = {"REFERENCE": "#0072B2", "unchanged": "#767676"}

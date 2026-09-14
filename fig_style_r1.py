@@ -141,6 +141,7 @@ TEX_WIDTH = {
     "fig_r2_adaptive_oat":      (0.49, "TW", "secs/6_experiments.tex:628"),
     # Two are generated but not yet cited by any \includegraphics; the width below is the
     # one this module recommends for them, and is what they are drawn at.
+    "fig_r2_spectrum_rl":       (0.92, "TW", "secs/S7_diagnostics.tex (supplement figure*)"),
     "fig_r2_spectrum_age":      (0.49, "TW", "NOT IN .tex -- recommended slot"),
     "fig_r2_cert_stage":        (0.92, "TW", "NOT IN .tex -- recommended own figure*"),
 }

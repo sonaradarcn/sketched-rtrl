@@ -1,0 +1,8 @@
+# A1: frozen-trajectory driver control + re-run of the `adding` records under the
+# fixed log-step diagnostics (sparse-target task: true_E/J_norm at the log step).
+run_svd_driver_equiv.py --task lorenz --r 16 --steps 3000 --clip 0.0 --outdir results/r2/svd_equiv --tag frozen  # out=results/r2/svd_equiv/lorenz_r16_clip0_frozen.json
+run_svd_driver_equiv.py --task rotation --r 16 --steps 3000 --clip 0.0 --outdir results/r2/svd_equiv --tag frozen  # out=results/r2/svd_equiv/rotation_r16_clip0_frozen.json
+run_svd_driver_equiv.py --task adding --r 16 --steps 3000 --clip 0.9 --outdir results/r2/svd_equiv --tag frozen  # out=results/r2/svd_equiv/adding_r16_clip0.9_frozen.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_gesvd_clip09.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver auto --outdir results/r2/svd_equiv --tag auto_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_auto_clip09.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_rep2_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_gesvd_rep2_clip09.json

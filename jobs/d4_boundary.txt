@@ -1,0 +1,4 @@
+# D4 stage-1 supplements, generated 2026-09-12 03:16:59 from D4_SELECT_stage1.json
+# LR-grid extensions (one rung on the 1-3 ladder, cap 2) plus the TBPTT window fill; 6000 steps, tuning seeds [100, 101], shadow on, svd_driver auto
+# written to the same directory as the screen (results/r2/d4_tune), so `select --stage 1` picks them up automatically
+# 0 LR-extension config(s), 0 TBPTT window-fill config(s), x 2 seeds

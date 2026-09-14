@@ -31,6 +31,11 @@ dist/
 *.sh
 *.ps1
 
+# Job run logs / partial downloads (noisy, not part of the released result trees)
+logs/
+logsr2smoke/
+*.part
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

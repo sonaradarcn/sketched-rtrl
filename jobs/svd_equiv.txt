@@ -1,0 +1,8 @@
+# A1 SVD-driver equivalence regression: 3 archived configs x {gesvd, auto}, first 3000 steps.
+# even index -> worker 0 (gesvd), odd index -> worker 1 (auto)
+run_m3.py --task lorenz --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 500 --shadow 1 --clip 0.0 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd  # out=results/r2/svd_equiv/lorenz_skrtrl-r16_s0_gesvd.json
+run_m3.py --task lorenz --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 500 --shadow 1 --clip 0.0 --svd_driver auto --outdir results/r2/svd_equiv --tag auto  # out=results/r2/svd_equiv/lorenz_skrtrl-r16_s0_auto.json
+run_m3.py --task rotation --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.0 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd  # out=results/r2/svd_equiv/rotation_skrtrl-r16_s0_gesvd.json
+run_m3.py --task rotation --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.0 --svd_driver auto --outdir results/r2/svd_equiv --tag auto  # out=results/r2/svd_equiv/rotation_skrtrl-r16_s0_auto.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_gesvd_clip09.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver auto --outdir results/r2/svd_equiv --tag auto_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_auto_clip09.json

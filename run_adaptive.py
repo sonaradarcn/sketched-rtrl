@@ -23,7 +23,10 @@ import torch.nn.functional as F
 
 from skrtrl.tasks import TASKS
 from skrtrl.train import OnlineLearner
-from skrtrl.algos import ExactRTRL, SKRTRL
+from skrtrl.algos import (ExactRTRL, SKRTRL, SVD_STATS, _svd_stats_reset,
+                          svd_fallbacks)
+
+TS_TASKS = {"henon", "mackeyglass", "lorenz", "sunspot", "laser"}
 
 
 def cos(a, b):
@@ -41,6 +44,8 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--log_every", type=int, default=250)
     ap.add_argument("--shadow", type=int, default=1)
+    ap.add_argument("--shadow_max_n", type=int, default=256, choices=[64, 128, 256, 512],
+                    help="hidden width above which the exact shadow is refused (memory)")
     # controller
     ap.add_argument("--fixed_r", type=int, default=-1)   # -1 -> adaptive; else fixed-r baseline
     ap.add_argument("--r_min", type=int, default=4)
@@ -55,6 +60,22 @@ def main():
     #   e_t    -> compounded normalized certificate e_t/||S+LR^T||_F     (naive)
     #   oracle -> hindsight TRUE residual ||J_exact - residual||_F norm. (needs shadow)
     ap.add_argument("--ctrl", choices=["eta", "e_t", "oracle"], default="eta")
+    # kernel knobs -- kept explicit so an OAT sweep moves one variable at a time
+    ap.add_argument("--c", type=int, default=-1,
+                    help="explicit append budget; -1 = default max(4, ceil(r_max/4))")
+    ap.add_argument("--force_preproject", type=int, default=0,
+                    help="1 = keep the top-c pre-projection and the append budget even at "
+                         "r_max = n, instead of silently switching to the exact "
+                         "Corollary-3 path (c = n, no pre-projection)")
+    ap.add_argument("--svd_driver", choices=["gesvd", "auto"], default="gesvd")
+    ap.add_argument("--preproject", choices=["auto", "on", "off"], default="auto",
+                    help="auto = paper default (pre-projection whenever r_max < n, and "
+                         "the exact Corollary-3 path at r_max = n); on = --force_preproject; "
+                         "off = A9 control, no top-c pre-projection at all (c = n)")
+    # time-series protocol (must match run_m3.py so the OAT sweep is comparable)
+    ap.add_argument("--horizon", type=int, default=1)
+    ap.add_argument("--causal", type=int, default=0)
+    ap.add_argument("--washout", type=int, default=200)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--outdir", default="results/adaptive")
     ap.add_argument("--tag", default="")
@@ -69,21 +90,42 @@ def main():
     if os.path.exists(out):
         print("exists, skip:", out); return
 
+    _svd_stats_reset()
     torch.manual_seed(args.seed)
-    task = TASKS[args.task](args.batch, args.device, seed=args.seed)
+    if args.task in TS_TASKS:
+        task = TASKS[args.task](args.batch, args.device, seed=args.seed,
+                                horizon=args.horizon, causal=bool(args.causal),
+                                washout=args.washout)
+    else:
+        task = TASKS[args.task](args.batch, args.device, seed=args.seed)
     # build SK-RTRL allocated for r_max so the controller can grow into it; c fixed from r_max.
+    algo_kw = {"svd_driver": args.svd_driver,
+               "force_preproject": bool(args.force_preproject) or args.preproject == "on",
+               "disable_preproject": args.preproject == "off"}
+    if args.c > 0:
+        algo_kw["c"] = args.c
     learner = OnlineLearner(task, args.n, "skrtrl-r%d" % args.r_max, lr=args.lr,
-                            device=args.device, seed=args.seed, spectral_clip=args.clip)
+                            device=args.device, seed=args.seed, spectral_clip=args.clip,
+                            algo_kw=algo_kw)
     algo = learner.algo
     assert isinstance(algo, SKRTRL)
     algo.r = args.r_max if args.fixed_r < 0 else args.fixed_r
     cur_r = args.r_min if args.fixed_r < 0 else args.fixed_r
     algo.r = cur_r
-    shadow = ExactRTRL(learner.cell, task.B) if (args.shadow and args.n <= 256) else None
+    args.c_effective = int(algo.c)
+    args.preproject_effective = bool(algo.preproject)
+    print(f"[kernel] r_max {args.r_max} r_start {algo.r} c {algo.c} "
+          f"preproject {algo.preproject} (--preproject {args.preproject}) "
+          f"svd_driver {algo.svd_driver}", flush=True)
+    shadow = (ExactRTRL(learner.cell, task.B)
+              if (args.shadow and args.n <= args.shadow_max_n) else None)
 
     log = {"args": vars(args), "records": []}
     metrics, coss, ranks = [], [], []
     viol = 0; checks = 0; low_streak = 0
+    # A9: who drives every rank change, and how often the controller sits on the cap
+    rank_changes = []
+    n_up = n_down = n_at_cap = 0
     last_trueE = torch.zeros(task.B, device=args.device)   # for oracle controller (lagged 1 step)
     t0 = time.time()
     for step in range(args.steps):
@@ -99,6 +141,8 @@ def main():
             shadow.step_state(A, imm)
         learner.h = h.detach()
         ranks.append(algo.r)
+        if algo.r >= args.r_max:
+            n_at_cap += 1
 
         # certificate controller every K steps (adaptive only).
         # Control signal = per-step RELATIVE DISCARDED MASS eta_t / ||S+LR^T||_F, which
@@ -117,14 +161,33 @@ def main():
             else:  # oracle: hindsight true residual mass
                 signal = last_trueE
             c_t = (signal / denom).mean().item()
+            # A9: eta_t = tau_c + tau_r -- the pre-projection term and the rank-truncation
+            # term.  Which of the two dominates says whether the controller is reacting to
+            # an insufficient append budget c or to an insufficient rank r, and the two are
+            # recorded normalised by the same denominator as the control signal.
+            la_now = algo.last or {}
+            tc = float((la_now["tau_c"] / denom).mean()) if "tau_c" in la_now else None
+            tr = float((la_now["tau_r"] / denom).mean()) if "tau_r" in la_now else None
+            dom = None if (tc is None or tr is None) else ("tau_c" if tc > tr else "tau_r")
+            r_before = algo.r
+            direction = None
             if c_t > args.tau_high and algo.r < args.r_max:
                 algo.r = min(2 * algo.r, args.r_max); low_streak = 0
+                direction = "up"
             elif c_t < args.tau_low:
                 low_streak += 1
                 if low_streak >= args.M and algo.r > args.r_min:
                     algo.r = max(algo.r // 2, args.r_min); low_streak = 0
+                    direction = "down"
             else:
                 low_streak = 0
+            if direction is not None:
+                n_up += direction == "up"
+                n_down += direction == "down"
+                rank_changes.append({"step": step, "direction": direction,
+                                     "r_before": r_before, "r_after": algo.r,
+                                     "c_t": c_t, "tau_c_norm": tc, "tau_r_norm": tr,
+                                     "dominant": dom, "at_cap": algo.r >= args.r_max})
 
         if y is not None:
             h_leaf = learner.h.requires_grad_(True)
@@ -165,12 +228,25 @@ def main():
                       f"rank {algo.r} cos {rec.get('grad_cos')}", flush=True)
 
     log["wall_s"] = time.time() - t0
-    log["peak_MB"] = torch.cuda.max_memory_allocated() / 2**20 if args.device == "cuda" else 0
+    log["peak_MB"] = (torch.cuda.max_memory_allocated() / 2**20
+                      if args.device == "cuda" else None)
     log["avg_rank"] = sum(ranks) / len(ranks)
+    log["frac_at_cap"] = n_at_cap / max(len(ranks), 1)
+    log["n_up"] = n_up
+    log["n_down"] = n_down
+    log["n_ctrl_checks"] = checks
+    log["rank_changes"] = rank_changes
+    log["cap_note"] = ("frac_at_cap = fraction of steps with r == r_max; dominant says "
+                       "whether tau_c (append budget c) or tau_r (rank truncation) "
+                       "contributed more to eta_t at the moment of the change")
     log["cert_violations"] = viol
     log["cert_checks_with_shadow"] = len(coss)
+    log["svd_stats"] = dict(SVD_STATS)
+    log["svd_fallbacks"] = svd_fallbacks()
     json.dump(log, open(out, "w"), indent=1)
-    print("saved", out, f"(avg_rank {log['avg_rank']:.1f}, viol {viol}, {log['wall_s']:.0f}s)")
+    print("saved", out, f"(avg_rank {log['avg_rank']:.1f}, viol {viol}, "
+                        f"at_cap {log['frac_at_cap']:.2f}, up/down {n_up}/{n_down}, "
+                        f"{log['wall_s']:.0f}s)")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,5 @@
+# A1 control: repeat the SAME gesvd driver a second time, to measure run-to-run
+# nondeterminism of cuSOLVER/cuBLAS against which the driver difference is judged.
+run_m3.py --task lorenz --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 500 --shadow 1 --clip 0.0 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_rep2  # out=results/r2/svd_equiv/lorenz_skrtrl-r16_s0_gesvd_rep2.json
+run_m3.py --task rotation --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.0 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_rep2  # out=results/r2/svd_equiv/rotation_skrtrl-r16_s0_gesvd_rep2.json
+run_m3.py --task adding --algo skrtrl-r16 --seed 0 --steps 3000 --log_every 250 --shadow 1 --clip 0.9 --svd_driver gesvd --outdir results/r2/svd_equiv --tag gesvd_rep2_clip09  # out=results/r2/svd_equiv/adding_skrtrl-r16_s0_gesvd_rep2_clip09.json

@@ -203,9 +203,10 @@ class TimeSeriesTask(StreamTask):
     n_out = 1
 
     def __init__(self, batch, device, seed=0, length=20000, washout=200, horizon=1,
-                 causal=False, causal_window=2000):
+                 causal=False, causal_window=2000, holdout_frac=0.0):
         super().__init__(batch, device, seed)
         self.washout, self.horizon = washout, horizon
+        self.holdout_frac = float(holdout_frac)
         series = self._gen(length + horizon + 64)            # (B, L) raw
         if causal:
             # causal normalization: statistics from an initial window only (no future leakage)
@@ -218,6 +219,25 @@ class TimeSeriesTask(StreamTask):
         self.series = ((series - mu) / sd).to(device)        # (B, L)
         self.L = self.series.shape[1] - horizon
         self.t = 64                                          # skip transient
+        # A11 time-ordered holdout: the LAST holdout_frac of the stream is never
+        # cycled during training; `enter_holdout()` streams it exactly once.  The
+        # split is in stream order, so no future value can leak into training.
+        self.t0 = 64
+        self.t_split = self.L
+        self.in_holdout = False
+        if self.holdout_frac > 0:
+            span = self.L - 64
+            self.t_split = 64 + int(round(span * (1.0 - self.holdout_frac)))
+            self.t_split = max(65, min(self.t_split, self.L - 1))
+
+    def enter_holdout(self):
+        """Switch the stream to the held-out tail and rewind to its first sample.
+        Returns the number of steps in the tail (0 when no holdout was configured)."""
+        if self.holdout_frac <= 0:
+            return 0
+        self.in_holdout = True
+        self.t = self.t_split
+        return self.L - self.t_split
 
     def _gen(self, L):
         raise NotImplementedError
@@ -230,9 +250,14 @@ class TimeSeriesTask(StreamTask):
         if self.washout > 0 and (t - 64) % self.washout == 0:
             new_ep[:] = True
         self.t += 1
-        if self.t >= self.L:
-            self.t = 64
+        end = self.L if self.in_holdout else self.t_split
+        if self.t >= end:
+            # the holdout tail is streamed once: stop rewinding, the runner stops
+            self.t = end if self.in_holdout else 64
         return x, y, new_ep
+
+    def holdout_exhausted(self):
+        return self.in_holdout and self.t >= self.L
 
 
 class HenonTask(TimeSeriesTask):
@@ -335,8 +360,10 @@ class LaserTask(RealSeriesTask):
 
 
 def _ts_factory(cls, **kw):
-    def make(batch, device, seed=0, horizon=1, causal=False, washout=200):
-        return cls(batch, device, seed, horizon=horizon, causal=causal, washout=washout, **kw)
+    def make(batch, device, seed=0, horizon=1, causal=False, washout=200,
+             holdout_frac=0.0):
+        return cls(batch, device, seed, horizon=horizon, causal=causal, washout=washout,
+                   holdout_frac=holdout_frac, **kw)
     return make
 
 
@@ -349,12 +376,16 @@ def _adding40(batch, device, seed=0):
 
 
 # Real-series tasks use a shorter length (their files are ~1k-3k points).
-def _sunspot(batch, device, seed=0, horizon=1, causal=False, washout=200):
-    return SunspotTask(batch, device, seed, length=3000, horizon=horizon, causal=causal, washout=washout)
+def _sunspot(batch, device, seed=0, horizon=1, causal=False, washout=200,
+             holdout_frac=0.0):
+    return SunspotTask(batch, device, seed, length=3000, horizon=horizon, causal=causal,
+                       washout=washout, holdout_frac=holdout_frac)
 
 
-def _laser(batch, device, seed=0, horizon=1, causal=False, washout=200):
-    return LaserTask(batch, device, seed, length=1000, horizon=horizon, causal=causal, washout=washout)
+def _laser(batch, device, seed=0, horizon=1, causal=False, washout=200,
+           holdout_frac=0.0):
+    return LaserTask(batch, device, seed, length=1000, horizon=horizon, causal=causal,
+                     washout=washout, holdout_frac=holdout_frac)
 
 
 TASKS = {"copy": CopyTask, "adding": AddingTask, "rotation": RotationMemoryTask,

@@ -1,0 +1,3 @@
+# A6 queue smoke test: 2 jobs (one SK-RTRL, one exact RTRL), 1000 steps, own outdir.
+run_m3.py --task henon --algo skrtrl-r16 --seed 100 --lr 0.001 --steps 1000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 0 --washout 200 --outdir results/r2/smoke_queue --tag lr1e-03  # out=results/r2/smoke_queue/henon_skrtrl-r16_s100_lr1e-03.json
+run_m3.py --task henon --algo exact --seed 100 --lr 0.001 --steps 1000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 0 --washout 200 --outdir results/r2/smoke_queue --tag lr1e-03  # out=results/r2/smoke_queue/henon_exact_s100_lr1e-03.json

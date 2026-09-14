@@ -53,7 +53,7 @@ import math
 
 import torch
 
-from .algos import SKRTRL, _diag_of, _robust_svd
+from .algos import SKRTRL, _diag_of, _robust_svd, _robust_svd_ex
 
 
 # --------------------------------------------------------------------------
@@ -114,12 +114,23 @@ class SKRTRLAmortised(SKRTRL):
 
     def __init__(self, cell, batch, r: int, c: int | None = None, mode: str = "svd",
                  collapse_every: int | None = None, max_buffer: int | None = None,
-                 width_mult: int = 4, hp_bookkeeping: bool = True):
+                 width_mult: int = 4, hp_bookkeeping: bool = True,
+                 svd_driver: str = "gesvd", force_preproject: bool = False):
+        if (getattr(cell, "G", 1) != 1
+                or getattr(cell, "n_state", cell.n) != cell.n
+                or int(getattr(cell, "append_width", cell.n)) != cell.n):
+            raise NotImplementedError(
+                "the amortised kernel is vanilla-cell only: its deferred "
+                "rotation buffers the (Snorm, Vc) pair of the vanilla "
+                "row-normalised append, which a gated cell does not have "
+                "(the GRU append has width 2n and carries I_t^perp).  Use the "
+                "kernel of record (skrtrl.algos.SKRTRL) for --cell gru/lstm.")
         self._collapse_every = collapse_every
         self._max_buffer = max_buffer
         self.width_mult = width_mult
         self.hp_bookkeeping = hp_bookkeeping
-        super().__init__(cell, batch, r, c=c, mode=mode)      # calls reset()
+        super().__init__(cell, batch, r, c=c, mode=mode, svd_driver=svd_driver,
+                         force_preproject=force_preproject)   # calls reset()
 
     # ---------------- bookkeeping dtype ----------------
     @property
@@ -297,10 +308,17 @@ class SKRTRLAmortised(SKRTRL):
                 tau_c = torch.sqrt((torch.linalg.matrix_norm(B0, ord="fro", dim=(1, 2)) ** 2
                                     - torch.linalg.matrix_norm(Bc, ord="fro", dim=(1, 2)) ** 2).clamp_min(0))
             else:
-                Ub, sb, Vbh = _robust_svd(B0)
+                Ub, sb, Vbh, path = _robust_svd_ex(B0, self.svd_driver)
                 Bc = Ub[:, :, :c] * sb[:, :c].unsqueeze(1)
                 Vc = Vbh[:, :c, :].transpose(1, 2)
-                tau_c = torch.sqrt((sb[:, c:] ** 2).sum(dim=1).clamp_min(0))
+                if path == "jitter":
+                    # factors of B0 + Delta: the perturbed tail is NOT the discarded
+                    # mass of B0 -- measure it on the original matrix (see
+                    # skrtrl.algos._robust_svd_ex).
+                    tau_c = torch.linalg.matrix_norm(
+                        B0 - torch.bmm(Bc, Vc.transpose(1, 2)), ord="fro", dim=(1, 2))
+                else:
+                    tau_c = torch.sqrt((sb[:, c:] ** 2).sum(dim=1).clamp_min(0))
         else:
             Bc = B0
             Vc = torch.eye(n, device=A.device, dtype=A.dtype).expand(B, n, n)
@@ -352,15 +370,19 @@ class SKRTRLAmortised(SKRTRL):
             tau_r = torch.sqrt((torch.linalg.matrix_norm(core, ord="fro", dim=(1, 2)) ** 2
                                 - torch.linalg.matrix_norm(self.L, ord="fro", dim=(1, 2)) ** 2).clamp_min(0))
         else:
-            Uc_, sc_, Wch = _robust_svd(core)
+            Uc_, sc_, Wch, path = _robust_svd_ex(core, self.svd_driver)
             k = min(r, sc_.shape[1])
             self.L = Uc_[:, :, :k] * sc_[:, :k].unsqueeze(1)
             Wfac = Wch.transpose(1, 2)[:, :, :k]                       # (B, r_in+cc, k)
+            if path == "jitter":
+                tau_r = torch.linalg.matrix_norm(
+                    core - torch.bmm(self.L, Wfac.transpose(1, 2)), ord="fro", dim=(1, 2))
+            else:
+                tau_r = torch.sqrt((sc_[:, k:] ** 2).sum(dim=1).clamp_min(0))
             self.M = torch.bmm(Mcat, Wfac.to(bdt))
             if k < r:                                                  # pad (early steps)
                 self.L = torch.cat([self.L, self.L.new_zeros(B, n, r - k)], dim=2)
                 self.M = torch.cat([self.M, self.M.new_zeros(B, w + cc, r - k)], dim=2)
-            tau_r = torch.sqrt((sc_[:, k:] ** 2).sum(dim=1).clamp_min(0))
 
         self.Gam = Gam2
         self._bufS[:, self._nbuf] = Snorm
@@ -395,10 +417,13 @@ class SKRTRLAmortised(SKRTRL):
         return outv.view(self.B, self.n, self.P)
 
 
-def make_skrtrl(cell, batch, r, c=None, mode="svd", kernel="naive", **kw):
+def make_skrtrl(cell, batch, r, c=None, mode="svd", kernel="naive",
+                svd_driver="gesvd", force_preproject=False, **kw):
     """Factory: ``kernel='naive'`` (implementation of record) or ``'amortised'``."""
     if kernel in ("naive", "eager", None):
-        return SKRTRL(cell, batch, r=r, c=c, mode=mode)
+        return SKRTRL(cell, batch, r=r, c=c, mode=mode, svd_driver=svd_driver,
+                      force_preproject=force_preproject)
     if kernel in ("amortised", "amortized", "amort"):
-        return SKRTRLAmortised(cell, batch, r=r, c=c, mode=mode, **kw)
+        return SKRTRLAmortised(cell, batch, r=r, c=c, mode=mode, svd_driver=svd_driver,
+                               force_preproject=force_preproject, **kw)
     raise ValueError(f"unknown kernel {kernel!r}")

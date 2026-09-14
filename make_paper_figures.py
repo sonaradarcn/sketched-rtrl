@@ -19,12 +19,12 @@ produced every figure -- read the summary printed at the end.  Paths are relativ
 repository root.
 
   fig_pilot_residual      results/m1_spectrum_*.json
-  fig_fidelity_bars       results/m3/*.json
-  fig_rinterp_rotation    results/m3/*.json  (also reads results/m31, m32 if present)
+  fig_fidelity_bars       results/r2/d4_eval  (--source r2, the default) or results/m3/*.json
+  fig_rinterp_rotation    results/r2/d4_eval  (--source r2) or results/m3, m31, m32
   fig_cert_c2sweep        results/c2sweep/*.json
   fig_adaptive_trajectory results/round1/traj/rotation_adaptive-eta_s0_traj.json
   fig_horizon_nmse        results/round1/horizon + results/ts
-  fig_fidelity_vs_error   results/round1/real    + results/ts
+  fig_fidelity_vs_error   results/r2/d4_eval  (--source r2) or results/round1/real + ts
   fig_scaling             results/{m3,scale,scale256} + results/membench
   fig_memory_time_pareto  results/membench
   fig_rl_curves           results/m5iso
@@ -32,14 +32,25 @@ repository root.
 Every tree above ships with this repository, so a clean clone regenerates all ten figures.
 See REPRODUCIBILITY.md ("Released result trees") for what is deliberately left out.
 
+Second round.  Three figures -- fig_fidelity_bars, fig_rinterp_rotation and
+fig_fidelity_vs_error -- were first-round panels drawn at one learning rate shared by every
+estimator, which is precisely what R3 objected to; `--source r2` (the default) redraws them
+from results/r2/d4_eval, the per-pair-tuned tree the R2 tables of record are built from, using
+make_r2_d4_tables.py's own aggregation helpers so figure and table cannot disagree.
+`--source r1` restores the first-round panels unchanged.  fig_horizon_nmse is NOT re-pointed:
+every run under results/r2 has horizon 1, so the h in {5, 10, 25} sweep exists only in
+results/round1/horizon (lr 1e-3, 5 seeds) and that is what the panel still shows.
+
 Usage:  python make_paper_figures.py [--root <repo root>] [--out <dir>] [--gray <dir>]
-        Defaults: root = this file's directory, out = results/figures/.
+                                     [--source r1|r2] [--fidelity-tex <path>]
+        Defaults: root = this file's directory, out = results/figures/, source = r2.
 """
 import argparse
 import glob
 import json
 import os
 import re
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -329,6 +340,34 @@ def legend_below(fig, axes, handles, labels, ncol, name, fontsize=6.4, pad=0.035
     return leg
 
 
+def legend_above(fig, axes, handles, labels, ncol, name, fontsize=6.4, pad=0.035,
+                 x=None, y=None, **kw):
+    """As `legend_below`, but above the axes -- and checked the same way.
+
+    Two figures key their series above the plotting rectangle rather than below it, because
+    their x axis already carries multi-line tick labels and a key underneath those would sit
+    an inconvenient distance from the data it explains.  Anchoring above needs the same two
+    guarantees (clear of every plotting rectangle, inside the horizontal span of the axes so
+    the exported PDF is not widened and then scaled down), so it goes through the same
+    `_check_legend_outside`; it used to be a bare `ax.legend(bbox_to_anchor=...)` that nothing
+    verified.
+    """
+    if not isinstance(axes, (list, tuple)):
+        axes = [axes]
+    axes = list(axes)
+    bb = _fig_bbox(fig, axes)
+    kw.setdefault("frameon", False)
+    kw.setdefault("handlelength", 2.4)
+    kw.setdefault("columnspacing", 1.0)
+    kw.setdefault("handletextpad", 0.45)
+    leg = fig.legend(handles, labels, loc="lower center",
+                     bbox_to_anchor=(0.5 * (bb.x0 + bb.x1) if x is None else x,
+                                     bb.y1 + pad if y is None else y),
+                     bbox_transform=fig.transFigure, ncol=ncol, fontsize=fontsize, **kw)
+    _check_legend_outside(fig, name, leg, axes, bb)
+    return leg
+
+
 def _merged_handles(axes):
     """Handles/labels of `axes` in order, de-duplicated by label."""
     h, l = [], []
@@ -370,7 +409,7 @@ def fig_pilot_residual():
     axL.set_ylim(0, 1)
     axR.set_xlabel("retained rank $k$")
     axR.set_ylabel("cumulative singular mass")
-    axR.set_title("Residual is approximately low rank")
+    axR.set_title("Residual spectral concentration varies substantially by task.")
     axR.set_xscale("log", base=2)
     axR.set_ylim(0, 1.02)
     fig.tight_layout()
@@ -687,6 +726,360 @@ def fig_scatter(rows):
 
 
 # --------------------------------------------------------------------------------------
+# R2 re-points: the three figures that used to be drawn from first-round runs
+# --------------------------------------------------------------------------------------
+# Three figures above -- fig_fidelity_bars, fig_rinterp_rotation and fig_fidelity_vs_error --
+# were computed from the first-round trees (results/m3, results/m31, results/m32,
+# results/round1/real, results/ts), every run of which used ONE learning rate shared by every
+# estimator.  R3 objected to exactly that, so the second round re-measured all nine tasks with
+# a learning rate tuned per (task, estimator) pair, and the tables of record (Tables 3/6/7
+# replacements) are now built from results/r2/d4_eval alone.  A figure drawn from the old tree
+# next to a table drawn from the new one would show two different experiments, so the three
+# functions below redraw the same three panels, with the same semantics and the same print
+# sizes, from d4_eval.
+#
+# The R1 functions are deliberately left in place and still work: `--source r1` reproduces the
+# old panels byte-for-byte, which is what the frozen first-round submission is checked against.
+# `--source r2` (the default) writes the same file names, so no \includegraphics changes.
+#
+# Aggregation is not re-implemented here.  make_r2_d4_tables.py is imported and its own
+# helpers do the loading, the per-run window mean, the stage-2 learning-rate selection and the
+# cross-seed statistics, because a figure that disagreed with the table next to it would be
+# worse than no figure: the two cannot drift apart if there is only one implementation.  That
+# implementation's conventions are, for the record:
+#   per run     mean of the field over every record with step >= 0.8 * args.steps (last 20 %)
+#   per cell    mean +/- POPULATION standard deviation (ddof=0) over the ten evaluation seeds,
+#               the seed being the unit of aggregation and never the pooled record set
+# Note the ddof: the published tables report a population standard deviation, so the error bars
+# here do too.  The R1 `_fidelity_from_raw` above used the sample standard deviation (ddof=1);
+# that difference is why the R1 and R2 error bars are not directly comparable.
+R2_EVAL_NOTE = "results/r2/d4_eval (D4 unified protocol, per-pair tuned learning rate)"
+
+# Estimators for which the gradient cosine is a defined quantity.  Both exclusions come from
+# make_r2_d4_tables.NO_COS and are asserted against it below: exact RTRL's cosine to itself is
+# trivially 1 (and run_m3.py logs None for it), and TBPTT's truncated gradient is not the RTRL
+# gradient at all -- the d4_eval TBPTT runs do carry a grad_cos field, but it is 1.0 to eight
+# decimals for all 90 of them, i.e. the shadow measured the truncated gradient against itself.
+# Plotting that would be a measurement artefact, so TBPTT is left out of every cosine panel,
+# exactly as it is left out of the fidelity table.
+R2_COS_ORDER = ["skrtrl-r32", "skrtrl-r16", "skrtrl-r4", "snap1", "kfrtrl", "rflo", "uoro"]
+
+_D4 = {}
+
+
+def _d4():
+    """Load results/r2/d4_eval once, through make_r2_d4_tables' own protocol helpers.
+
+    Returns {"kept": {(task, algo, seed): run}, "cells": {(task, algo, field): cell},
+             "T": the make_r2_d4_tables module}.  Raises SystemExit with an actionable
+    message rather than drawing a figure from a half-loaded tree.
+    """
+    if _D4:
+        return _D4
+    here = os.path.dirname(os.path.abspath(__file__))
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    try:
+        import make_r2_d4_tables as T          # noqa: N806  the D4 protocol, single source
+    except Exception as e:                     # noqa: BLE001
+        raise SystemExit("cannot import make_r2_d4_tables (%s: %s); the R2 figures are built "
+                         "from its helpers so that they cannot disagree with the tables -- fix "
+                         "the import or pass --source r1" % (type(e).__name__, e))
+    if set(T.NO_COS) != {"exact", "tbptt"}:
+        raise SystemExit("make_r2_d4_tables.NO_COS is now %s; R2_COS_ORDER in "
+                         "make_paper_figures.py was written for {exact, tbptt} and must be "
+                         "revisited before any cosine panel is trusted" % sorted(T.NO_COS))
+    selected, note = T.load_selection(T.SELECT_JSON)
+    runs, problems = T.load_runs([T.EVAL_DIR], "window20", T.sel.WINDOW_FRAC, 5)
+    if not runs:
+        raise SystemExit("no runs under %s -- the R2 figures have no input" % T.EVAL_DIR)
+    kept, dropped, ambiguous, unmatched = T.pick_config(runs, selected)
+    cells = T.build_cells(kept, list(T.SEEDS_EVAL), len(T.SEEDS_EVAL), T.STEPS_EVAL, 0)
+    flagged = [(k, c["flags"]) for k, c in sorted(cells.items()) if c["defined"] and c["flags"]]
+    print("  d4_eval: %d runs, %d cells, %d unreadable, %d dropped, %d unmatched, %d flagged"
+          % (len(runs), len(kept), len(problems), len(dropped), len(unmatched), len(flagged)))
+    print("  d4_eval LR selection: %s" % note)
+    for k, f in flagged:
+        print("  !! off-protocol cell %s: %s" % (k, "; ".join(f)))
+    _D4.update(kept=kept, cells=cells, T=T, note=note, flagged=flagged)
+    return _D4
+
+
+# ---------------------------------------------------------------------------- (a) bars
+# The cross-check that used to run against the hard-coded first-round FIDELITY_TABLE now runs
+# against the R2 table of record, paper/secs/tab_r2_fidelity.tex, which make_r2_d4_tables.py
+# writes.  The .tex is parsed READ-ONLY -- the LaTeX is owned elsewhere and this script must
+# never write into paper/secs -- and every cell of the figure must reproduce it at the printed
+# three decimals.  A figure that cannot match the table is not drawn.
+_TEX_ROW = re.compile(r"^(?!\s*%)(?P<label>[^&]+?)\s*&\s*(?P<cells>.*?)\s*\\\\\s*$")
+_TEX_CELL = re.compile(r"\$\\?(?:mathbf\{)?(?P<mean>-?\d*\.\d+)\}?"
+                       r"(?:\\pm(?P<std>-?\d*\.\d+))?")
+
+
+def _parse_r2_fidelity_tex(path, tasks, algos, label_of):
+    """-> {(task, algo): (mean, std)} parsed from tab_r2_fidelity.tex, or None if absent."""
+    if not os.path.isfile(path):
+        return None
+    want = dict((re.sub(r"\s+", "", label_of[a]), a) for a in algos)
+    out = {}
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            m = _TEX_ROW.match(line.rstrip("\n"))
+            if not m:
+                continue
+            algo = want.get(re.sub(r"\s+", "", m.group("label")))
+            if algo is None:
+                continue
+            vals = [_TEX_CELL.match(c.strip()) for c in m.group("cells").split("&")]
+            if len(vals) != len(tasks) or any(v is None for v in vals):
+                raise SystemExit("cannot parse the %s row of %s: %r"
+                                 % (algo, path, m.group("cells")))
+            for t, v in zip(tasks, vals):
+                out[(t, algo)] = (float(v.group("mean")),
+                                  None if v.group("std") is None else float(v.group("std")))
+    return out
+
+
+def fig_fidelity_bars_r2(tex_path=None):
+    """fig_fidelity_bars from d4_eval: grouped bars of the gradient cosine to exact RTRL on
+    the four diagnostic tasks, one bar per estimator, error bar = cross-seed std.
+
+    Layout, print size and legend placement are those of the R1 panel; the only visible change
+    is a seventh series, SK-RTRL r=32, which the second round added as a table column.
+    """
+    d = _d4()
+    T, cells = d["T"], d["cells"]
+    tasks = list(T.DIAG_TASKS)
+    algos = [a for a in R2_COS_ORDER if a in T.ORDER]
+    nd = T.ND["grad_cos"]
+
+    series, bad = [], []
+    for a in algos:
+        ms, ss = [], []
+        for t in tasks:
+            c = cells[(t, a, "grad_cos")]
+            if c["mean"] is None:
+                bad.append("%s/%s: no usable run in %s" % (t, a, T.EVAL_DIR))
+                ms.append(0.0); ss.append(0.0)
+                continue
+            ms.append(c["mean"]); ss.append(c["std"] or 0.0)
+        series.append((a, ms, ss))
+    if bad:
+        raise SystemExit("fig_fidelity_bars: %s" % "; ".join(bad))
+
+    # cross-check against the R2 table of record, at its printed precision
+    tex_path = tex_path or os.path.join(ROOT, "..", "paper", "secs", "tab_r2_fidelity.tex")
+    pub = _parse_r2_fidelity_tex(tex_path, tasks, algos, T.LABEL)
+    if pub is None:
+        raise SystemExit("fig_fidelity_bars: the R2 table of record %s is missing, so the bars "
+                         "cannot be cross-checked; run make_r2_d4_tables.py first (or pass "
+                         "--source r1 for the first-round panel)" % tex_path)
+    drift = []
+    for a, ms, ss in series:
+        for t, m, s in zip(tasks, ms, ss):
+            if (t, a) not in pub:
+                drift.append("%s/%s: absent from %s" % (t, a, os.path.basename(tex_path)))
+                continue
+            pm, ps = pub[(t, a)]
+            if abs(round(m, nd) - pm) > 0.5 * 10 ** -nd:
+                drift.append("%s/%s mean %.*f vs table %.*f" % (t, a, nd, m, nd, pm))
+            if ps is not None and abs(round(s, nd) - ps) > 0.5 * 10 ** -nd:
+                drift.append("%s/%s std %.*f vs table %.*f" % (t, a, nd, s, nd, ps))
+    if drift:
+        raise SystemExit("fig_fidelity_bars: the figure disagrees with %s:\n  %s"
+                         % (tex_path, "\n  ".join(drift)))
+    print("  fig_fidelity_bars: %d/%d cells match %s at %d decimals"
+          % (len(tasks) * len(algos), len(tasks) * len(algos), os.path.basename(tex_path), nd))
+
+    x = np.arange(len(tasks), dtype=float)
+    w = 0.8 / len(series)
+    fig, ax = plt.subplots(figsize=figsize("fig_fidelity_bars"))
+    for i, (key, vals, errs) in enumerate(series):
+        c, _, _, hatch = sty(key)
+        hatch = hatch[: max(1, len(hatch) // 2)]   # sparser hatch: bars are narrow
+        ax.bar(x + i * w, vals, w, yerr=errs, capsize=1.6, label=LABEL.get(key, key),
+               color=c, hatch=hatch, edgecolor="black", linewidth=0.5,
+               error_kw=dict(lw=0.8, ecolor="black"))
+    ax.set_xticks(x + w * len(series) / 2)
+    ax.set_xticklabels([TASK_LABEL.get(t, t) for t in tasks])
+    ax.set_ylabel("Gradient cosine vs exact RTRL")
+    ax.set_ylim(0, 1.05)
+    ax.grid(axis="y", alpha=0.3)
+    ax.set_axisbelow(True)
+    fig.tight_layout()
+    # Seven series no longer fit on one row above the axes at 7.5 pt without widening the
+    # exported figure (and a wider export is scaled down by the fixed \includegraphics width,
+    # which is what shrank the type before the revision), so the key is two rows of four and
+    # goes through the same hard check as every other externalised key.
+    h, l = ax.get_legend_handles_labels()
+    legend_above(fig, ax, h, l, ncol=4, name="fig_fidelity_bars", fontsize=6.6,
+                 handlelength=1.5, columnspacing=0.9, handletextpad=0.4)
+    _save(fig, "fig_fidelity_bars")
+
+
+# ---------------------------------------------------------------------------- (b) rank sweep
+def fig_rinterp_r2(task="rotation"):
+    """fig_rinterp_rotation from d4_eval: gradient cosine against the sketch rank.
+
+    The rank ladder the second round actually ran is r in {4, 16, 32} plus the two endpoints,
+    so it is the one plotted: SnAp-1 at the pseudo-position x=0.5 (it is the r=0 member of the
+    family, and 0 has no place on a log axis), then r=4, 16, 32, and exact RTRL as the r=n
+    endpoint.  There is no skrtrl-r64 run in d4_eval and none is needed: at r=n the sketch is
+    the full Jacobian, so the cosine is 1 by the exactness corollary rather than by
+    measurement.  That endpoint therefore carries no error bar, and both the tick label ("n")
+    and the key say what it is.
+    """
+    d = _d4()
+    T, cells = d["T"], d["cells"]
+    ladder = [(0.5, "snap1"), (4, "skrtrl-r4"), (16, "skrtrl-r16"), (32, "skrtrl-r32")]
+    xs, ys, es, keys = [], [], [], []
+    for r, alg in ladder:
+        c = cells[(task, alg, "grad_cos")]
+        if c["mean"] is None:
+            continue
+        xs.append(float(r)); ys.append(c["mean"]); es.append(c["std"] or 0.0); keys.append(alg)
+    if len(xs) < 2:
+        return _skip("fig_rinterp_%s" % task,
+                     "fewer than 2 measured rank points in %s" % T.EVAL_DIR)
+    n_hid = 64
+    xs.append(float(n_hid)); ys.append(1.0); es.append(0.0); keys.append("exact")
+
+    fig, ax = plt.subplots(figsize=figsize("fig_rinterp_rotation"))
+    # one continuous interpolation curve ...
+    ax.errorbar(xs, ys, yerr=es, color=OI["blue"], linestyle="-", marker="",
+                capsize=3, lw=1.6, zorder=2, label="sketch rank sweep")
+    # ... plus a per-configuration marker so each point is identifiable without colour
+    for i, alg in enumerate(keys):
+        c, ls, mk, _ = sty(alg)
+        lab = r"exact RTRL ($r{=}n$)" if alg == "exact" else LABEL.get(alg, alg)
+        ax.errorbar([xs[i]], [ys[i]], yerr=[es[i]], color=c, marker=mk, ms=7,
+                    linestyle="none", capsize=3, mec="black", mew=0.6, zorder=3, label=lab)
+    ax.set_xscale("log")
+    ax.set_xticks([0.5, 4, 16, 32, float(n_hid)])
+    # The two endpoints are labelled for what they are rather than by a bare number: r=0 is
+    # SnAp-1 (the same estimator with no sketch) and r=n is exact RTRL, whose cosine is 1 by
+    # the exactness corollary and not by measurement.
+    ax.set_xticklabels([r"$r{=}0$" "\n" "(SnAp-1)", "4", "16", "32",
+                        "$n$" "\n" "(exact)"])
+    ax.set_xlabel(r"sketch rank $r$")
+    ax.set_ylabel("gradient cosine vs exact")
+    ax.set_title("Rank interpolation (%s)" % task)
+    fig.tight_layout()
+    # The interpolation curve sweeps the whole panel, so the key goes underneath the axes.
+    h, l = ax.get_legend_handles_labels()
+    legend_below(fig, ax, h, l, ncol=2, name="fig_rinterp_%s" % task, fontsize=6.0,
+                 handlelength=1.4, columnspacing=0.6, handletextpad=0.3)
+    _save(fig, "fig_rinterp_%s" % task)
+    print("  fig_rinterp_%s: " % task
+          + "; ".join("%s r=%g: %.3f+-%.3f" % (keys[i], xs[i], ys[i], es[i])
+                      for i in range(len(xs)))
+          + " (the r=n value is 1 by the exactness corollary, not a measurement)")
+
+
+# ---------------------------------------------------------------------------- (c) scatter
+def fig_scatter_r2():
+    """fig_fidelity_vs_error from d4_eval: gradient cosine against task error, one point per
+    (task, estimator, seed).
+
+    Why the y axis is normalised.  The R1 panel read results/round1/real + results/ts, i.e.
+    the five time-series tasks, all of which report an NMSE -- one axis, one unit.  d4_eval
+    spans all nine D4 tasks, and their metrics are not commensurable: adding and rotation are
+    an MSE, the five series tasks an NMSE, and copy and a^nb^n are ACCURACIES, which are
+    higher-is-better and would be upside down on a "task error" axis.  Two ways out were
+    available: drop the two accuracy tasks, or normalise per task.  Normalising wins, because
+    copy is the sharpest decoupling instance in the whole study (RFLO is the best predictor on
+    it, 0.182 accuracy, with a gradient cosine of 0.034 -- chance), and a panel about
+    decoupling that silently dropped that task would understate its own claim.
+    So each run's metric is turned into an error (1 - accuracy on the accuracy tasks, the
+    metric itself elsewhere) and divided by the ten-seed mean error of exact RTRL on the same
+    task.  y = 1 therefore means "as accurate as exact RTRL on this task", y > 1 worse, and
+    every task lives on one comparable axis.  Exact RTRL itself is drawn as that y=1 reference
+    line instead of as a cloud of points: normalising its own runs by their own mean would put
+    them at 1 by construction, which is not a measurement.
+    """
+    d = _d4()
+    T, cells, kept = d["T"], d["cells"], d["kept"]
+    higher = set(T.HIGHER_IS_BETTER)
+
+    def as_error(task, v):
+        return (1.0 - v) if task in higher else v
+
+    ref = {}
+    for t in T.TASKS:
+        m = cells[(t, "exact", "metric")]["mean"]
+        if m is None:
+            raise SystemExit("fig_fidelity_vs_error: no exact-RTRL metric on %s, so the "
+                             "per-task normaliser is undefined" % t)
+        ref[t] = as_error(t, m)
+        if ref[t] <= 0:
+            raise SystemExit("fig_fidelity_vs_error: exact RTRL's error on %s is %g; a "
+                             "non-positive normaliser cannot go on a log axis" % (t, ref[t]))
+
+    pts = []
+    for (t, a, s), r in sorted(kept.items()):
+        if a in T.NO_COS:
+            continue
+        gc, m = r.get("grad_cos"), r.get("metric")
+        if gc is None or m is None or not (np.isfinite(gc) and np.isfinite(m)):
+            continue
+        e = as_error(t, m) / ref[t]
+        if e <= 0:
+            continue
+        pts.append((t, a, s, float(gc), e))
+    if len(pts) < 4:
+        return _skip("fig_fidelity_vs_error", "insufficient (grad_cos, metric) pairs in d4_eval")
+
+    methods = [m for m in R2_COS_ORDER if any(p[1] == m for p in pts)]
+    methods += sorted({p[1] for p in pts} - set(methods))
+    fig, ax = plt.subplots(figsize=figsize("fig_fidelity_vs_error"))
+    ax.axhline(1.0, color=OI["black"], linestyle=(0, (4, 2)), lw=0.9, zorder=2,
+               label="exact RTRL")
+    for meth in methods:
+        mp = [p for p in pts if p[1] == meth]
+        c, _, mk, _ = sty(meth)
+        ax.scatter([p[3] for p in mp], [p[4] for p in mp],
+                   s=11, color=c, marker=mk, edgecolors="black", linewidths=0.3,
+                   label=LABEL.get(meth, meth), alpha=0.85, zorder=3)
+    ax.set_xlabel("gradient cosine vs exact (fidelity)")
+    ax.set_ylabel("task error / exact RTRL")
+    ax.set_yscale("log")
+    fig.tight_layout()
+    h, l = ax.get_legend_handles_labels()
+    legend_below(fig, ax, h, l, ncol=3, name="fig_fidelity_vs_error", fontsize=5.8,
+                 handlelength=1.0, columnspacing=0.7, handletextpad=0.3)
+    _save(fig, "fig_fidelity_vs_error")
+
+    # printed so the caption can quote the pooled number without re-deriving it by hand
+    xs = np.array([p[3] for p in pts]); ys = np.array([p[4] for p in pts])
+    rho = _spearman(xs, ys)
+    print("  fig_fidelity_vs_error: %d points, %d tasks x %d estimators x %d seeds; "
+          "Spearman(cosine, normalised error) = %+.3f; pearson(cosine, log10 error) = %+.3f"
+          % (len(pts), len({p[0] for p in pts}), len(methods), len({p[2] for p in pts}),
+             rho, float(np.corrcoef(xs, np.log10(ys))[0, 1])))
+    for t in T.TASKS:
+        sub = [p for p in pts if p[0] == t]
+        if len(sub) > 3:
+            print("     %-12s n=%3d rho=%+.3f" % (t, len(sub),
+                  _spearman(np.array([p[3] for p in sub]), np.array([p[4] for p in sub]))))
+
+
+def _spearman(x, y):
+    """Spearman rho without a scipy dependency at figure level (average ranks on ties)."""
+    def rank(v):
+        order = np.argsort(v, kind="mergesort")
+        r = np.empty(len(v), dtype=float)
+        r[order] = np.arange(1, len(v) + 1, dtype=float)
+        # average the ranks of tied values, as Spearman requires
+        for val in np.unique(v):
+            m = v == val
+            if m.sum() > 1:
+                r[m] = r[m].mean()
+        return r
+    rx, ry = rank(np.asarray(x, dtype=float)), rank(np.asarray(y, dtype=float))
+    return float(np.corrcoef(rx, ry)[0, 1])
+
+
+# --------------------------------------------------------------------------------------
 # Fig 9  fig_scaling
 # --------------------------------------------------------------------------------------
 def fig_scaling():
@@ -895,6 +1288,24 @@ def main():
     ap.add_argument("--out", default=os.path.join(here, "results", "figures"),
                     help="directory to write the figures into")
     ap.add_argument("--gray", default="")
+    # Three panels exist in two versions; see the R2 re-points block above.  r2 is the default
+    # because the tables of the revision are built from d4_eval and a figure from the other
+    # tree beside them would be a different experiment.
+    ap.add_argument("--source", choices=["r1", "r2"], default="r2",
+                    help="which runs fig_fidelity_bars / fig_rinterp_rotation / "
+                         "fig_fidelity_vs_error are drawn from (default: r2 = "
+                         "results/r2/d4_eval, the D4 unified protocol)")
+    ap.add_argument("--fidelity-tex", default="",
+                    help="R2 fidelity table to cross-check the bars against, read-only "
+                         "(default: <root>/../paper/secs/tab_r2_fidelity.tex)")
+    # Selective regeneration.  When --out points at paper/figures/ (the directory the
+    # manuscript's \includegraphics actually reads) a full run would rewrite all ten files,
+    # including panels whose input tree has not changed since they were last approved -- and a
+    # figure should not be silently re-rendered by a run that was only meant to fix another
+    # one.  --only names the figures to write; everything else is not even drawn.
+    ap.add_argument("--only", default="",
+                    help="comma-separated figure names to (re)generate, e.g. "
+                         "fig_fidelity_bars,fig_rinterp_rotation; default: all of them")
     args = ap.parse_args()
     ROOT, OUT, GRAY = args.root, args.out, args.gray
     print("root =", ROOT)
@@ -902,20 +1313,46 @@ def main():
     if not _assert_styles_distinct():
         print("  style table OK: every method pair differs in >=2 visual attributes")
 
-    fig_pilot_residual()
-    fig_fidelity_bars()
-    fig_rinterp("rotation")
-    fig_cert_c2sweep()
-    fig_adaptive_trajectory()
-    hz = _scan([_res("round1", "horizon"),
-                _res("ts")])
-    fig_horizon(hz)
-    sc = _scan([_res("round1", "real"),
-                _res("ts")])
-    fig_scatter(sc)
-    fig_scaling()
-    fig_pareto(_scan([_res("membench")]))
-    fig_rl_curves()
+    known = ["fig_pilot_residual", "fig_fidelity_bars", "fig_rinterp_rotation",
+             "fig_cert_c2sweep", "fig_adaptive_trajectory", "fig_horizon_nmse",
+             "fig_fidelity_vs_error", "fig_scaling", "fig_memory_time_pareto",
+             "fig_rl_curves"]
+    only = [s.strip() for s in args.only.split(",") if s.strip()]
+    unknown = [s for s in only if s not in known]
+    if unknown:
+        raise SystemExit("--only: unknown figure name(s) %s; known names are %s"
+                         % (unknown, known))
+    want = (lambda name: name in only) if only else (lambda name: True)
+    if only:
+        print("only =", ", ".join(only))
+    print("source =", args.source, "(fig_fidelity_bars, fig_rinterp_rotation, "
+          "fig_fidelity_vs_error)")
+
+    if want("fig_pilot_residual"):
+        fig_pilot_residual()
+    if want("fig_fidelity_bars"):
+        fig_fidelity_bars_r2(args.fidelity_tex or None) if args.source == "r2" \
+            else fig_fidelity_bars()
+    if want("fig_rinterp_rotation"):
+        fig_rinterp_r2("rotation") if args.source == "r2" else fig_rinterp("rotation")
+    if want("fig_cert_c2sweep"):
+        fig_cert_c2sweep()
+    if want("fig_adaptive_trajectory"):
+        fig_adaptive_trajectory()
+    if want("fig_horizon_nmse"):
+        # Not re-pointed at results/r2: every R2 run has horizon 1 (the only exception under
+        # results/r2 is a 200-step adaptive-eta smoke run at h=3), so the h in {5, 10, 25}
+        # sweep exists only in results/round1/horizon, at the shared lr of the first round.
+        fig_horizon(_scan([_res("round1", "horizon"), _res("ts")]))
+    if want("fig_fidelity_vs_error"):
+        fig_scatter_r2() if args.source == "r2" \
+            else fig_scatter(_scan([_res("round1", "real"), _res("ts")]))
+    if want("fig_scaling"):
+        fig_scaling()
+    if want("fig_memory_time_pareto"):
+        fig_pareto(_scan([_res("membench")]))
+    if want("fig_rl_curves"):
+        fig_rl_curves()
 
     print("\n%d figures written: %s" % (len(WROTE), ", ".join(WROTE)))
     if LEGEND_ISSUES:

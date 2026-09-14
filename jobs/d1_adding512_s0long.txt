@@ -1,0 +1,2 @@
+# adding n=512 seed0 40k-step rerun: s0 showed silent spectral collapse (stable_rank 2.5 at frac=1.0) with smooth loss; check whether it follows s2_long (recovery branch) or degrades. Generated 2026-09-14.
+run_e1_spectrum.py --task adding --n 512 --seed 0 --steps 40000 --batch 4 --lr 1e-3 --ckpt_fracs 0.01,0.05,0.25,0.5,0.75,1.0 --ckpt_align age --outdir results/r2/d1_spectrum --tag long  # out=results/r2/d1_spectrum/adding_n512_s0_long.json

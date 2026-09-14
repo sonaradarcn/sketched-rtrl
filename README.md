@@ -291,6 +291,104 @@ emit UTF-8 with LF newlines explicitly. `make_figures.py` and
 `make_round1_figures.py` are earlier, plainer entry points kept for reference;
 `make_paper_figures.py` is the one that produced the figures in the manuscript.
 
+## Round-2 experiments (results/r2)
+
+Additive infrastructure for the second-round revision. Nothing here changes the round-1
+scripts' default behaviour or results; every new flag defaults to the round-1 setting.
+Round-2 raw results live under `results/r2/`, which — like the Table 5 / diagnostic-rerun
+trees above — is **not** in the released tree; the code to reproduce it is.
+
+**New scripts**
+
+- `run_e1_spectrum.py` — D1: spectrum of the true SnAp-1 residual `R_t = J_t - S_t`
+  (exact-RTRL training, SnAp-1 attached as a passive tracker).
+- `run_e4b_common.py` — E4b/D4b: common-trajectory estimator comparison (one exact-RTRL
+  trajectory, every estimator a passive tracker on it, to separate estimator accuracy
+  from where its own training took the network).
+- `run_svd_driver_equiv.py` — A1 control: `svd_driver=auto` vs `gesvd` on a frozen
+  trajectory, isolating the numerical effect of the SVD driver from training drift.
+- `skrtrl/cells_gated.py` — GRU/LSTM cells exposing the `jac_pieces`/`append_factors`
+  interface SK-RTRL needs; additive, does not modify `cells.py`/`algos.py`/`train.py`.
+- `run_m3.py --cell {tanh,gru,lstm}` — run a diagnostic/time-series task on a gated cell
+  (KF-RTRL and TBPTT are refused for `gru`/`lstm`, see D5 below); `--holdout_frac F` holds
+  out the trailing fraction of a real series and logs a single-pass `metric_holdout`
+  after training; `--svd_driver {gesvd,auto}` selects the SVD backend (`auto` allows the
+  CPU fallback path exercised by `run_svd_driver_equiv.py`).
+- `run_adaptive.py --c N` pins the adaptive controller's append width instead of the
+  default `c(r)` rule; `--preproject {auto,on,off}` / `--force_preproject` control the
+  pre-projection step used at the sensitivity-sweep's rank ceiling.
+- `run_m5.py --clip V` adds spectral clipping (as in `run_m3.py`) to the RL (T-maze) runner.
+
+**Job generation → `jobs/*.txt`**
+
+Each `make_r2_*_jobs.py` writes plain-text job files: one full `run_*.py …` command per
+line, terminated by a `# out=<path>` annotation that the queue scripts use for
+exists-skip (authoritative — never re-derived from the flags).
+
+| Generator | Job files |
+|---|---|
+| `make_r2_d1_jobs.py` | `jobs/d1_spectrum*.txt` |
+| `make_r2_d2_jobs.py` | `jobs/d2_noreset.txt`, `jobs/d2_clip.txt` |
+| `make_r2_d3_jobs.py` | `jobs/d3_diag.txt`, `jobs/d3_oat.txt` (+ `jobs/d3_oat_extra.txt`) |
+| `make_r2_jobs.py --stage d4_tune` | `jobs/d4_tune.txt` (stage-1 LR tuning) |
+| `make_r2_d4_select.py select --stage {1,2}` / `emit --what {boundary,stage2,eval}` | reads `d4_tune`/`d4_stage2` results, writes `jobs/d4_boundary.txt`, `jobs/d4_stage2.txt`, `jobs/d4_eval.txt`, `jobs/d4_holdout.txt` |
+| `make_r2_d5_jobs.py` | `jobs/d5_gru.txt`, `jobs/d5_lstm.txt` (`jobs/d5_gated.txt` = both) |
+| `make_r2_rl_jobs.py` | `jobs/rl.txt` |
+| `make_r2_e4b_jobs.py` | `jobs/e4b_common.txt` |
+
+**Queue scripts** `run_r2_queue.ps1` / `run_r2_queue.sh` are local orchestration wrappers,
+not published — same convention as the round-1 `launch_*.sh`/`run_*_local.ps1` wrappers
+above: they hard-code a machine-specific Python interpreter path and GPU ordinal, which
+carry no scientific content. One worker is one process pinned to one GPU
+(`CUDA_VISIBLE_DEVICES=<dev>`); jobs are split across workers by kept-line-index modulo
+worker count. Usage: `run_r2_queue.sh WORKER NWORKERS DEV JOBS LOGDIR [TIMEOUT_S] [PY]`
+positionally, or `run_r2_queue.ps1 -Worker -NWorkers -Dev -Jobs -LogDir -TimeoutSec
+-Python` by name. Before running a job, the queue reads its line's `# out=<path>` — if
+that file already exists, the job is skipped (exists-skip), so a queue can be killed and
+restarted, or split across more workers, without redoing finished jobs. Job lines
+themselves may request `--svd_driver auto`; the queue does not interpret that flag, it is
+just part of the command line it launches.
+
+**Report scripts → `results/r2/*.md`**
+
+Each reads its raw JSON tree only, writes its report(s), and touches no GPU. Together
+they back the paper's revised main tables and figures and the supplement — see the paper
+and supplement for which table/figure number each corresponds to.
+
+| Script | Output |
+|---|---|
+| `make_r2_d1_report.py` | `results/r2/d1_spectrum/D1_SUMMARY.md` + `fig_r2_spectrum_{stage,width,age}.pdf` |
+| `make_r2_d2_report.py` | D2 certificate-informativeness-vs-clip report + figures |
+| `make_r2_d3_report.py` | D3 adaptive-rank ceiling/sensitivity report |
+| `make_r2_d4_tables.py` | `results/r2/D4_TABLES.md`, `D4_STATS.md` (paired bootstrap/Wilcoxon/Holm over all estimator pairs) |
+| `make_r2_d4_select.py` | `D4_SELECT_stage{1,2}.{md,json}` (learning-rate selection behind `d4_tune`/`d4_stage2`/`d4_eval`) |
+| `make_r2_d5_report.py` | `results/r2/D5_SUMMARY.md` (gated-cell results vs the tanh reference) |
+| `make_r2_holdout_report.py` | `results/r2/HOLDOUT_SUMMARY.md` (A11 temporal hold-out on sunspot/laser) |
+| `make_r2_rl_report.py` | RL (T-maze) certificate + per-seed task report |
+| `make_r2_e4b_report.py` | E4b common-trajectory report vs `D4_TABLES.md` |
+| `make_r2_w1b_tables.py` | rebuilds the certificate-tightness and adaptive-vs-fixed-rank tables from the full R2 task set |
+
+**`make_reproduction_archive.py`** builds `../paper/revise_r2/reproduction_archive_r2.zip`:
+read-only with respect to the source tree. It packs the JSON for the 12 named,
+report-backed R2 experiment directories under `results/r2/`, every top-level
+`results/r2/*.md` summary, and the *formal* `jobs/*.txt` files (excluding
+scheduling-shard splits like `_gpu<N>`/`_tail`/`.round<N>`) — smoke/probe/dev/timing runs
+are deliberately excluded; see the script's docstring for the exact manifest.
+
+**Testing**
+
+```bash
+python -m pytest tests -q --import-mode=importlib
+```
+
+New round-2 tests: `test_gated_cells.py` / `test_gated_jacobians.py` /
+`test_gated_numerics.py` (GRU/LSTM cell correctness and autograd-Jacobian equivalence)
+and `test_svd_fallback_cert.py` (the `svd_driver=auto` CPU-fallback path keeps the
+certificate valid). They join the round-1 suite under the same `tests/` package.
+
+**Environment.** No new dependencies: the gated cells and the SVD-driver fallback use
+only `torch`/`numpy`, already pinned in `requirements.txt` above.
+
 ## Data sources
 
 - `skrtrl/data/sunspot.txt` — monthly **mean total** sunspot number, [SILSO](https://www.sidc.be/SILSO/),

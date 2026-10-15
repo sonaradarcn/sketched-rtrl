@@ -35,7 +35,8 @@ files tmaze<len>_<algo>_s<seed>.json; the runner is detected from the args keys
 
 Outputs
 -------
-  results/r2/D2_SUMMARY.md   tables A-E (+ F when present) and auto-generated
+  results/r2/D2_SUMMARY.md   tables A-E (+ F when present), table G (the
+                             washout-free runs) and auto-generated
                              numeric bullet points
   <figdir>/fig_r2_cert_frac_vs_clip.{pdf,png}     (figdir default: results/figures)
   <figdir>/fig_r2_cert_cdf.{pdf,png}
@@ -836,6 +837,126 @@ def section_f(runs):
     return L
 
 
+# Largest finite fp32 / fp64 numbers, for the overflow horizon of Table G.
+FP32_MAX = 3.4028234663852886e38
+FP64_MAX = sys.float_info.max
+TREND_BAND = 0.10        # Table G: median ||E_t||_F within 10% of its start = "flat"
+
+
+def noreset_stats(runs):
+    """Per-run quantities of the washout-free runs, read from the logged records.
+
+    rho_bar_t, the gradient cosine and ||E_t||_F are logged every --log_every steps,
+    so the medians are over the log points.  The overflow horizon is an estimate,
+    not a measurement: a bound multiplied by the run's median rho_bar_t at every step
+    leaves the fp32 (fp64) range after ln(max)/ln(rho_bar) steps.  The records hold
+    no per-step rho_bar_t, so e_t cannot be re-accumulated; the logged e_t is
+    infinite at every counted step (n_bound_finite = 0), consistent with the estimate.
+    """
+    out = []
+    for r in sorted((r for r in cert_runs(runs) if r.get("noreset")),
+                    key=lambda r: (r["task"], str(r["algo"]), r["clip_key"], r["seed"])):
+        with open(r["path"], encoding="utf-8") as fh:
+            d = json.load(fh)
+        recs = d.get("records") or []
+        cs = d.get("cert_summary") or {}
+        steps = d["args"]["steps"]
+        rho = [x["rho_bar"] for x in recs if finite(x.get("rho_bar"))]
+        cos = [x["grad_cos"] for x in recs if finite(x.get("grad_cos"))]
+        E = [(x["step"], x["true_E"]) for x in recs
+             if x.get("step", 0) > 0 and finite(x.get("true_E"))]
+        e_first = [v for t, v in E if t < (1 - WINDOW_FRAC) * steps]
+        e_last = [v for t, v in E if t >= WINDOW_FRAC * steps]
+        med_rho = statistics.median(rho) if rho else None
+        ef = statistics.median(e_first) if e_first else None
+        el = statistics.median(e_last) if e_last else None
+        trend = "n/a"
+        if ef and el is not None:
+            trend = ("rises" if el > (1 + TREND_BAND) * ef
+                     else "falls" if el < (1 - TREND_BAND) * ef else "flat")
+        fin_pts = sum(1 for x in recs
+                      if x.get("step", 0) > 0 and finite(x.get("bound_norm")))
+        ok_rho = med_rho is not None and med_rho > 1
+        out.append({
+            "task": r["task"], "algo": r["algo"], "seed": r["seed"], "lr": r["lr"],
+            "n_steps": cs.get("n_steps"), "n_bound_finite": cs.get("n_bound_finite"),
+            "n_rhobar_lt1": cs.get("n_rhobar_lt1"),
+            "med_rho": med_rho, "min_rho": min(rho) if rho else None,
+            "h32": math.log(FP32_MAX) / math.log(med_rho) if ok_rho else None,
+            "h64": math.log(FP64_MAX) / math.log(med_rho) if ok_rho else None,
+            "med_cos": statistics.median(cos) if cos else None,
+            "med_E": statistics.median([v for _t, v in E]) if E else None,
+            "E_first": ef, "E_last": el, "trend": trend, "finite_bound_points": fin_pts})
+    return out
+
+
+def section_g(runs):
+    L = ["## Table G -- the washout-free runs, per run", "",
+         "The quantities Section 6.5 and Section S6 quote for the uninterrupted stream.  "
+         "`med rho_bar`, `med cos` and `med ||E||` are medians over the log points "
+         "(every `--log_every` steps; `||E||` from the first log point after step 0); "
+         "`n_rhobar_lt1`, `counted` and `n_bound_finite` are the runner's every-step "
+         "counters.  `||E|| first / last` are the medians over the first and the last "
+         "%d%% of the run, and the trend is `flat` when they differ by at most %d%%.  "
+         "`h32` / `h64` estimate the overflow horizon of e_t as ln(largest fp32 / fp64 "
+         "number) / ln(med rho_bar): the records hold rho_bar_t only at the log points, "
+         "so e_t cannot be re-accumulated step by step, and the logged e_t is infinite "
+         "at every counted step.  `finite bound pts` counts the log points after step 0 "
+         "with a finite Theorem-1 bound."
+         % (round((1 - WINDOW_FRAC) * 100), round(TREND_BAND * 100)), ""]
+    st = noreset_stats(runs)
+    if not st:
+        return L + ["_no washout=0 run found_", ""]
+    rows = [[s["task"], s["algo"], s["seed"], fmt(s["lr"], 4), s["n_steps"],
+             s["n_bound_finite"], s["n_rhobar_lt1"], fmt(s["med_rho"]), fmt(s["min_rho"]),
+             fmt(s["h32"], 1), fmt(s["h64"], 1), fmt(s["med_cos"]), fmt(s["med_E"], 2),
+             "%s / %s" % (fmt(s["E_first"], 2), fmt(s["E_last"], 2)), s["trend"],
+             s["finite_bound_points"]] for s in st]
+    L += md_table(["task", "algo", "seed", "lr", "counted", "n_bound_finite",
+                   "n_rhobar_lt1", "med rho_bar", "min rho_bar", "h32", "h64", "med cos",
+                   "med ||E||", "||E|| first / last", "trend", "finite bound pts"], rows)
+
+    def ms(key):
+        v = [s[key] for s in st if finite(s[key])]
+        return statistics.fmean(v), (statistics.stdev(v) if len(v) > 1 else 0.0)
+
+    m_rho = ms("med_rho")[0]
+    h32, h32s = ms("h32")
+    h64, h64s = ms("h64")
+    m_cos = ms("med_cos")[0]
+    tasks = {s["task"] for s in st}
+    ctl = group([r for r in cert_runs(runs) if not r.get("noreset")
+                 and r["clip_key"] == "none" and r["task"] in tasks], lambda r: r["task"])
+    ctl_tight = sorted(statistics.fmean(r["frac_tight_le10"] for r in rs)
+                       for rs in ctl.values())
+    rising = ", ".join("%s s%s" % (s["task"], s["seed"]) for s in st if s["trend"] == "rises")
+    L += ["Summary over the %d run(s):" % len(st), "",
+          "- per-run median rho_bar_t: mean %s, range %s-%s; smallest logged rho_bar_t %s; "
+          "steps with rho_bar_t < 1 (every-step counter): %d."
+          % (fmt(m_rho), fmt(min(s["med_rho"] for s in st)),
+             fmt(max(s["med_rho"] for s in st)), fmt(min(s["min_rho"] for s in st)),
+             sum(s["n_rhobar_lt1"] or 0 for s in st)),
+          "- estimated overflow horizon of e_t: fp32 %s+-%s steps, fp64 %s+-%s steps "
+          "(mean +- s.d. over runs)." % (fmt(h32, 1), fmt(h32s, 1), fmt(h64, 1), fmt(h64s, 1)),
+          "- counted steps %d; steps with a finite fp32 bound %d; log points after step 0 "
+          "with a finite bound %d."
+          % (sum(s["n_steps"] or 0 for s in st), sum(s["n_bound_finite"] or 0 for s in st),
+             sum(s["finite_bound_points"] for s in st)),
+          "- per-run median gradient cosine: mean %s, range %s-%s."
+          % (fmt(m_cos), fmt(min(s["med_cos"] for s in st)),
+             fmt(max(s["med_cos"] for s in st))),
+          "- per-run median ||E_t||_F: %s-%s; first to last fifth: %d fall, %d flat, "
+          "%d rise (%s)."
+          % (fmt(min(s["med_E"] for s in st), 2), fmt(max(s["med_E"] for s in st), 2),
+             sum(s["trend"] == "falls" for s in st), sum(s["trend"] == "flat" for s in st),
+             sum(s["trend"] == "rises" for s in st), rising or "none"),
+          "- tightness bin of the reset-bearing runs of the same series (per-series mean): "
+          "%s." % (("%s-%s" % (fmt(ctl_tight[0]), fmt(ctl_tight[-1]))) if ctl_tight
+                   else "n/a"),
+          ""]
+    return L
+
+
 def section_bullets(runs, figs):
     """Auto-generated bullet points.  Numbers only -- no interpretation."""
     L = ["## Automatic numeric summary", ""]
@@ -1463,6 +1584,7 @@ def main():
     L += section_d(runs)
     L += section_e(runs)
     L += section_f(runs)
+    L += section_g(runs)
     L += section_bullets(runs, figs)
     if figs is not None:
         L += ["## Figures", "",

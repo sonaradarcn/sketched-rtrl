@@ -954,6 +954,141 @@
    "tol": 0.0006,
    "source": "secs/6_experiments.tex (R3 text; frozen R2 text printed 0.397)",
    "note": ""
+  },
+  {
+   "key": "noreset_runs",
+   "paper": 15,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "results/r2/d2_noreset"
+  },
+  {
+   "key": "noreset_rhobar_median_mean",
+   "paper": 3.86,
+   "tol": 0.005,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "per-run median of the logged rho_bar_t, mean over the 15 runs (also secs/7_discussion.tex, secs/8_conclusion.tex)"
+  },
+  {
+   "key": "noreset_rhobar_min_logged",
+   "paper": 2.54,
+   "tol": 0.005,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "smallest logged rho_bar_t over the 15 runs"
+  },
+  {
+   "key": "noreset_rhobar_lt1_steps",
+   "paper": 0,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "every-step counter n_rhobar_lt1: rho_bar_t never below one"
+  },
+  {
+   "key": "noreset_overflow_fp32_steps",
+   "paper": [
+    67.0,
+    7.0
+   ],
+   "tol": 0.5,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "estimated horizon ln(fp32 max)/ln(per-run median rho_bar_t), mean +- s.d. over runs (also secs/7_discussion.tex, secs/8_conclusion.tex)"
+  },
+  {
+   "key": "noreset_overflow_fp64_steps",
+   "paper": 536.0,
+   "tol": 0.5,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "same estimate with the fp64 maximum"
+  },
+  {
+   "key": "noreset_counted_steps",
+   "paper": 297000,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "also secs/S6_certificate.tex"
+  },
+  {
+   "key": "noreset_bound_finite_steps",
+   "paper": 0,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "fp32 bound finite at 0 counted steps"
+  },
+  {
+   "key": "noreset_theorem1_violations",
+   "paper": 0,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": ""
+  },
+  {
+   "key": "noreset_rel_lt1_and_tight_le10",
+   "paper": 0.0,
+   "tol": 0,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "direction-certifiable fraction and T_t <= 10 bin are 0.000 in every run"
+  },
+  {
+   "key": "noreset_cos_median_mean",
+   "paper": 0.93,
+   "tol": 0.005,
+   "source": "secs/S6_certificate.tex, Section S6 (R3 text)",
+   "note": "per-run median gradient cosine, mean over runs"
+  },
+  {
+   "key": "noreset_trueE_median_range",
+   "paper": [
+    2.2,
+    12.0
+   ],
+   "tol": 0.05,
+   "source": "secs/S6_certificate.tex, Section S6 (R3 text)",
+   "note": "range of the per-run median ||E_t||_F"
+  },
+  {
+   "key": "noreset_trueE_not_rising",
+   "paper": 12,
+   "tol": 0,
+   "source": "secs/S6_certificate.tex, Section S6 (R3 text)",
+   "note": "runs whose median ||E_t||_F over the last fifth is at most 1.1x that over the first fifth"
+  },
+  {
+   "key": "noreset_task_error",
+   "paper": {
+    "henon": {
+     "noreset": 0.0032,
+     "reset": 0.0051
+    },
+    "mackeyglass": {
+     "noreset": 0.0006,
+     "reset": 0.0025
+    },
+    "laser": {
+     "noreset": 0.0118,
+     "reset": 0.0197
+    },
+    "lorenz": {
+     "noreset": 0.0022,
+     "reset": 0.0014
+    },
+    "sunspot": {
+     "noreset": 0.1485,
+     "reset": 0.1335
+    }
+   },
+   "tol": 5e-05,
+   "source": "secs/S6_certificate.tex, Section S6 (R3 text)",
+   "note": "mean task error over the last 20% of the run; reset = the r=16 evaluation runs, seeds 0-9"
+  },
+  {
+   "key": "reset_tight_le10_range",
+   "paper": [
+    0.01,
+    0.014
+   ],
+   "tol": 0.0005,
+   "source": "secs/6_experiments.tex, Section 6.5 (R3 text)",
+   "note": "T_t <= 10 bin of the unclipped reset-bearing r=16 runs on the five series, per-series mean"
   }
  ]
 }

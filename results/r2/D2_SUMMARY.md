@@ -277,6 +277,37 @@ The same log points seen as distributions, so the bins of tables A-C can be read
 | real       | 0.7  | skrtrl-r16 | 10     | [50, 100]                  | 0.575+-0.201 | 0.521+-0.212 | 0.501+-0.216 | 0.941+-0.087    | 0.909+-0.123    | 0.896+-0.125    |
 | real       | 0.9  | skrtrl-r16 | 10     | [50, 100]                  | 0.030+-0.031 | 0.002+-0.002 | 0.002+-0.002 | 0.125+-0.059    | 0.016+-0.017    | 0.013+-0.015    |
 
+## Table G -- the washout-free runs, per run
+
+The quantities Section 6.5 and Section S6 quote for the uninterrupted stream.  `med rho_bar`, `med cos` and `med ||E||` are medians over the log points (every `--log_every` steps; `||E||` from the first log point after step 0); `n_rhobar_lt1`, `counted` and `n_bound_finite` are the runner's every-step counters.  `||E|| first / last` are the medians over the first and the last 20% of the run, and the trend is `flat` when they differ by at most 10%.  `h32` / `h64` estimate the overflow horizon of e_t as ln(largest fp32 / fp64 number) / ln(med rho_bar): the records hold rho_bar_t only at the log points, so e_t cannot be re-accumulated step by step, and the logged e_t is infinite at every counted step.  `finite bound pts` counts the log points after step 0 with a finite Theorem-1 bound.
+
+| task        | algo       | seed | lr     | counted | n_bound_finite | n_rhobar_lt1 | med rho_bar | min rho_bar | h32  | h64   | med cos | med ||E|| | ||E|| first / last | trend | finite bound pts |
+|-------------|------------|------|--------|---------|----------------|--------------|-------------|-------------|------|-------|---------|-----------|--------------------|-------|------------------|
+| henon       | skrtrl-r16 | 0    | 0.0010 | 19800   | 0              | 0            | 3.319       | 2.710       | 74.0 | 591.6 | 0.976   | 6.56      | 10.51 / 4.64       | falls | 0                |
+| henon       | skrtrl-r16 | 1    | 0.0010 | 19800   | 0              | 0            | 3.637       | 2.981       | 68.7 | 549.7 | 0.964   | 8.64      | 12.17 / 6.85       | falls | 0                |
+| henon       | skrtrl-r16 | 2    | 0.0010 | 19800   | 0              | 0            | 3.396       | 3.017       | 72.6 | 580.6 | 0.969   | 7.11      | 10.12 / 5.44       | falls | 0                |
+| laser       | skrtrl-r16 | 0    | 0.0010 | 19800   | 0              | 0            | 3.913       | 3.597       | 65.0 | 520.2 | 0.898   | 9.75      | 16.40 / 6.69       | falls | 0                |
+| laser       | skrtrl-r16 | 1    | 0.0010 | 19800   | 0              | 0            | 3.156       | 2.904       | 77.2 | 617.6 | 0.938   | 4.98      | 16.49 / 4.29       | falls | 0                |
+| laser       | skrtrl-r16 | 2    | 0.0010 | 19800   | 0              | 0            | 3.941       | 3.264       | 64.7 | 517.5 | 0.937   | 9.09      | 14.33 / 7.12       | falls | 0                |
+| lorenz      | skrtrl-r16 | 0    | 0.0010 | 19800   | 0              | 0            | 3.099       | 2.790       | 78.4 | 627.5 | 0.997   | 2.15      | 8.74 / 1.90        | falls | 0                |
+| lorenz      | skrtrl-r16 | 1    | 0.0010 | 19800   | 0              | 0            | 3.702       | 2.864       | 67.8 | 542.3 | 0.958   | 10.00     | 9.12 / 9.53        | flat  | 0                |
+| lorenz      | skrtrl-r16 | 2    | 0.0010 | 19800   | 0              | 0            | 3.982       | 2.536       | 64.2 | 513.7 | 0.939   | 9.90      | 9.91 / 6.14        | falls | 0                |
+| mackeyglass | skrtrl-r16 | 0    | 0.0010 | 19800   | 0              | 0            | 3.637       | 2.699       | 68.7 | 549.7 | 0.979   | 8.35      | 8.41 / 8.26        | flat  | 0                |
+| mackeyglass | skrtrl-r16 | 1    | 0.0010 | 19800   | 0              | 0            | 4.021       | 3.110       | 63.8 | 510.0 | 0.960   | 10.12     | 9.03 / 10.71       | rises | 0                |
+| mackeyglass | skrtrl-r16 | 2    | 0.0010 | 19800   | 0              | 0            | 3.496       | 3.073       | 70.9 | 567.1 | 0.960   | 8.31      | 8.69 / 8.75        | flat  | 0                |
+| sunspot     | skrtrl-r16 | 0    | 0.0010 | 19800   | 0              | 0            | 4.903       | 2.958       | 55.8 | 446.4 | 0.800   | 9.75      | 9.21 / 7.88        | falls | 0                |
+| sunspot     | skrtrl-r16 | 1    | 0.0010 | 19800   | 0              | 0            | 4.691       | 3.636       | 57.4 | 459.2 | 0.816   | 12.05     | 8.98 / 12.78       | rises | 0                |
+| sunspot     | skrtrl-r16 | 2    | 0.0010 | 19800   | 0              | 0            | 4.951       | 4.337       | 55.5 | 443.7 | 0.788   | 10.41     | 9.12 / 13.51       | rises | 0                |
+
+Summary over the 15 run(s):
+
+- per-run median rho_bar_t: mean 3.856, range 3.099-4.951; smallest logged rho_bar_t 2.536; steps with rho_bar_t < 1 (every-step counter): 0.
+- estimated overflow horizon of e_t: fp32 67.0+-7.1 steps, fp64 535.8+-57.1 steps (mean +- s.d. over runs).
+- counted steps 297000; steps with a finite fp32 bound 0; log points after step 0 with a finite bound 0.
+- per-run median gradient cosine: mean 0.925, range 0.788-0.997.
+- per-run median ||E_t||_F: 2.15-12.05; first to last fifth: 9 fall, 3 flat, 3 rise (mackeyglass s1, sunspot s1, sunspot s2).
+- tightness bin of the reset-bearing runs of the same series (per-series mean): 0.010-0.014.
+
 ## Automatic numeric summary
 
 - 267 run(s) with a certificate summary over 12 task(s), 5 clip level(s) {none, 0.35, 0.5, 0.7, 0.9} and 10 distinct seed(s); 5589060 counted step(s) in total.

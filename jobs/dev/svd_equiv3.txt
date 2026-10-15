@@ -1,4 +1,4 @@
-# A1: frozen-trajectory driver control + re-run of the `adding` records under the
+# SVD driver: frozen-trajectory driver control + re-run of the `adding` records under the
 # fixed log-step diagnostics (sparse-target task: true_E/J_norm at the log step).
 run_svd_driver_equiv.py --task lorenz --r 16 --steps 3000 --clip 0.0 --outdir results/r2/svd_equiv --tag frozen  # out=results/r2/svd_equiv/lorenz_r16_clip0_frozen.json
 run_svd_driver_equiv.py --task rotation --r 16 --steps 3000 --clip 0.0 --outdir results/r2/svd_equiv --tag frozen  # out=results/r2/svd_equiv/rotation_r16_clip0_frozen.json

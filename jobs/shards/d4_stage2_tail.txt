@@ -1,5 +1,5 @@
 # D4 stage-2 tail sweep: worker0/2 remaining jobs from d4_stage2.txt, reverse order
-# so remote scans backward while local GPU0 scans forward. Regenerated 2026-09-12 10:49:44 (remote pass done)
+# so remote scans backward while local GPU0 scans forward. Regenerated 2026-09-12 10:49:44
 run_m3.py --task laser --algo rflo --seed 101 --lr 0.0001 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_stage2 --tag lr1e-04  # out=results/r2/d4_stage2/laser_rflo_s101_lr1e-04.json
 run_m3.py --task laser --algo uoro --seed 101 --lr 0.0001 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_stage2 --tag lr1e-04  # out=results/r2/d4_stage2/laser_uoro_s101_lr1e-04.json
 run_m3.py --task laser --algo skrtrl-r16 --seed 101 --lr 0.003 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_stage2 --tag lr3e-03  # out=results/r2/d4_stage2/laser_skrtrl-r16_s101_lr3e-03.json

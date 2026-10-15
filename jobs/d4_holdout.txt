@@ -1,4 +1,4 @@
-# D4 holdout check, generated 2026-09-14: A11 temporal hold-out promised in the R2 reply letter
+# D4 temporal hold-out, generated 2026-09-14
 # sunspot & laser x {exact,snap1,skrtrl-r16,skrtrl-r32,tbptt} x seeds 0-4, 20000 steps, --holdout_frac 0.2, lr/window = D4_SELECT_stage2.json final selection (same as jobs/d4_eval.txt)
 run_m3.py --task sunspot --algo exact --seed 0 --lr 0.0001 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --holdout_frac 0.2 --outdir results/r2/d4_holdout --tag lr1e-04_ho0.2  # out=results/r2/d4_holdout/sunspot_exact_s0_lr1e-04_ho0.2.json
 run_m3.py --task sunspot --algo exact --seed 1 --lr 0.0001 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --holdout_frac 0.2 --outdir results/r2/d4_holdout --tag lr1e-04_ho0.2  # out=results/r2/d4_holdout/sunspot_exact_s1_lr1e-04_ho0.2.json

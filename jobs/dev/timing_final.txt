@@ -1,5 +1,5 @@
-# A1 timing sweep (shadow off, counters off) + frozen-trajectory driver re-check,
-# all re-measured with the final package-A code on GPU0.
+# Timing sweep (shadow off, counters off) + frozen-trajectory driver re-check,
+# measured on GPU0.
 run_m3.py --task henon --algo skrtrl-r4 --n 64 --seed 0 --steps 500 --log_every 250 --shadow 0 --cert_warmup 999999 --horizon 1 --causal 0 --washout 200 --svd_driver gesvd --outdir results/r2/timing --tag n64_r4_gesvd  # out=results/r2/timing/henon_skrtrl-r4_s0_n64_r4_gesvd.json
 run_m3.py --task henon --algo skrtrl-r4 --n 64 --seed 0 --steps 500 --log_every 250 --shadow 0 --cert_warmup 999999 --horizon 1 --causal 0 --washout 200 --svd_driver auto --outdir results/r2/timing --tag n64_r4_auto  # out=results/r2/timing/henon_skrtrl-r4_s0_n64_r4_auto.json
 run_m3.py --task henon --algo skrtrl-r16 --n 64 --seed 0 --steps 500 --log_every 250 --shadow 0 --cert_warmup 999999 --horizon 1 --causal 0 --washout 200 --svd_driver gesvd --outdir results/r2/timing --tag n64_r16_gesvd  # out=results/r2/timing/henon_skrtrl-r16_s0_n64_r16_gesvd.json

@@ -50,7 +50,8 @@ and, when `../paper/secs` exists next to the repository, that the table bodies m
 manuscript. Layer 2 recomputes the numbers listed in `paper_numbers.json` from the run JSON and
 compares them with the printed values: the 108 of 108 fidelity wins, the win-tie-loss records
 24-18-3 / 26-16-3 / 30-12-3, the certificate counters, the cells of Tables 5, 6, 9 and 11, the
-adaptive mean ranks of Table 8, the 13.5x memory ratio and the §6.3 random-projection cosines.
+adaptive mean ranks of Table 8, the 13.5x memory ratio, the §6.3 random-projection cosines and
+the numbers §6.5, §7, §8 and S6 quote for the washout-free runs.
 Each entry stores its source line in the manuscript and its tolerance.
 
 ## 3. Tables and figures
@@ -72,6 +73,7 @@ otherwise.
 | Fig 4 residual spectrum | `results/r2/d1_spectrum` | `d1_spectrum.txt` | `make_r2_d1_report.py` (`fig_r2_spectrum_stage`, `fig_r2_spectrum_width`) |
 | Table 5 certificate vs clip | `d4_eval` (r=16), `d2_noreset`, `d2_clip`, `rl`, `rl_clip05` | `d4_eval.txt`, `d2_noreset.txt`, `d2_clip.txt`, `rl.txt` | `make_r2_d2_report.py` (`D2_SUMMARY.md` table B), `make_r2_rl_report.py` (`RL_SUMMARY.md` table RL-C) |
 | Table 6 certificate per task | `d4_eval` (r=16), `d2_noreset`, `d2_clip` | as Table 5 | `make_r2_d2_report.py` (`D2_SUMMARY.md` table A) |
+| §6.5, §7, §8, S6 washout-free runs (text) | `results/r2/d2_noreset`, `d4_eval` (r=16) | `d2_noreset.txt`, `d4_eval.txt` | `make_r2_d2_report.py` (`D2_SUMMARY.md` tables D and G) |
 | Table 7 clip cost | `d4_eval` (r=16, seeds 0-4), `d2_clip` | `d4_eval.txt`, `d2_clip.txt` | `make_r2_clipcost_table.py` (`tab_r2_clipcost.tex`) |
 | Table 8 adaptive rank | `results/r2/d3_diag` | `d3_diag.txt` | `make_r2_w1b_tables.py` (`tab_r2_adaptive.tex`) |
 | Fig 5 adaptive diagnosis, sensitivity | `d3_diag`, `d3_oat` | `d3_diag.txt`, `d3_oat.txt`, `d3_oat_extra.txt` | `make_r2_d3_report.py` (`fig_r2_adaptive_diag`, `fig_r2_adaptive_oat`, `D3_SUMMARY.md`) |
@@ -113,7 +115,7 @@ python make_r2_d4_tables.py --outdir results/r2       # Tables 13, S1-S3, S6-S8
 python make_r2_w1b_tables.py                           # Tables 8, S5
 python make_r2_clipcost_table.py                       # Table 7
 python make_r2_d1_report.py                            # Table 4, Fig 4
-python make_r2_d2_report.py                            # Tables 5-6, Fig S3
+python make_r2_d2_report.py                            # Tables 5-6, Fig S3, §6.5 no-reset numbers
 python make_r2_d3_report.py                            # Fig 5
 python make_r2_holdout_report.py                       # Table 9
 python make_r2_d5_report.py                            # Table 11

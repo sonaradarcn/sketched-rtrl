@@ -419,6 +419,49 @@ def compute():
                 a = load("results/m3/%s_skrtrl-%s_s%d.json" % (task, algo, s))
                 xs.append(window_mean(a["records"], a["args"]["steps"], "grad_cos"))
             got["rp_%s_%s" % (task, algo)] = sum(xs) / 3
+    # Section 6.5 / S6 washout-free block (results/r2/d2_noreset, 15 runs); medians are over
+    # the log points, the overflow horizon is ln(largest float) / ln(per-run median rho_bar)
+    nr = [load(f) for f in sorted(glob.glob("results/r2/d2_noreset/*.json"))]
+    med_rho, h32, h64, med_cos, med_e, trend = [], [], [], [], [], []
+    for a in nr:
+        recs, steps = a["records"], a["args"]["steps"]
+        m = statistics.median(r["rho_bar"] for r in recs)
+        med_rho.append(m)
+        h32.append(math.log(3.4028234663852886e38) / math.log(m))
+        h64.append(math.log(sys.float_info.max) / math.log(m))
+        med_cos.append(statistics.median(r["grad_cos"] for r in recs))
+        e = [(r["step"], r["true_E"]) for r in recs if r["step"] > 0]
+        med_e.append(statistics.median(v for _, v in e))
+        first = statistics.median(v for t, v in e if t < 0.2 * steps)
+        last = statistics.median(v for t, v in e if t >= 0.8 * steps)
+        trend.append(last <= 1.1 * first)
+    cs = [a["cert_summary"] for a in nr]
+    got.update(
+        noreset_runs=len(nr),
+        noreset_rhobar_median_mean=sum(med_rho) / len(med_rho),
+        noreset_rhobar_min_logged=min(r["rho_bar"] for a in nr for r in a["records"]),
+        noreset_rhobar_lt1_steps=sum(c["n_rhobar_lt1"] for c in cs),
+        noreset_overflow_fp32_steps=list(msd(h32, 1)),
+        noreset_overflow_fp64_steps=sum(h64) / len(h64),
+        noreset_counted_steps=sum(c["n_steps"] for c in cs),
+        noreset_bound_finite_steps=sum(c["n_bound_finite"] for c in cs),
+        noreset_theorem1_violations=sum(c["n_bound_violation"] for c in cs),
+        noreset_rel_lt1_and_tight_le10=max(max(c["frac_rel_lt1"], c["frac_tight_le10"])
+                                           for c in cs),
+        noreset_cos_median_mean=sum(med_cos) / len(med_cos),
+        noreset_trueE_median_range=[min(med_e), max(med_e)],
+        noreset_trueE_not_rising=sum(trend))
+    # task error with and without resets (Section S6), last 20% of the run, mean over seeds
+    perf = {}
+    for t in CHAOS + REAL:
+        nrs = [window_mean(a["records"], a["args"]["steps"]) for a in nr
+               if a["args"]["task"] == t]
+        rs = [window_mean(load(f)["records"], 20000) for f in r16_eval(t, range(10))]
+        perf[t] = {"noreset": sum(nrs) / len(nrs), "reset": sum(rs) / len(rs)}
+    got["noreset_task_error"] = perf
+    tight = [sum(load(f)["cert_summary"]["frac_tight_le10"] for f in r16_eval(t, range(10))) / 10
+             for t in CHAOS + REAL]
+    got["reset_tight_le10_range"] = [min(tight), max(tight)]
     return got
 
 

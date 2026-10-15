@@ -1,4 +1,4 @@
-# D4 tune real-series jobs, split out 2026-09-11 pending the real-task CPU-stall fix (A13)
+# D4 tune real-series share (sunspot, laser) of jobs/d4_tune.txt, split out 2026-09-11
 run_m3.py --task sunspot --algo exact --seed 100 --lr 0.0001 --steps 6000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_tune --tag lr1e-04  # out=results/r2/d4_tune/sunspot_exact_s100_lr1e-04.json
 run_m3.py --task sunspot --algo snap1 --seed 100 --lr 0.0001 --steps 6000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_tune --tag lr1e-04  # out=results/r2/d4_tune/sunspot_snap1_s100_lr1e-04.json
 run_m3.py --task sunspot --algo skrtrl-r4 --seed 100 --lr 0.0001 --steps 6000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --horizon 1 --causal 1 --washout 200 --outdir results/r2/d4_tune --tag lr1e-04  # out=results/r2/d4_tune/sunspot_skrtrl-r4_s100_lr1e-04.json

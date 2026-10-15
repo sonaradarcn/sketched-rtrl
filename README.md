@@ -12,7 +12,7 @@ SnAp-1 (r = 0) and exact RTRL (r = n). The discarded mass of each truncation fee
 Every number in the paper was produced with the implementation at commit `109e698`. This release
 (tag `v1.0-neurocomputing`) adds the result records, the launch manifests, the reproduction guide
 and a release check; `git diff 109e698 -- skrtrl/ run_*.py` shows comments, docstrings, help text
-and two error messages only.
+and error-message text only.
 
 Table and figure numbers below are those of the final manuscript (main paper Tables 1-14 and
 Figs 1-6, supplement Tables S1-S10 and Figs S1-S9). [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)

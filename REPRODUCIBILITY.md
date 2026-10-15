@@ -7,7 +7,7 @@ the supplement.
 Every number in the paper was produced with the implementation at commit `109e698`. This release
 (tag `v1.0-neurocomputing`) adds the result records, the launch manifests, this guide and the
 release check. It leaves the implementation unchanged: `git diff 109e698 -- skrtrl/ run_*.py`
-shows comments, docstrings, help text and two error messages only.
+shows comments, docstrings, help text and error-message text only.
 
 All commands run from the repository root. The manuscript cites paths as `code/...`; here the
 repository is the root, so `code/results/r2/` is `results/r2/`.

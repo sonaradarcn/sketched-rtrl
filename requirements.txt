@@ -1,6 +1,8 @@
-# Versions that regenerate every report, table and figure of this release exactly
-# (the second-campaign environment; REPRODUCIBILITY.md, section 1, lists the versions per batch).
-# The first-campaign runs used torch 2.3.0 + CUDA 12.1, numpy 1.26.4 and matplotlib 3.9.0.
+# With these versions the reports and table fragments of this release regenerate from the
+# released JSON identically (timestamp lines aside), every figure is drawn and check_release.py
+# passes. They are the second-campaign versions. Re-running training also needs the CUDA build
+# below and is not bit-reproducible on a GPU; REPRODUCIBILITY.md, section 1, lists the versions
+# per batch (the first-campaign runs used torch 2.3.0 + CUDA 12.1, numpy 1.26.4, matplotlib 3.9.0).
 #
 #   pip install -r requirements.txt
 #   pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124   # CUDA build

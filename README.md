@@ -25,23 +25,54 @@ every block.
 pip install -r requirements.txt
 ```
 
-Python 3.10 or later. A CUDA GPU is needed to train; checking the release and drawing every table
-and figure runs on CPU. The paper's runs used PyTorch 2.3.0 (first campaign) and PyTorch 2.6.0 with
-CUDA 12.4 (second campaign); REPRODUCIBILITY.md, section 1, lists the versions per batch.
+Python 3.10 or later. Two uses of the release need different things.
+
+- Regenerating the reports, table fragments and figures from the released JSON, and running
+  `check_release.py`, needs only `requirements.txt` and a CPU. With those versions the reports
+  and fragments come out identical to the committed copies, apart from timestamp lines.
+- Re-running training needs a CUDA GPU, the same code and a stated environment. The paper's runs
+  used PyTorch 2.3.0 + CUDA 12.1 (first campaign) and PyTorch 2.6.0 + CUDA 12.4 (second campaign;
+  five runs under 2.5.1); REPRODUCIBILITY.md, section 1, lists the versions per batch. GPU training
+  is not bit-reproducible, even on the same card and library, so a re-run agrees with the
+  released record only up to floating-point nondeterminism, and the agreement to expect is within
+  the seed-to-seed spread of the block, not digit for digit.
 
 ## Checking the release
 
 ```bash
 python -m pytest tests -q --import-mode=importlib    # 16 tests, about a minute on CPU
-python check_release.py                              # regenerates every report, recomputes the headline numbers
+python check_release.py                              # about two minutes on CPU, no GPU
 ```
 
 The tests cover exact RTRL against autograd BPTT, SK-RTRL at r = n against exact RTRL, the
 Lemma-1 inequality on a small float64 problem, the amortised kernel against the released one, the
-GRU/LSTM Jacobians and the SVD fallback chain. `check_release.py` re-runs every report and table
-generator into `results/_check/`, compares the output with the committed copies, and recomputes
-the counts and table cells listed in `paper_numbers.json` from the run JSON. It fails on a missing
-input, a skipped figure or a mismatch.
+GRU/LSTM Jacobians and the SVD fallback chain.
+
+`check_release.py` covers part of the paper, not every table and figure. Exactly:
+
+- Layer 1 re-runs 15 generator commands on the released trees and compares 16 reports and 8 table
+  fragments line by line with the committed copies (Tables 7, 8, 13, S1-S3, S5-S8 as fragments;
+  the reports behind Tables 4, 5, 6, 9, 11, S9 and S10). It checks that the 17 figure files of
+  Figs 3-6 and S2-S9 are drawn, but not what they show.
+- When the manuscript sources sit next to the repository (`../paper/secs`), layer 1 also compares
+  the fragment bodies, the rows of Table 7 and the 18 cells of Table S10 with the manuscript.
+  Without them it prints a `SKIP` line and does not compare.
+- The manifest layer checks every launch line in `jobs/*.txt` against the record it names (below).
+- Layer 2 recomputes the numbers listed in `paper_numbers.json` from the run JSON: the cells of
+  Tables 5, 6, 9 and 11, the mean ranks of Table 8, and headline counts quoted in the text.
+  `paper_numbers.json` is a copy of the printed values, transcribed by hand, with a tolerance per
+  entry; it is not read from the PDF, so a change to a printed number has to be made there too.
+- Not checked by the script: Tables 4 and S9 (typeset by hand from the reports), Table 10 (read
+  from `results/revise_timing/*.json`), Table 12 (the protocol table), the analytic and notation
+  Tables 1-3, 14 and S4, and the hand-drawn Figs 1, 2 and S1. REPRODUCIBILITY.md, section 2, says
+  how each was checked by hand.
+
+The last line of the output counts the checks that passed, were skipped and failed; the check
+fails on a missing input, a skipped figure or a mismatch.
+
+Checked on a fresh clone: [`docs/acceptance_v1.0.md`](docs/acceptance_v1.0.md) records the
+installation, the tests, the release check, the figures, a GPU re-run of the worked example below
+and a dry run of its manifest, with commands, return codes and times.
 
 ## Layout
 
@@ -114,6 +145,19 @@ First campaign: `m3` (202 runs; Fig 6, §6.3), `scale` and `scale256` (23, 24; F
 
 ## Re-running an experiment
 
+Commands come from three sources, and the guide labels each.
+
+- Second campaign (13 result trees, 2,672 runs): per-run launch manifests in `jobs/`, one command
+  per line, each naming its output file. `check_release.py` checks every flag of every line
+  against the `args` stored in that file.
+- First campaign, for the blocks the paper still reports (Table 10, Fig 6, Figs S2, S4, S5,
+  S6 left, S8, Table S10 and Fig S9, and runs cited in the text): the commands are in
+  `docs/legacy_round1.md`, with their known run conditions. These are the loops we ran; no
+  per-run manifest was kept.
+- The §4.3 kernel benchmark: its argument lists were not saved. The commands in
+  `docs/legacy_round1.md` were reconstructed from the fields recorded in the result files and are
+  marked as reconstructed.
+
 Each line of a manifest in `jobs/` is one run. For example, the first SK-RTRL r=16 run of the
 estimator comparison:
 
@@ -126,7 +170,7 @@ For another run, take its line from the manifest and change `results/r2/` to a n
 runners skip a run whose output file already exists. REPRODUCIBILITY.md gives the loop that runs a
 whole manifest, the learning-rate tuning chain (stage-1 grid, boundary extensions, stage 2,
 evaluation on seeds 0-9 with tuning seeds 100-101 kept apart), and the steps, seeds, clip, cell,
-width and machine of every block. First-campaign commands are in `docs/legacy_round1.md`.
+width and machine of every block.
 
 ## The certificate in the code
 

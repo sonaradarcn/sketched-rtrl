@@ -18,6 +18,7 @@ results/*
 !results/cor3_timing.json
 !results/m1_spectrum_*.json
 !results/TIMESERIES_TABLES.md
+!results/REPORT_m5iso.md
 # Table fragments written by the generators (results/figures/ and results/_check/ stay ignored)
 !results/tables/
 

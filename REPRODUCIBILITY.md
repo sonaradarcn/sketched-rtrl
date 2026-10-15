@@ -12,6 +12,21 @@ shows comments, docstrings, help text and error-message text only.
 All commands run from the repository root. The manuscript cites paths as `code/...`; here the
 repository is the root, so `code/results/r2/` is `results/r2/`.
 
+Commands come from three sources, labelled throughout this guide:
+
+- **Manifest.** The second-campaign blocks (the 13 trees of section 5, 2,672 runs) have per-run
+  launch manifests in `jobs/`: one command per line, each annotated with its output file.
+  `check_release.py` compares every flag of every line with the `args` stored in that file
+  (section 2).
+- **Legacy.** The first-campaign blocks the paper still reports (Table 10, Fig 6, Figs S2, S4, S5,
+  S6 left, S8, Table S10 and Fig S9, and the runs cited in §4.2, §6.3, §6.6, §7.4 and S9.3) have
+  their commands in `docs/legacy_round1.md`, with their known run conditions. These are the loops
+  we ran; no per-run manifest was kept.
+- **Reconstructed.** The argument lists of the §4.3 kernel benchmark were not saved. Its commands
+  in `docs/legacy_round1.md` were rebuilt from the fields recorded in the result files and are
+  marked as reconstructed. (The second round of boundary extensions, section 4, step 3, is a
+  manifest rebuilt the same way, and is checked flag by flag like the others.)
+
 ## 1. Environments
 
 The runs come from two campaigns and one re-measurement.
@@ -31,28 +46,118 @@ runs); the rented node's PyTorch version is in the launch log. Which machine ran
 from the per-job queue logs, which are not part of the release. Every second-campaign run peaks
 below 4.3 GB of GPU memory.
 
-`requirements.txt` pins the versions that regenerate this release exactly (the second-campaign
-environment, with SciPy 1.15.3 and Matplotlib 3.10.9 for the reports and figures). Install the
-CUDA build of PyTorch with `pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124`.
+Three things can be reproduced, and they need different things.
+
+1. **Reports, tables and figures from the released JSON.** `requirements.txt` (the second-campaign
+   versions, with SciPy 1.15.3 and Matplotlib 3.10.9) is enough, on a CPU. With it the generators
+   rewrite the committed reports and table fragments identically, apart from timestamp lines, and
+   `check_release.py` passes. This is what the release guarantees.
+2. **Re-running training.** This needs a CUDA GPU, the same code and a stated environment:
+   section 1 above, per batch. Install the CUDA build of PyTorch with
+   `pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124`. GPU training is
+   not bit-reproducible: the runners do not switch on PyTorch's deterministic algorithms, the
+   order of floating-point reductions on the GPU can change from run to run, even on the same
+   card and library, and last-bit differences grow over 20,000 steps of a recurrent network.
+3. **Agreement of a re-run with the released record.** Expect agreement within the seed-to-seed
+   spread of the block, not digit for digit. `docs/acceptance_v1.0.md` shows one such re-run and
+   the size of the difference.
 
 ## 2. Check the release
 
 ```bash
-python check_release.py                                  # about one minute, no GPU
+python check_release.py                                  # about two minutes, no GPU
 python -m pytest tests -q --import-mode=importlib       # 16 tests, about one minute on CPU
 ```
 
-`check_release.py` has two layers. Layer 1 re-runs every report and table generator on the released
-trees into `results/_check/` and compares the output with the committed reports in `results/r2/`
-and table fragments in `results/tables/`, ignoring timestamp lines and tex comments. It also checks
-that every input tree is present with its released run count, that no generator skips a figure,
-and, when `../paper/secs` exists next to the repository, that the table bodies match the
-manuscript. Layer 2 recomputes the numbers listed in `paper_numbers.json` from the run JSON and
-compares them with the printed values: the 108 of 108 fidelity wins, the win-tie-loss records
-24-18-3 / 26-16-3 / 30-12-3, the certificate counters, the cells of Tables 5, 6, 9 and 11, the
-adaptive mean ranks of Table 8, the 13.5x memory ratio, the §6.3 random-projection cosines and
-the numbers §6.5, §7, §8 and S6 quote for the washout-free runs.
-Each entry stores its source line in the manuscript and its tolerance.
+`check_release.py` covers part of the paper, not every table and figure. This section lists what it
+compares, what it only draws, and what it does not cover. Each output line starts with `ok`, `SKIP`
+or `FAIL`, and the last line counts them (`check_release: N ok, M skipped, K failed`). The check
+exits non-zero on any `FAIL`; a `SKIP` is a step that was not run and is reported as such.
+`--layer 1|m|2` runs one layer.
+
+**Inputs.** The 24 input trees must be present with their released run counts (`TREES` in the
+script), together with the two selection records and the four pilot-spectrum files.
+
+**Layer 1: regenerate and compare.** 15 generator commands run on the released trees, writing into
+`results/_check/`. Their output is compared line by line with the committed copies, ignoring
+timestamp lines and tex comment lines:
+
+| Compared with the committed copy | Float |
+|---|---|
+| `results/r2/D4_SELECT_stage1.{md,json}`, `D4_SELECT_stage2.{md,json}` | Table 13 (selection) |
+| `results/r2/D4_TABLES.md`, `D4_STATS.md`, `D4_STATS.json` | Tables 13, S1-S3, S6-S8 |
+| `results/tables/tab_r2_{lr,stats,fidelity,timeseries,realts}.tex` | Tables 13, S1-S3, S6, S7, S8 |
+| `results/tables/tab_r2_{adaptive,tightness}.tex` | Tables 8, S5 |
+| `results/tables/tab_r2_clipcost.tex` | Table 7 |
+| `results/r2/d1_spectrum/D1_SUMMARY.md` | Table 4 |
+| `results/r2/D2_SUMMARY.md`, `RL_SUMMARY.md` | Tables 5, 6; §6.5 washout-free numbers |
+| `results/r2/D3_SUMMARY.md` | §6.6, S6 |
+| `results/r2/HOLDOUT_SUMMARY.md` | Table 9 |
+| `results/r2/D5_SUMMARY.md` | Table 11 |
+| `results/r2/RL_SPECTRUM_SUMMARY.md` | Table S9 |
+| `results/r2/E4B_SUMMARY.md` | §6.2 common-trajectory control |
+| `results/REPORT_m5iso.md` (`make_m5_report.py`) | Table S10 |
+
+That is 16 reports and 8 table fragments. A generator that exits with an error or prints a `SKIP`
+line for a figure fails the check.
+
+**Figures: drawn, not compared.** The 17 figure files of Figs 3, 4, 5, 6 and S2-S9
+(`fig_fidelity_bars`, `fig_rinterp_rotation`, `fig_r2_spectrum_stage`, `fig_r2_spectrum_width`,
+`fig_r2_adaptive_diag`, `fig_r2_adaptive_oat`, `fig_scaling`, `fig_cert_c2sweep`,
+`fig_r2_cert_frac_vs_clip`, `fig_r2_cert_cdf`, `fig_adaptive_trajectory`, `fig_pilot_residual`,
+`fig_horizon_nmse`, `fig_fidelity_vs_error`, `fig_r2_spectrum_rl`, `fig_memory_time_pareto`,
+`fig_rl_curves`) must be written. The check does not compare curves, panels or pixels with the
+PDFs in the manuscript. What ties a figure to its data is that it is drawn from the same trees
+whose reports and table cells are compared.
+
+**Against the manuscript, when `../paper/secs` exists.** `compare_with_paper()` runs only when the
+manuscript sources sit next to the repository, as in our working copy. It compares the bodies of
+the 7 fragments the manuscript inputs (Tables 8, 13, S1-S3, S5-S8), the rows of Table 7 in
+`secs/6_experiments.tex`, and the 18 success-rate cells of Table S10 in `secs/S8_scaling_rl.tex`
+(recomputed from `results/m5iso`). In a clone without the manuscript it prints
+
+```
+  SKIP ../paper/secs not found next to the repository: table fragments, Table 7 rows and Table S10 NOT compared with the manuscript
+```
+
+and counts one skipped check. It reads the LaTeX sources, not the submitted PDFs.
+
+**Manifest layer.** For every command line of every manifest in `jobs/` (not `jobs/shards/` or
+`jobs/dev/`), it loads the run file named by the line's `# out=` annotation and compares every flag
+on the line (`--task`, `--algo`, `--seed`, `--lr`, `--steps`, `--n`, `--batch`, `--clip`, `--cell`,
+`--svd_driver`, `--tbptt_window`, `--env_len`, `--outdir`, `--tag` and the rest) with the `args`
+stored in the file. It also checks that no file is named by two lines, that every run file of the
+13 second-campaign trees is named by a line, that `d4_eval.txt` covers exactly 81
+(task, estimator) pairs x seeds 0-9, that seeds 100-101 occur only in `d4_tune` and `d4_stage2`
+and those trees hold no other seed, and that `make_r2_d4_select.py emit` re-creates
+`jobs/d4_stage2.txt` and `jobs/d4_eval.txt` line for line from the committed selection records.
+On this release: 18 manifests, 2,672 lines, 2,672 records, no mismatch.
+
+**Layer 2: printed numbers.** It recomputes from the run JSON the numbers listed in
+`paper_numbers.json` and compares them with the values stored there, within the tolerance stored
+there: the 108 of 108 fidelity wins, the win-tie-loss records 24-18-3 / 26-16-3 / 30-12-3, the
+certificate counters, the 93 Lemma-1 failures, the cells of Tables 5, 6, 9 and 11, the adaptive
+mean ranks of Table 8, the 13.5x memory ratio, the §6.3 random-projection cosines and the numbers
+§6.5, §7, §8 and S6 quote for the washout-free runs. `paper_numbers.json` is a copy of the values
+the manuscript prints, transcribed by hand; each entry stores its source line. It is not extracted
+from the PDF, so a change to a printed number has to be mirrored in it, or layer 2 compares the
+records with the old value.
+
+**Not covered by the script, and how each was checked by hand.**
+
+| Float | Why not automatic | Hand check (2026-10-15) |
+|---|---|---|
+| Table 4 residual spectrum, Table S9 T-maze spectrum | typeset by hand from `D1_SUMMARY.md` and `RL_SPECTRUM_SUMMARY.md`, which layer 1 regenerates | all 88 cells compared with the reports: 82 equal at the printed precision; 6 sit on a rounding boundary of the reports' four-decimal display and agree within one unit of the last printed digit |
+| Table 10 factored vs textbook exact | values read from `results/revise_timing/*.json`, no generator | time, s.d. and memory of the 9 rows compared with the JSON rows (three cells rounded at the last digit, section 10); throughput recomputed as 1000 / time; FLOPs are analytic, factored = 4 x textbook in every row |
+| Table 12 protocol | a protocol summary, not a computed table | rows compared with the manifests and records (section 5); the manifest layer checks every launched value, but does not read Table 12 |
+| Tables 1, 2, 3, S4 | analytic or notation, no data | none needed |
+| Table 14 gated-cell constants | analytic | state size, per-unit and total parameter counts checked against `skrtrl/cells_gated.py` at n = 64, m = 1 |
+| Figs 1, 2, S1 | hand-drawn diagrams, no data | none needed |
+
+Checked on a fresh clone: `docs/acceptance_v1.0.md` records a clone of this release, the
+installation, the tests, `check_release.py`, the figures, a GPU re-run of the worked example of
+section 5 compared with its released record, and a dry run of `jobs/d4_eval.txt`, with commands,
+return codes and times.
 
 ## 3. Tables and figures
 
@@ -165,6 +270,8 @@ rates from the same `D4_SELECT_stage2.json`.
 
 ## 5. Second-campaign blocks (rows of Table 12)
 
+Every block in this section has a per-run launch manifest in `jobs/`.
+
 All blocks use a tanh cell (except the gated block), n=64, batch 8, Adam, `--svd_driver auto` and
 no spectral clip unless the row says otherwise. "Ran on": W0/W1 = workstation GPU0/GPU1, L = Linux
 machine, A = rented node; counts are runs.
@@ -214,11 +321,17 @@ older than that description).
 
 ## 6. First-campaign blocks
 
-`docs/legacy_round1.md` lists the commands for the floats still drawn from first-campaign trees
-(Table 10, Table S10, Figs 6, S2, S4, S5, S6 left, S8, S9) and for the runs cited in the text
-(§4.2 width sweep, §4.3 kernel benchmark, §6.3 random-projection control, §6.6 control-signal
-ablation, §7.4 and S9.3 rank x clip and normalisation ablations). These runs used
-`--svd_driver gesvd`, the default of `run_m3.py`, `run_m5.py` and `run_adaptive.py`.
+These blocks have no per-run manifest. `docs/legacy_round1.md` lists the commands, with their
+known run conditions, for the floats still drawn from first-campaign trees (Table 10, Table S10,
+Figs 6, S2, S4, S5, S6 left, S8, S9) and for the runs cited in the text (§4.2 width sweep, §4.3
+kernel benchmark, §6.3 random-projection control, §6.6 control-signal ablation, §7.4 and S9.3
+rank x clip and normalisation ablations). Its index table marks each block as an original run, a
+re-measurement or a reconstruction; only the §4.3 kernel benchmark is reconstructed. These runs
+used `--svd_driver gesvd`, the default of `run_m3.py`, `run_m5.py` and `run_adaptive.py`.
+
+One first-campaign run is missing: `results/scale` has no rotation, SK-RTRL r=4, seed 0 run at
+n=128, so the r=4 point of Fig 6 (left) at n=128 rests on seed 1 alone. No other legacy tree used
+by a float lacks a run of its loop.
 
 ## 7. The certificate counts
 
@@ -275,5 +388,7 @@ first submission and are not used by the final paper.
 - The §6.3 random-projection runs are seeds 0-2 (`results/m3/*skrtrl-rp*`).
 - Table 10 rounds three cells at the last digit (n=192 factored 133.45 ms printed 133.5; s.d.
   0.0075 and 0.0135 printed 0.008 and 0.014).
-- Re-running a training block on another card or library version gives the same numbers only up
-  to floating-point nondeterminism; the release check compares the released records, not new runs.
+- Re-running a training block gives the same numbers only up to floating-point nondeterminism,
+  on the same card and library as on another; the release check compares the released records,
+  not new runs. Section 1 states what to expect from a re-run, and `docs/acceptance_v1.0.md`
+  shows one.

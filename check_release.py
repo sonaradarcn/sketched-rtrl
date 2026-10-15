@@ -1,19 +1,34 @@
-"""Check the released result records against the reports, the table fragments and the paper.
+"""Check the released result records against the manifests, the reports, the table fragments
+and the paper.
 
-Layer 1 re-runs every report and table generator on the released result trees, writing into
-results/_check/, and compares the output with the committed files: the reports under
-results/r2/, D4_STATS.json, the selection records and the table fragments under results/tables/.
-Lines that carry a timestamp are ignored, and so are the comment lines of a .tex fragment. When the
-manuscript sources sit next to the repository (../paper/secs), the table bodies are compared with
-them as well. make_paper_figures.py and the four figure-drawing reports must write every figure.
+Layer 1 re-runs the report and table generators listed in GENERATORS on the released result
+trees, writing into results/_check/, and compares their output line by line with the committed
+files: the reports under results/r2/, D4_STATS.json, the two selection records, the T-maze report
+results/REPORT_m5iso.md and the table fragments under results/tables/. Lines that carry a
+timestamp are ignored, and so are the comment lines of a .tex fragment. Figures are only drawn:
+the check confirms that each listed figure file is written, not what it shows. When the
+manuscript sources sit next to the repository (../paper/secs), the bodies of the table fragments,
+the rows of Table 7 and the cells of Table S10 are compared with them as well; otherwise that step
+prints a SKIP line and is counted as skipped.
+
+The manifest layer parses every command line of every launch manifest in jobs/ (not jobs/shards/
+or jobs/dev/), loads the run record named by its "# out=" annotation and compares every flag on
+the line with the record's args. It also checks that every run file of the thirteen
+second-campaign trees is named by exactly one manifest line, that the evaluation block covers
+exactly 81 (task, estimator) pairs x seeds 0-9, that the tuning seeds 100-101 appear only in the
+tuning trees, and that the stage-2 and evaluation manifests are re-emitted unchanged from the
+committed selection records.
 
 Layer 2 recomputes the headline numbers listed in paper_numbers.json directly from the run JSON
-and compares them with the values printed in the paper, within the tolerance stored there.
+and compares them with the values stored there, within the tolerance stored there.
+paper_numbers.json is a hand-transcribed copy of the values the manuscript prints: it is not
+extracted from the PDF, so an edit to a printed number has to be mirrored in it.
 
 A missing input tree, a run count that differs from the released one, a generator that fails or
-skips a figure, and any mismatch all make the check fail.
+skips a figure, and any mismatch all make the check fail. The last line counts the checks that
+passed (ok), were skipped (SKIP) and failed (FAIL).
 
-Usage:  python check_release.py [--layer 1|2|all] [--keep]
+Usage:  python check_release.py [--layer 1|m|2|all] [--keep]
 """
 import argparse
 import glob
@@ -87,6 +102,8 @@ GENERATORS = [
      ["fig_r2_spectrum_rl"]),
     (["make_r2_e4b_report.py", "--out", C + "/E4B_SUMMARY.md"],
      [(C + "/E4B_SUMMARY.md", "results/r2/E4B_SUMMARY.md")], []),
+    (["make_m5_report.py", "results/m5iso", "--out", C + "/REPORT_m5iso.md"],
+     [(C + "/REPORT_m5iso.md", "results/REPORT_m5iso.md")], []),
     (["make_paper_figures.py", "--out", C + "/figures"], [],
      ["fig_fidelity_bars", "fig_rinterp_rotation", "fig_scaling", "fig_cert_c2sweep",
       "fig_adaptive_trajectory", "fig_pilot_residual", "fig_horizon_nmse",
@@ -95,6 +112,8 @@ GENERATORS = [
 
 TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}")
 FAILS = []
+COUNT = {"ok": 0, "skipped": 0}
+ENV = dict(os.environ, PYTHONIOENCODING="utf-8")
 
 
 def fail(msg):
@@ -103,7 +122,13 @@ def fail(msg):
 
 
 def ok(msg):
+    COUNT["ok"] += 1
     print("  ok   " + msg)
+
+
+def skip(msg):
+    COUNT["skipped"] += 1
+    print("  SKIP " + msg)
 
 
 # --------------------------------------------------------------------------------------
@@ -192,10 +217,11 @@ def tex_bodies(path):
 
 def compare_with_paper():
     secs = os.path.join(HERE, "..", "paper", "secs")
+    print("manuscript tables against ../paper/secs")
     if not os.path.isdir(secs):
-        print("paper sources not found next to the repository; table bodies not compared with them")
+        skip("../paper/secs not found next to the repository: table fragments, Table 7 rows and "
+             "Table S10 NOT compared with the manuscript")
         return
-    print("table bodies against ../paper/secs")
     for g in sorted(glob.glob(CHECK + "/tables/tab_r2_*.tex")):
         name = os.path.basename(g)
         p = os.path.join(secs, name)
@@ -216,6 +242,41 @@ def compare_with_paper():
             ok("%s body matches the paper" % name)
         else:
             fail("%s body differs from ../paper/secs/%s" % (name, name))
+    compare_table_s10(secs)
+
+
+M5_COLUMNS = ["rtu", "exact", "lru", "skrtrl-r16", "snap1", "tbptt"]   # column order of Table S10
+
+
+def compare_table_s10(secs):
+    """Table S10 (secs/S8_scaling_rl.tex, tab:rl): success rate, mean over seeds, 2 decimals."""
+    sys.path.insert(0, HERE)
+    from make_m5_report import tail_mean
+    succ = {}
+    for f in glob.glob("results/m5iso/*.json"):
+        d = load(f)
+        recs = d["records"]
+        key = "succ" if any("succ" in r for r in recs) else "success"
+        succ.setdefault((d["args"]["env_len"], d["args"]["algo"]), []).append(tail_mean(recs, key))
+    src = open(os.path.join(secs, "S8_scaling_rl.tex"), encoding="utf-8").read()
+    m = re.search(r"\\label\{tab:rl\}(.*?)\\bottomrule", src, re.S)
+    rows = [l for l in (m.group(1) if m else "").split("\n") if "&" in l and "Corridor" not in l]
+    bad, n = [], 0
+    for row in rows:
+        cells = [re.sub(r"\\textbf\{([^}]*)\}", r"\1", c).replace("\\\\", "").strip()
+                 for c in row.split("&")]
+        L = int(cells[0])
+        for algo, cell in zip(M5_COLUMNS, cells[1:]):
+            n += 1
+            v = succ.get((L, algo))
+            got = "%.2f" % (sum(v) / len(v)) if v else None
+            if got != cell:
+                bad.append("corridor %d %s: paper %s, recomputed %s" % (L, algo, cell, got))
+    if n == 18 and not bad:
+        ok("Table S10: 18 success-rate cells match secs/S8_scaling_rl.tex")
+    else:
+        fail("Table S10 differs from secs/S8_scaling_rl.tex (%d cells read): %s"
+             % (n, "; ".join(bad[:4])))
 
 
 def layer1():
@@ -228,7 +289,7 @@ def layer1():
     for cmd, pairs, figs in GENERATORS:
         print("$ python " + " ".join(cmd))
         r = subprocess.run([PY] + cmd, cwd=HERE, capture_output=True, text=True,
-                           encoding="utf-8", errors="replace")
+                           encoding="utf-8", errors="replace", env=ENV)
         log = (r.stdout or "") + (r.stderr or "")
         with open(os.path.join(CHECK, "log_%s.txt" % cmd[0].replace(".py", "")), "a",
                   encoding="utf-8") as fh:
@@ -244,8 +305,148 @@ def layer1():
         for f in figs:
             pdf = os.path.join(CHECK, "figures", f + ".pdf")
             (ok if os.path.isfile(pdf) else fail)("figure %s %s" % (
-                f, "written" if os.path.isfile(pdf) else "not written"))
+                f, "drawn (file written; its content is not compared)" if os.path.isfile(pdf)
+                else "not written"))
     compare_with_paper()
+
+
+# --------------------------------------------------------------------------------------
+# manifest layer: every launch line against its run record
+# --------------------------------------------------------------------------------------
+R2_TREES = [d for d in TREES if d.startswith("results/r2/")]
+TUNING_TREES = ("results/r2/d4_tune", "results/r2/d4_stage2")
+TUNING_SEEDS = {100, 101}
+
+
+def parse_manifest_line(line):
+    """'[python] run_x.py --flag value ...  # out=path' -> (script, {flag: value}, out)."""
+    cmd, _, out = line.partition("# out=")
+    toks = cmd.split()
+    if toks and toks[0] == "python":
+        toks = toks[1:]
+    flags, i = {}, 1
+    while i < len(toks):
+        if not toks[i].startswith("--") or i + 1 >= len(toks):
+            raise ValueError("cannot parse %r" % toks[i])
+        flags[toks[i][2:]] = toks[i + 1]
+        i += 2
+    return toks[0], flags, out.strip()
+
+
+def same_value(text, value):
+    if isinstance(value, bool):
+        return text in (str(value), str(int(value)))
+    if isinstance(value, (int, float)):
+        try:
+            return float(text) == float(value)
+        except ValueError:
+            return False
+    return text == str(value)
+
+
+def manifest_lines(path):
+    with open(path, encoding="utf-8") as fh:
+        for i, line in enumerate(fh, 1):
+            line = line.strip()
+            if line and not line.startswith("#"):
+                yield i, line
+
+
+def check_manifests():
+    print("== manifests: every launch line in jobs/*.txt against its run record")
+    referenced = {}
+    eval_cover = {}
+    for m in sorted(glob.glob("jobs/*.txt")):
+        name = os.path.basename(m)
+        lines = bad = 0
+        for i, line in manifest_lines(m):
+            lines += 1
+            try:
+                script, flags, out = parse_manifest_line(line)
+            except ValueError as e:
+                fail("%s:%d %s" % (name, i, e))
+                bad += 1
+                continue
+            if not out:
+                fail("%s:%d has no '# out=' annotation" % (name, i))
+                bad += 1
+                continue
+            referenced.setdefault(os.path.normpath(out), []).append("%s:%d" % (name, i))
+            if not os.path.isfile(out):
+                fail("%s:%d: %s does not exist" % (name, i, out))
+                bad += 1
+                continue
+            args = load(out)["args"]
+            for k, v in flags.items():
+                if k not in args:
+                    fail("%s:%d: --%s is not recorded in %s" % (name, i, k, out))
+                    bad += 1
+                elif not same_value(v, args[k]):
+                    fail("%s:%d: --%s %s, but %s records %r" % (name, i, k, v, out, args[k]))
+                    bad += 1
+            if name == "d4_eval.txt":
+                eval_cover.setdefault((args.get("task"), args.get("algo")), []).append(
+                    args.get("seed"))
+        if lines == 0:
+            ok("%s: no command lines (an empty emission, kept for the record)" % name)
+        elif not bad:
+            ok("%s: %d lines, every flag matches its record" % (name, lines))
+    dup = {k: v for k, v in referenced.items() if len(v) > 1}
+    if dup:
+        k = sorted(dup)[0]
+        fail("%d records are named by more than one manifest line, e.g. %s (%s)"
+             % (len(dup), k, ", ".join(dup[k])))
+    else:
+        ok("no record is named by two manifest lines (%d lines, %d records)"
+           % (sum(len(v) for v in referenced.values()), len(referenced)))
+    files = [os.path.normpath(f) for d in R2_TREES for f in glob.glob(os.path.join(d, "*.json"))
+             if not f.endswith(".localpartial.json")]
+    orphans = [f for f in files if f not in referenced]
+    if orphans:
+        fail("%d run files of the second-campaign trees are named by no manifest, e.g. %s"
+             % (len(orphans), orphans[0]))
+    else:
+        ok("every one of the %d run files of the %d second-campaign trees is named by a "
+           "manifest line" % (len(files), len(R2_TREES)))
+    wrong = [k for k, v in eval_cover.items() if sorted(v) != list(range(10))]
+    if len(eval_cover) == 81 and not wrong:
+        ok("d4_eval.txt: 81 (task, estimator) pairs x seeds 0-9, 810 runs")
+    else:
+        fail("d4_eval.txt covers %d pairs; %d pairs without exactly seeds 0-9, e.g. %s"
+             % (len(eval_cover), len(wrong), wrong[:1]))
+    leak, stray = [], []
+    for d in R2_TREES:
+        for f in glob.glob(os.path.join(d, "*.json")):
+            if f.endswith(".localpartial.json"):
+                continue
+            seed = load(f)["args"].get("seed")
+            if d in TUNING_TREES and seed not in TUNING_SEEDS:
+                stray.append(f)
+            elif d not in TUNING_TREES and seed in TUNING_SEEDS:
+                leak.append(f)
+    (fail if leak else ok)("records outside d4_tune/d4_stage2 with tuning seed 100 or 101: %d%s"
+                           % (len(leak), (", e.g. " + leak[0]) if leak else ""))
+    (fail if stray else ok)("records in d4_tune/d4_stage2 with a seed other than 100-101: %d%s"
+                            % (len(stray), (", e.g. " + stray[0]) if stray else ""))
+    # the stage-2 and evaluation manifests are emitted from the committed selection records
+    os.makedirs(CHECK, exist_ok=True)
+    for what, sel, ref in (("stage2", "results/r2/D4_SELECT_stage1.json", "jobs/d4_stage2.txt"),
+                           ("eval", "results/r2/D4_SELECT_stage2.json", "jobs/d4_eval.txt")):
+        out = os.path.join(CHECK, "emit_%s.txt" % what)
+        r = subprocess.run([PY, "make_r2_d4_select.py", "emit", "--what", what, "--sel-json", sel,
+                            "--out", out], cwd=HERE, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", env=ENV)
+        if r.returncode != 0 or not os.path.isfile(out):
+            fail("make_r2_d4_select.py emit --what %s failed:\n%s"
+                 % (what, ((r.stdout or "") + (r.stderr or ""))[-800:]))
+            continue
+        a = [l for _, l in manifest_lines(out)]
+        b = [l for _, l in manifest_lines(ref)]
+        if a == b:
+            ok("%s re-emitted unchanged from %s (%d lines)" % (ref, os.path.basename(sel), len(a)))
+        else:
+            fail("%s differs from the manifest re-emitted from %s (%d vs %d lines)"
+                 % (ref, os.path.basename(sel), len(b), len(a)))
 
 
 # --------------------------------------------------------------------------------------
@@ -512,21 +713,28 @@ def _fmt(x):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--layer", choices=["1", "2", "all"], default="all")
+    ap.add_argument("--layer", choices=["1", "m", "2", "all"], default="all",
+                    help="1 = regenerate and compare, m = manifests against records, "
+                         "2 = headline numbers; all (default) = the three")
     ap.add_argument("--keep", action="store_true", help="keep results/_check after the run")
     args = ap.parse_args()
     os.chdir(HERE)
     if args.layer in ("1", "all"):
         layer1()
+    if args.layer in ("m", "all"):
+        check_manifests()
     if args.layer in ("2", "all"):
         layer2()
     if not args.keep and os.path.isdir(CHECK) and not FAILS:
         shutil.rmtree(CHECK)
     print()
+    summary = "check_release: %d ok, %d skipped, %d failed" % (COUNT["ok"], COUNT["skipped"],
+                                                                 len(FAILS))
     if FAILS:
-        print("check_release: %d problem(s)" % len(FAILS))
+        print(summary)
         sys.exit(1)
-    print("check_release: all checks passed")
+    print(summary + (" -- all checks passed" if not COUNT["skipped"] else
+                     " -- nothing failed; the SKIP lines above were not checked"))
 
 
 if __name__ == "__main__":

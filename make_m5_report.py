@@ -24,7 +24,13 @@ def steps_to(records, key, thr=0.8):
 
 
 def main():
-    d_ = sys.argv[1] if len(sys.argv) > 1 else "results/m5"
+    import argparse
+    ap = argparse.ArgumentParser(description="T-maze report over the runs of one result tree")
+    ap.add_argument("indir", nargs="?", default="results/m5")
+    ap.add_argument("--out", default=None,
+                    help="report path (default results/REPORT_<basename of indir>.md)")
+    cli = ap.parse_args()
+    d_ = cli.indir
     runs = defaultdict(list)
     for f in sorted(glob.glob(f"{d_}/*.json")):
         d = json.load(open(f))
@@ -58,9 +64,9 @@ def main():
         lines.append(f"| {L} | {algo} | {ms([r['ret'] for r in rs])} | "
                      f"{ms([r['succ'] for r in rs])} | {s2t_str} ({len(s2t)}/{len(rs)}) |")
     out = "\n".join(lines) + "\n"
-    os.makedirs("results", exist_ok=True)
-    open(f"results/REPORT_{os.path.basename(d_)}.md", "w", encoding="utf-8",
-         newline="\n").write(out)
+    path = cli.out or f"results/REPORT_{os.path.basename(os.path.normpath(d_))}.md"
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    open(path, "w", encoding="utf-8", newline="\n").write(out)
     print(out)
 
 

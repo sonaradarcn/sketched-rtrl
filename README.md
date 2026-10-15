@@ -225,7 +225,6 @@ covered by it.
 @misc{yi2026skrtrl,
   title  = {Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks},
   author = {Junfei Yi and Yuxiang Wang},
-  year   = {2026},
-  note   = {Neurocomputing, under minor revision}
+  year   = {2026}
 }
 ```

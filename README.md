@@ -1,8 +1,7 @@
 # Sketched RTRL (SK-RTRL)
 
 Code, result records and launch manifests for the paper *Certified Low-Rank Real-Time Recurrent
-Learning for Dense Recurrent Neural Networks* (Junfei Yi and Yuxiang Wang; Neurocomputing, under
-minor revision).
+Learning for Dense Recurrent Neural Networks*.
 
 SK-RTRL keeps the RTRL influence matrix as the exact SnAp-1 block-diagonal trace `S` plus a
 deterministic rank-r sketch `L Rᵀ` of the off-diagonal residual. One rank knob interpolates between

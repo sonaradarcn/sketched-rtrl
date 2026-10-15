@@ -12,7 +12,9 @@ SnAp-1 (r = 0) and exact RTRL (r = n). The discarded mass of each truncation fee
 Every number in the paper was produced with the implementation at commit `109e698`. This release
 (tag `v1.0-neurocomputing`) adds the result records, the launch manifests, the reproduction guide
 and a release check; `git diff 109e698 -- skrtrl/ run_*.py` shows comments, docstrings, help text
-and error-message text only.
+and error-message text only. The materials cited by the paper are those at tag
+`v1.0-neurocomputing` (commit `583dc9f`); the second acceptance section of `docs/acceptance_v1.0.md` and the helper scripts under `tools/`
+were added on `main` afterwards, without changing code, data or the release check.
 
 Table and figure numbers below are those of the final manuscript (main paper Tables 1-14 and
 Figs 1-6, supplement Tables S1-S10 and Figs S1-S9). [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md)
@@ -72,7 +74,10 @@ fails on a missing input, a skipped figure or a mismatch.
 
 Checked on a fresh clone: [`docs/acceptance_v1.0.md`](docs/acceptance_v1.0.md) records the
 installation, the tests, the release check, the figures, a GPU re-run of the worked example below
-and a dry run of its manifest, with commands, return codes and times.
+and a dry run of its manifest, with commands, return codes and times, once at the parent commit of
+the tag and once on a clone checked out at the tag. The re-run at the tag is compared with its released record
+by `python tools/compare_rerun.py` and the manifest by `python tools/dry_run_manifest.py
+jobs/d4_eval.txt`, both run from the repository root.
 
 ## Layout
 

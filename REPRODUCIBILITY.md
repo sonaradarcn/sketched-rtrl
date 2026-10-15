@@ -157,7 +157,11 @@ records with the old value.
 Checked on a fresh clone: `docs/acceptance_v1.0.md` records a clone of this release, the
 installation, the tests, `check_release.py`, the figures, a GPU re-run of the worked example of
 section 5 compared with its released record, and a dry run of `jobs/d4_eval.txt`, with commands,
-return codes and times.
+return codes and times, once at the parent commit of the tag and once on a clone checked out at the
+tag; at the tag, `tools/compare_rerun.py` compares every logged record and every numeric field, and
+`tools/dry_run_manifest.py` does the dry run. The materials cited by the paper are those at tag
+`v1.0-neurocomputing` (commit `583dc9f`); the second acceptance section of
+`docs/acceptance_v1.0.md` and the helper scripts under `tools/` were added on `main` afterwards, without changing code, data or the release check.
 
 ## 3. Tables and figures
 

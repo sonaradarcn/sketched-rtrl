@@ -162,6 +162,9 @@ tag; at the tag, `tools/compare_rerun.py` compares every logged record and every
 `tools/dry_run_manifest.py` does the dry run. The materials cited by the paper are those at tag
 `v1.0-neurocomputing` (commit `583dc9f`); the second acceptance section of
 `docs/acceptance_v1.0.md` and the helper scripts under `tools/` were added on `main` afterwards, without changing code, data or the release check.
+On a clone checked out at the tag, the scripts are copied in with `mkdir -p tools` and
+`git show 8a549fe:tools/<script>.py > tools/<script>.py`, and removed afterwards with `rm -r tools`
+(`git status --short` then prints nothing); the second acceptance section lists these steps.
 
 ## 3. Tables and figures
 

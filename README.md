@@ -77,7 +77,18 @@ installation, the tests, the release check, the figures, a GPU re-run of the wor
 and a dry run of its manifest, with commands, return codes and times, once at the parent commit of
 the tag and once on a clone checked out at the tag. The re-run at the tag is compared with its released record
 by `python tools/compare_rerun.py` and the manifest by `python tools/dry_run_manifest.py
-jobs/d4_eval.txt`, both run from the repository root.
+jobs/d4_eval.txt`, both run from the repository root. The tag does not contain `tools/`; on a
+clone checked out at the tag, copy the scripts in from `main` first and remove them afterwards:
+
+```
+mkdir -p tools
+git show 8a549fe:tools/compare_rerun.py > tools/compare_rerun.py
+git show 8a549fe:tools/dry_run_manifest.py > tools/dry_run_manifest.py
+python tools/compare_rerun.py   # after the GPU re-run of the worked example below
+python tools/dry_run_manifest.py jobs/d4_eval.txt
+rm -r tools
+git status --short       # prints nothing
+```
 
 ## Layout
 

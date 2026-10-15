@@ -127,7 +127,9 @@ first run. A fresh clone of the public repository (`https://github.com/sonaradar
 was made into an empty directory and checked out at the tag; as in the first run, `../paper/secs`
 is absent, so the manuscript comparison of `check_release.py` is skipped. The tag does not contain
 `tools/`, so steps 10 and 11 ran `tools/compare_rerun.py` and `tools/dry_run_manifest.py` as
-committed on `main` together with this section, from the clone root.
+committed on `main` in `8a549fe`, from the clone root. Steps 9a-9c copy the two scripts from that
+commit into the checkout (the clone holds `main`, so `git show` finds it) and steps 12-13 remove them
+and confirm that the checkout is clean again; with them the table can be replayed verbatim (bash).
 
 ### Commands, return codes and wall times
 
@@ -142,8 +144,21 @@ committed on `main` together with this section, from the clone root.
 | 7 | `python check_release.py` | 0 | 80.9 |
 | 8 | `python -m pytest tests -q --import-mode=importlib` | 0 | 52.3 |
 | 9 | `CUDA_VISIBLE_DEVICES=0 python run_m3.py --task adding --algo skrtrl-r16 --seed 0 --lr 0.003 --steps 20000 --n 64 --batch 8 --log_every 250 --shadow 1 --svd_driver auto --outdir results/rerun/d4_eval --tag lr3e-03` | 0 | 936.1 |
+| 9a | `mkdir -p tools` | 0 | - |
+| 9b | `git show 8a549fe:tools/compare_rerun.py > tools/compare_rerun.py` | 0 | - |
+| 9c | `git show 8a549fe:tools/dry_run_manifest.py > tools/dry_run_manifest.py` | 0 | - |
 | 10 | `python tools/compare_rerun.py` | 0 | 0.7 |
 | 11 | `python tools/dry_run_manifest.py jobs/d4_eval.txt` | 0 | 0.4 |
+| 12 | `rm -r tools` | 0 | - |
+| 13 | `git status --short` (prints nothing) | 0 | - |
+
+The 14:21 run did not log how the scripts were brought into the checkout, so the return codes of
+steps 9a-9c, 12 and 13 are those of a replay checked on 2026-10-15 (17:33 UTC+8; same machine,
+Python environment and shell; no wall times taken): a fresh clone checked out at the tag, then
+steps 9a-9c, 11, `python tools/compare_rerun.py --help`, 12 and 13, all returning 0; step 11
+printed the line below and step 13 printed nothing. Step 10 was not repeated, as it needs the
+re-run JSON of step 9 (without it, the script exits 1 with `FileNotFoundError`). The clone was
+deleted afterwards.
 
 ### Results
 

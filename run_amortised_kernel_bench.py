@@ -1,4 +1,4 @@
-"""Revision benchmark: naive (kernel of record) vs amortised-rotation kernel.
+"""Benchmark: naive (released kernel) vs amortised-rotation kernel.
 
 Protocol copied from run_cor3_timing_revise.py:
   * CUDA-event timing, 20 warmup steps, 5 independent repeats -> mean +/- std

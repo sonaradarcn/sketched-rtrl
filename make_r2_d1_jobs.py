@@ -1,14 +1,13 @@
-"""Generate the D1 (residual-spectrum, R3-1) job list for the R2 queue.
+"""Generate the D1 residual-spectrum job list (Table 4, Fig. 4) for the second-round queue.
 
-Coverage (R2_EXPERIMENT_PLAN.md, D1):
+Coverage:
   (a) every non-RL task at n=64, seeds 0-2, 20 000 steps, batch 8
   (b) width sweep on the four diagnostic tasks, n in {256, 512, 128}, seeds 0-2,
       batch 8 (batch 4 at n=512, where the exact shadow needs ~4.2 GB).  The sweep is
       emitted in the order 64 / 256 / 512 / 128 so that the widths that decide the
       "does the required rank grow with n" figure land first and n=128 (the cheapest
       interpolation point) fills in last.
-The T-maze RL spectrum is NOT included here: it needs the shadow + SnAp-1 trace added to
-the RL core first, and is queued separately once that lands.
+The T-maze RL spectrum is not included here; make_r2_rl_jobs.py generates it.
 
 Every line is a complete command and ends with `# out=<json path>` so the queue can do
 exists-skip without importing anything.  This script only writes the list; it launches

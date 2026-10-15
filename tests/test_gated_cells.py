@@ -29,7 +29,7 @@ end-to-end checks that close the loop back to autograd:
 
 float64, CPU only (no CUDA needed).
 Run:
-  D:\Anaconda\envs\multilingual_lora\python.exe code/tests/test_gated_cells.py
+  python code/tests/test_gated_cells.py
 """
 import math
 import os

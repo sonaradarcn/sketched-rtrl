@@ -1,37 +1,37 @@
-"""Generate the RL job list for the R2 queue (plan D1/D2, RL part).
+"""Generate the RL job list for the second-round queue (residual spectrum and certificate).
 
-Grid (fixed after the external plan review)
--------------------------------------------
+Grid
+----
   SK-RTRL r=16 x tmaze{10,20,40} x clip{0.0, 0.5} x seeds{0,1,2}   18 runs
   SnAp-1        x tmaze{10,20,40} x clip 0.0      x seeds{0,1,2}     9 runs
-all with --shadow 1, n=64, batch 16, lr 3e-4 (the archived R1 RL protocol).
-tmaze40 is in on purpose: it is the one corridor where R1 reports no advantage,
-so it cannot be missing from the R2 evidence.
+all with --shadow 1, n=64, batch 16, lr 3e-4 (the archived first-round RL protocol).
+tmaze40 is in on purpose: it is the one corridor where the first round reports no
+advantage, so it cannot be missing from the second-round evidence.
 
 Order = priority, and the queue walks the list in order on every worker (it
 splits by line index modulo the worker count), so a tail that is cut still
 leaves a balanced grid:
-  1. SK-RTRL clip 0.0, corridors 10 / 20 / 40   (the R1 setting: no clipping)
+  1. SK-RTRL clip 0.0, corridors 10 / 20 / 40   (the first-round setting: no clipping)
   2. SK-RTRL clip 0.5, corridors 10 / 20 / 40   (the informative-certificate arm)
   3. SnAp-1  clip 0.0, corridors 10 / 20 / 40   (residual reference, droppable)
 
 Step budgets (--steps_map, basis printed into the job file)
 ----------------------------------------------------------
-From the archived R1 runs in results/m5iso (n=64, batch 16, lr 3e-4):
+From the archived first-round runs in results/m5iso (n=64, batch 16, lr 3e-4):
   tmaze10  60 000 steps: exact reaches success 1.00, SK-RTRL-r16 peaks at 1.00
            by 20k and decays to 0.67 by 60k -- the whole rise-and-decay is inside
            60k, so 60k is the smallest budget that still shows learning.
   tmaze20 100 000 steps: SK-RTRL-r16 goes 0.40 @40k -> 0.76 @60k -> 0.67 @100k,
-           i.e. the transition sits inside 60k but only settles by 100k; R1 used
-           100k, so 100k keeps the D1/D2 numbers comparable to Table 9.
-  tmaze40  60 000 steps (R1 used 150 000): at 150k EVERY estimator is still at
+           i.e. the transition sits inside 60k but only settles by 100k; the first
+           round used 100k, so 100k keeps the numbers comparable to Table S10.
+  tmaze40  60 000 steps (the first round used 150 000): at 150k every estimator is still at
            chance (exact 0.49, SK-RTRL-r16 0.52, SnAp-1 0.49), so no additional
            learning regime exists to capture; 60k characterises the same
            non-learning regime at 40 % of the cost.  Raise it with
-           --steps_map 40:150000 if the campaign wants R1's exact budget.
+           --steps_map 40:150000 for the first round's exact budget.
 
 Line format is the one run_r2_queue.ps1 consumes: a full command line ending in
-`# out=<json path>`, which is authoritative for exists-skip (run_m5.py also skips
+`# out=<json path>`, which is used for exists-skip (run_m5.py also skips
 by itself when the output file exists).  A line may start with the bare .py
 script (--py ""), with "python", or with an explicit interpreter.
 
@@ -43,10 +43,10 @@ script (--py ""), with "python", or with an explicit interpreter.
 This script launches nothing.
 
 NOTE on the queue timeout: run_r2_queue.ps1 defaults to -TimeoutSec 10800 (3 h).
-With --svd_driver auto (the default here, as in every other R2 job file; the
-driver-equivalence gate is A1's) the longest job is ~2.3 h, which fits but has
-little margin under GPU contention -- pass -TimeoutSec 18000.  With
---svd_driver gesvd the SK-RTRL jobs take 2.5x longer and WILL time out.
+With --svd_driver auto (the default here, as in every other second-round job file)
+the longest job is ~2.3 h, which fits but has little margin under GPU contention;
+pass -TimeoutSec 18000.  With --svd_driver gesvd the SK-RTRL jobs take 2.5x longer
+and will time out.
 """
 import argparse
 import os
@@ -151,11 +151,11 @@ def main():
                     help="uniform step budget; 0 = per-corridor --steps_map")
     ap.add_argument("--steps_map", default="",
                     help='per-corridor budgets, e.g. "10:60000,20:100000,40:60000"')
-    ap.add_argument("--n", type=int, default=64)           # archived R1 RL protocol
+    ap.add_argument("--n", type=int, default=64)           # archived first-round RL protocol
     ap.add_argument("--batch", type=int, default=16)
     ap.add_argument("--lr", default="3e-4")
     ap.add_argument("--log_every", type=int, default=500)
-    # same checkpoint set as make_r2_d1_jobs.py (plan D1: 1, 5, 25, 50, 75, 100 %)
+    # same checkpoint set as make_r2_d1_jobs.py (1, 5, 25, 50, 75, 100 %)
     ap.add_argument("--spectrum_ckpts", default="0.01,0.05,0.25,0.5,0.75,1.0")
     ap.add_argument("--cert_warmup", type=int, default=200)
     ap.add_argument("--cert_stages", type=int, default=3)

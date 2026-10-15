@@ -1,5 +1,7 @@
 """Aggregate the D1-style residual spectrum measured on the online RL task (T-maze).
 
+This produces Table S9 and Fig S7 of the paper.
+
 Reads results/r2/rl/tmaze<len>_<algo>_s<seed>.json (clip 0) and
 results/r2/rl_clip05/tmaze<len>_skrtrl-r16_s<seed>.json (clip 0.5), written by run_m5.py
 with --shadow 1.  Each file carries a `spectrum` list of six checkpoints (fractions 0.01,
@@ -10,7 +12,7 @@ two are directly comparable.  `*.localpartial.json` are partial copies of a runn
 are ignored.
 
 One convention differs from D1 and is handled explicitly.  run_m5.py stores the residual
-spectrum as the LANE MEAN of the per-lane singular values (`sv`, 16 lanes at n=64), while
+spectrum as the lane mean of the per-lane singular values (`sv`, 16 lanes at n=64), while
 D1 reports r_eps as the lane mean of the per-lane r_eps.  r_eps therefore has to be read off
 the mean spectrum here.  The same quantity is recomputed from D1's own stored mean spectrum
 (run_e1_spectrum.py stores `sv` the same way) so the offset between the two conventions is
@@ -29,9 +31,9 @@ Outputs
                                          r_eps10/n of the T-maze arms against the nine
                                          supervised tasks, with the Section 6.4 thresholds.
 
-A missing file is listed and left out of every pooled statistic, never interpolated; a
-figure whose inputs are missing is skipped loudly.  Style helpers come from fig_style_r1.py
-and paper/figures/gen/regen_all.py, exactly as in make_r2_d1_report.py.
+A missing file is listed and left out of every pooled statistic; nothing is interpolated.
+A figure whose inputs are missing is skipped and listed.  Style helpers come from
+fig_style_r1.py and figstyle.py, as in make_r2_d1_report.py.
 
 Usage
   python make_r2_rl_spectrum_report.py
@@ -48,7 +50,6 @@ import sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "paper", "figures", "gen"))
 sys.path.insert(0, HERE)
 
 # --------------------------------------------------------------------------------------
@@ -266,12 +267,12 @@ def group_of(r10n):
     if r10n is None:
         return "—"
     if r10n < GROUP_LOW:
-        return "低秩"
+        return "low-rank"
     if r10n <= GROUP_MID:
-        return "中间"
+        return "intermediate"
     if r10n > GROUP_HIGH:
-        return "非低秩"
-    return "未归组 (0.5–0.6)"
+        return "not low-rank"
+    return "ungrouped (0.5–0.6)"
 
 
 # --------------------------------------------------------------------------------------
@@ -346,14 +347,14 @@ def build_table_a(runs):
 
 
 def render_table_a(rows_out, pooled):
-    out = ["### 表 A — 末阶段 (frac=1.0)，走廊 × arm，3 seeds",
+    out = ["### Table A — final stage (frac=1.0), corridor × arm, 3 seeds",
            "",
-           "mean±sd over seeds（每个 (走廊, arm, seed) 在末阶段只有一个检查点，故 n=3）。"
-           "`r_eps10/n` 由存储的 lane 平均谱算出，见上文口径说明；"
-           "`mass_top16`、`stable_rank`、`res_frac_of_J` 是 lane 平均量，与 D1 同口径。",
+           "mean±sd over seeds (each (corridor, arm, seed) has a single checkpoint at the final stage, so n=3). "
+           "`r_eps10/n` is computed from the stored lane-mean spectrum; see the conventions above. "
+           "`mass_top16`, `stable_rank` and `res_frac_of_J` are lane means, with the same convention as D1.",
            "",
-           "| 走廊 | arm | n_seeds | r_eps10/n | r_eps05/n | r_eps10 | mass_top16 | "
-           "stable rank | res_frac_of_J | 组别 |",
+           "| corridor | arm | n_seeds | r_eps10/n | r_eps05/n | r_eps10 | mass_top16 | "
+           "stable rank | res_frac_of_J | group |",
            "|---|---|---|---|---|---|---|---|---|---|"]
     for e in rows_out + [None] + pooled:
         if e is None:
@@ -382,12 +383,12 @@ def build_table_b(runs, fracs):
 
 
 def render_table_b(rows_out, fracs):
-    out = ["### 表 B — 全检查点网格：r_eps10/n 按训练阶段",
+    out = ["### Table B — full checkpoint grid: r_eps10/n by training stage",
            "",
-           "列为 `--spectrum_ckpts` 的六个 frac（占 `--steps` 的比例）；每格 mean±sd "
-           "over 3 seeds。",
+           "Columns are the six fracs of `--spectrum_ckpts` (fractions of `--steps`); each cell is mean±sd "
+           "over 3 seeds.",
            "",
-           "| 走廊 | arm | " + " | ".join("frac=%g" % f for f in fracs) + " |",
+           "| corridor | arm | " + " | ".join("frac=%g" % f for f in fracs) + " |",
            "|---|---|" + "---|" * len(fracs)]
     for e in rows_out:
         out.append("| %s | %s | %s |" % (e["corridor"], e["arm"],
@@ -415,7 +416,7 @@ def paired_diff(runs, key_a, key_b, field, pred=is_final):
 
 def render_paired(title, lead, runs, key_a, key_b, fields):
     out = ["### %s" % title, "", lead, "",
-           "| 量 | 走廊 10 | 走廊 20 | 走廊 40 | 全部 (9 配对) |",
+           "| quantity | corridor 10 | corridor 20 | corridor 40 | all (9 pairs) |",
            "|---|---|---|---|---|"]
     for field, label, nd in fields:
         per_corr, allm = paired_diff(runs, key_a, key_b, field)
@@ -427,16 +428,17 @@ def render_paired(title, lead, runs, key_a, key_b, fields):
 
 
 def render_table_e(pooled, d1):
-    out = ["### 表 E — 与监督任务 D1 (n=64，末阶段) 并列，并按 §6.4 规则归组",
+    out = ["### Table E — side by side with the supervised D1 tasks (n=64, final stage), grouped by the Section 6.4 rule",
            "",
-           "D1 行取 `results/r2/d1_spectrum/<task>_n64_s{0,1,2}.json` 的 frac=1.0 检查点"
-           "（3 seeds × 各 reset age 池化），与主文表 4 同口径。`r_eps10/n (官方)` 是 D1 报告"
-           "使用的 per-lane r_eps 的 lane 平均；`r_eps10/n (均值谱)` 用与 T-maze 相同的方式"
-           "（从存储的 lane 平均谱读出）重算，两列之差即口径偏差。T-maze 行只有均值谱一列。"
-           "归组按 §6.4：`<0.3` 低秩，`≤0.5` 中间，`>0.6` 非低秩。",
+           "D1 rows take, from `results/r2/d1_spectrum/<task>_n64_s{0,1,2}.json`, the frac=1.0 checkpoints"
+           " (pooled over 3 seeds × reset ages), with the same convention as Table 4 of the paper. `r_eps10/n (official)` is "
+           "the lane mean of the per-lane r_eps used by the D1 report. `r_eps10/n (mean spectrum)` is recomputed the same way as "
+           "for the T-maze (read off the stored lane-mean spectrum), and the difference between the two columns is the convention offset. "
+           "T-maze rows have only the mean-spectrum column. "
+           "Grouping follows Section 6.4: `<0.3` low-rank, `≤0.5` intermediate, `>0.6` not low-rank.",
            "",
-           "| 任务 / arm | 来源 | r_eps10/n (官方) | r_eps10/n (均值谱) | mass_top16 | "
-           "stable rank | res_frac_of_J | 组别 (均值谱) |",
+           "| task / arm | source | r_eps10/n (official) | r_eps10/n (mean spectrum) | mass_top16 | "
+           "stable rank | res_frac_of_J | group (mean spectrum) |",
            "|---|---|---|---|---|---|---|---|"]
     for task in D1_TASKS:
         e = d1.get(task)
@@ -460,12 +462,13 @@ def render_table_e(pooled, d1):
 def render_table_f(runs, d1):
     """Convention cross-checks: (i) the two r_eps conventions on D1, (ii) the mean-spectrum
     mass_top16 / stable_rank against their stored lane-mean versions on the RL runs."""
-    out = ["### 表 F — 口径核对",
+    out = ["### Table F — convention cross-checks",
            "",
-           "**(i) D1 上两种 r_eps 口径之差**（n=64，末阶段；`均值谱 − 官方`）。这是把 T-maze 的"
-           "均值谱读数与主文表 4 并列时应扣掉的偏差，负值表示均值谱口径偏乐观（读出的秩更小）。",
+           "**(i) Difference between the two r_eps conventions on D1** (n=64, final stage; `mean spectrum − official`). "
+           "This is the offset to subtract when the T-maze mean-spectrum readings are set beside Table 4 of the paper. "
+           "A negative value means the mean-spectrum convention is optimistic (it reads a smaller rank).",
            "",
-           "| 任务 | r_eps10/n (官方) | r_eps10/n (均值谱) | 差 | r_eps05/n 差 |",
+           "| task | r_eps10/n (official) | r_eps10/n (mean spectrum) | diff | r_eps05/n diff |",
            "|---|---|---|---|---|"]
     d10, d05 = [], []
     for task in D1_TASKS:
@@ -482,15 +485,16 @@ def render_table_f(runs, d1):
                    % (D1_LABEL.get(task, task), fmt(*e["off10"]), fmt(*e["ms10"]), a,
                       ("%+.4f" % b) if b is not None else "—"))
     if d10:
-        out.append("| **全部 9 任务** | | | mean %+.4f，最大绝对偏差 %.4f | mean %+.4f |"
+        out.append("| **all 9 tasks** | | | mean %+.4f, max abs offset %.4f | mean %+.4f |"
                    % (sum(d10) / len(d10), max(abs(v) for v in d10),
                       (sum(d05) / len(d05)) if d05 else float("nan")))
     out += ["",
-            "**(ii) T-maze 均值谱与存储 lane 平均量的一致性**（全 27 run × 6 检查点）。"
-            "`mass_top16` 与 `stable_rank` 两种算法在同一检查点上的差，用来说明 lane 之间"
-            "谱的异质程度：差值越大，均值谱越比“典型 lane”集中，(i) 的偏差就越该被当作下限。",
+            "**(ii) Agreement of the T-maze mean spectrum with the stored lane means** (all 27 runs × 6 checkpoints). "
+            "The difference between the two ways of computing `mass_top16` and `stable_rank` at the same checkpoint shows "
+            "how heterogeneous the spectra are across lanes: the larger it is, the more concentrated the mean spectrum is "
+            "than a \"typical lane\", and the more the offset in (i) should be read as a lower bound.",
             "",
-            "| 量 | 存储 (lane 平均) | 均值谱重算 | 差 (均值谱 − 存储) |",
+            "| quantity | stored (lane mean) | recomputed from mean spectrum | diff (mean spectrum − stored) |",
             "|---|---|---|---|"]
     for field, dfield, label, nd in (("mass_top16", "mass_top16_derived", "mass_top16", 4),
                                      ("stable_rank", "stable_rank_derived", "stable rank", 2)):
@@ -517,7 +521,7 @@ def make_figure(runs, d1, figdir):
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        import regen_all as ra
+        import figstyle as ra
         import fig_style_r1 as fs
         fs.bind(ra)
         fs.apply_rc(plt)
@@ -612,32 +616,32 @@ def render_summary(runs, pooled, d1, fracs):
     for key in ARM_KEYS:
         e = fin.get(key)
         if e and e["r_eps10_over_n"][0] is not None:
-            b.append("末阶段 %s（3 走廊 × 3 seeds = %d 个检查点）: r_eps10/n = %s，"
-                     "mass_top16 = %s，stable rank = %s，res_frac_of_J = %s，组别 %s。"
+            b.append("Final stage %s (3 corridors × 3 seeds = %d checkpoints): r_eps10/n = %s, "
+                     "mass_top16 = %s, stable rank = %s, res_frac_of_J = %s, group %s."
                      % (key, e["r_eps10_over_n"][2], fmt(*e["r_eps10_over_n"]),
                         fmt(*e["mass_top16"]), fmt(*e["stable_rank"], nd=2),
                         fmt(*e["res_frac_of_J"]), group_of(e["r_eps10_over_n"][0])))
     per_corr, allm = paired_diff(runs, ARM_KEYS[2], ARM_KEYS[0], "r_eps10_over_n")
     if allm[0] is not None:
-        b.append("clip 0.5 − clip 0（skrtrl-r16，按 (走廊, seed) 配对，9 对）: "
-                 "Δ r_eps10/n = %s。" % fmt(*allm))
+        b.append("clip 0.5 − clip 0 (skrtrl-r16, paired by (corridor, seed), 9 pairs): "
+                 "Δ r_eps10/n = %s." % fmt(*allm))
     per_corr, allm = paired_diff(runs, ARM_KEYS[1], ARM_KEYS[0], "r_eps10_over_n")
     if allm[0] is not None:
-        b.append("snap1 − skrtrl-r16（均 clip 0，9 对）: Δ r_eps10/n = %s。" % fmt(*allm))
+        b.append("snap1 − skrtrl-r16 (both clip 0, 9 pairs): Δ r_eps10/n = %s." % fmt(*allm))
     # stage trend
     for key in ARM_KEYS:
         rows = [r for corr in CORRIDORS for r in runs.get((corr, key), [])]
         m0 = mean_std(pool(rows, "r_eps10_over_n", at_frac(fracs[0])))
         m1 = mean_std(pool(rows, "r_eps10_over_n", is_final))
         if m0[0] is not None and m1[0] is not None:
-            b.append("%s: r_eps10/n 从 frac=%g 的 %s 变到末阶段的 %s（Δ %+.4f）。"
+            b.append("%s: r_eps10/n at frac=%g is %s; at the final stage it is %s (Δ %+.4f)."
                      % (key, fracs[0], fmt(*m0), fmt(*m1), m1[0] - m0[0]))
     # the early-stage band, which is what D1 reports as the unstructured signature
     rows10 = runs.get((10, ARM_KEYS[0]), []) + runs.get((10, ARM_KEYS[1]), [])
     m = mean_std(pool(rows10, "r_eps10_over_n", at_frac(fracs[0])))
     if m[0] is not None:
-        b.append("走廊 10 的两个 clip-0 arm 在 frac=%g 上是 %s，落在 D1 早期"
-                 "“无结构残差”带 0.686–0.746 内；压缩同样是训练产生的。" % (fracs[0], fmt(*m)))
+        b.append("Corridor 10, both clip-0 arms, at frac=%g: %s, inside the D1 early "
+                 "\"unstructured residual\" band 0.686–0.746; here too the compression comes from training." % (fracs[0], fmt(*m)))
     # D1 band the RL arms fall in, and the worst-case convention correction
     if d1:
         off = [d1[t]["ms10"][0] - d1[t]["off10"][0] for t in D1_TASKS
@@ -646,29 +650,29 @@ def render_summary(runs, pooled, d1, fracs):
         worst = max((-v for v in off), default=0.0)     # largest downward (optimistic) bias
         lo = [t for t in D1_TASKS if d1.get(t) and d1[t]["ms10"][0] is not None
               and d1[t]["ms10"][0] < GROUP_LOW]
-        b.append("D1 低秩组（均值谱 r_eps10/n < %.1f）为 %s。" % (
-            GROUP_LOW, ", ".join(D1_LABEL.get(t, t) for t in lo) or "（空）"))
+        b.append("D1 low-rank group (mean-spectrum r_eps10/n < %.1f): %s." % (
+            GROUP_LOW, ", ".join(D1_LABEL.get(t, t) for t in lo) or "(empty)"))
         for key in ARM_KEYS:
             e = fin.get(key)
             if not e or e["r_eps10_over_n"][0] is None:
                 continue
             adj = e["r_eps10_over_n"][0] + worst
             g0, g1 = group_of(e["r_eps10_over_n"][0]), group_of(adj)
-            b.append("%s: 均值谱读数 %.4f 归「%s」；加上 D1 上测到的最大向下口径偏差 %.4f "
-                     "后为 %.4f，%s。"
+            b.append("%s: mean-spectrum reading %.4f is in group \"%s\"; adding the largest downward convention "
+                     "offset measured on D1, %.4f, gives %.4f, %s."
                      % (key, e["r_eps10_over_n"][0], g0, worst, adj,
-                        ("归组不变" if g0 == g1 else "归组改为「%s」" % g1)))
+                        ("group unchanged" if g0 == g1 else "group changes to \"%s\"" % g1)))
     return b
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--indir", default=os.path.join("results", "r2", "rl"))
-    ap.add_argument("--clipdir", default=os.path.join("results", "r2", "rl_clip05"))
+    ap.add_argument("--indir", default="results/r2/rl")
+    ap.add_argument("--clipdir", default="results/r2/rl_clip05")
     ap.add_argument("--d1dir", default=os.path.join("results", "r2", "d1_spectrum"))
     ap.add_argument("--outmd", default=None,
                     help="default: <indir>/../RL_SPECTRUM_SUMMARY.md")
-    ap.add_argument("--figdir", default=os.path.join(HERE, "..", "paper", "figures"))
+    ap.add_argument("--figdir", default=os.path.join("results", "figures"))
     ap.add_argument("--no-fig", action="store_true")
     args = ap.parse_args()
 
@@ -689,85 +693,87 @@ def main():
     if not args.no_fig:
         figpath, figwhy = make_figure(runs, d1, args.figdir)
 
-    L = ["# RL 残差谱 (T-maze) —— 聚合报告", ""]
-    L.append("数据目录: `%s` (clip 0) + `%s` (clip 0.5)  |  已完成 %d/%d 项 roster "
-             "(%d 项缺失)  |  忽略文件: %d  |  解析失败/无谱: %d"
+    L = ["# RL residual spectrum (T-maze) — aggregated report", ""]
+    L.append("Data directories: `%s` (clip 0) + `%s` (clip 0.5)  |  roster done: %d/%d "
+             "(%d missing)  |  ignored files: %d  |  unreadable/no spectrum: %d"
              % (args.indir, args.clipdir, n_have, n_want, len(missing), len(ignored),
                 len(bad)))
     L.append("")
-    L.append("## 口径")
+    L.append("## Conventions")
     L.append("")
     L += [
-        "测量对象与监督任务 D1 完全相同：残差 $R_t = J_t - S_t$，$J_t$ 是 exact-RTRL shadow "
-        "携带的影响矩阵，$S_t$ 是 SnAp-1 trace 按块对角嵌入后的矩阵（`skrtrl/rl.py` 的 "
-        "`TanhCore.spectrum`，与 `run_e1_spectrum.py` 的 `checkpoint_spectrum` 同一定义）。"
-        "两个 arm 的差别只在于这条残差是在哪条策略轨迹上测的，不在残差本身的定义：snap1 "
-        "arm 训练用 SnAp-1，被丢弃的正是整个 $J_t-S_t$，因此它是“无 sketch”参照。",
+        "The measured object is the same as in the supervised D1 tasks: the residual $R_t = J_t - S_t$, where $J_t$ is the "
+        "influence matrix carried by the exact-RTRL shadow and $S_t$ is the SnAp-1 trace embedded block-diagonally (`skrtrl/rl.py` "
+        "`TanhCore.spectrum`, the same definition as `checkpoint_spectrum` in `run_e1_spectrum.py`). "
+        "The two arms differ only in the policy trajectory on which the residual is measured, not in the definition of the residual. "
+        "The snap1 arm trains with SnAp-1 and discards exactly the whole $J_t-S_t$, so it is the \"no sketch\" reference.",
         "",
-        "RL 运行为 iso-width $n=%d$，$P=%d$（= 参数数 $n(n+n_{\\mathrm{obs}}+1)"
-        "=64\\times69$），每个检查点 %s 个 lane。检查点为 `--spectrum_ckpts` 的六个 frac；"
-        "`--spectrum_min_age 4` 与 `--spectrum_defer 200` 使检查点向后滑动，避开 T-maze 中"
-        "所有 lane 同步 reset（那里残差恒为零、会读出虚假低秩）的步；`--spectrum_defer` "
-        "到期仍未达 age 阈值时照样取样，这类检查点在下面的异常清单中逐个列出。"
+        "The RL runs use iso-width $n=%d$, $P=%d$ (= parameter count $n(n+n_{\\mathrm{obs}}+1)"
+        "=64\\times69$), with %s lanes per checkpoint. The checkpoints are the six fracs of `--spectrum_ckpts`. "
+        "`--spectrum_min_age 4` and `--spectrum_defer 200` slide each checkpoint later, away from the T-maze steps at which "
+        "all lanes reset together (there the residual is exactly zero and would read as a spurious low rank). If the age threshold "
+        "is still not reached when `--spectrum_defer` runs out, the checkpoint is taken anyway, and each such checkpoint is listed "
+        "in the anomaly list below."
         % (N_RL, P_RL, "16"),
         "",
-        "**一处口径差异必须显式处理。** `run_m5.py` 只存 lane 平均后的奇异值向量 `sv`，"
-        "而 D1 报告的 `r_eps` 是 per-lane `r_eps` 的 lane 平均。因此本报告的 `r_eps` 只能"
-        "从 lane 平均谱读出（“均值谱”口径）。为了量化而非假设这个偏差，D1 的 `sv` 用同样"
-        "方式（`run_e1_spectrum.py` 也只存 lane 平均谱）重算了一遍，两种口径之差见表 F(i)。"
-        "`mass_top{k}`、`stable_rank`、`res_frac_of_J` 在两套实验里都是 per-lane 量的 lane "
-        "平均，无此问题，可直接与主文表 4 对照。",
+        "One convention difference has to be handled explicitly. `run_m5.py` stores only the lane-mean singular value vector `sv`, "
+        "whereas the D1 report's `r_eps` is the lane mean of the per-lane `r_eps`. So in this report `r_eps` can only be "
+        "read off the lane-mean spectrum (the \"mean spectrum\" convention). To measure this offset rather than assume it, D1's `sv` "
+        "was recomputed the same way (`run_e1_spectrum.py` also stores only the lane-mean spectrum); the difference between the two "
+        "conventions is in Table F(i). "
+        "`mass_top{k}`, `stable_rank` and `res_frac_of_J` are lane means of per-lane quantities in both experiments, "
+        "so they are not affected and can be compared directly with Table 4 of the paper.",
         "",
-        "归组沿用 §6.4 的规则：末阶段 $r_{0.1}/n<0.3$ 低秩，$\\le 0.5$ 中间，$>0.6$ 非低秩。",
+        "Grouping follows the rule of Section 6.4: final-stage $r_{0.1}/n<0.3$ low-rank, $\\le 0.5$ intermediate, $>0.6$ not low-rank.",
         "",
-        "## 缺失与异常",
+        "## Missing files and anomalies",
         "",
     ]
     if not missing:
-        L.append("roster 全部完成（%d/%d），无缺失。" % (n_have, n_want))
+        L.append("The roster is complete (%d/%d); nothing is missing." % (n_have, n_want))
     else:
-        L.append("缺失 %d 项:" % len(missing))
+        L.append("%d missing:" % len(missing))
         L.append("")
         for corr, key, seed in missing:
-            L.append("- 走廊 %d / %s / seed %d" % (corr, key, seed))
+            L.append("- corridor %d / %s / seed %d" % (corr, key, seed))
     L.append("")
     if bad:
-        L.append("解析失败 / 无谱:")
+        L.append("Unreadable / no spectrum:")
         L.append("")
         for p, why in bad:
             L.append("- `%s` — %s" % (p, why))
         L.append("")
     if notes:
-        L.append("逐检查点异常（NaN、age 未达阈值仍取样、n/P/lane 数异常）:")
+        L.append("Per-checkpoint anomalies (NaN, sampled before the age threshold was reached, unexpected n/P/lane count):")
         L.append("")
         for t in notes:
             L.append("- %s" % t)
         L.append("")
     else:
-        L.append("逐检查点异常：无。全部 %d 个 run × 6 个检查点均可用，无 NaN，"
-                 "无检查点在 `--spectrum_min_age` 未达标时被 deadline 强制取样。" % n_have)
+        L.append("Per-checkpoint anomalies: none. All %d runs × 6 checkpoints are usable, with no NaN, "
+                 "and no checkpoint was forced by the deadline before `--spectrum_min_age` was reached." % n_have)
         L.append("")
     if ignored:
-        L.append("忽略的文件（`*.localpartial.json` 为运行中作业的部分副本，"
-                 "不参与任何聚合）:")
+        L.append("Ignored files (`*.localpartial.json` are partial copies of running jobs "
+                 "and take part in no aggregation):")
         L.append("")
         for p in ignored:
-            L.append("- `%s`" % p)
+            L.append("- `%s`" % p.replace("\\", "/"))
         L.append("")
 
     L += render_table_a(table_a, pooled)
     L += render_table_b(table_b, fracs)
     L += render_paired(
-        "表 C — clip 0.5 相对 clip 0（skrtrl-r16，按 (走廊, seed) 配对）",
-        "每格为 `clip 0.5 − clip 0` 的配对差，mean±sd；末阶段检查点。",
+        "Table C — clip 0.5 relative to clip 0 (skrtrl-r16, paired by (corridor, seed))",
+        "Each cell is the paired difference `clip 0.5 − clip 0`, mean±sd; final-stage checkpoints.",
         runs, ARM_KEYS[2], ARM_KEYS[0],
         [("r_eps10_over_n", "Δ r_eps10/n", 4), ("r_eps05_over_n", "Δ r_eps05/n", 4),
          ("mass_top16", "Δ mass_top16", 4), ("stable_rank", "Δ stable rank", 2),
          ("res_frac_of_J", "Δ res_frac_of_J", 4)])
     L += render_paired(
-        "表 D — snap1 相对 skrtrl-r16（均 clip 0，按 (走廊, seed) 配对）",
-        "snap1 arm 的策略由 SnAp-1 自己训练，残差 $J_t-S_t$ 即它丢弃的全部非块对角部分，"
-        "作为“无 sketch”参照。每格为 `snap1 − skrtrl-r16` 的配对差，mean±sd；末阶段检查点。",
+        "Table D — snap1 relative to skrtrl-r16 (both clip 0, paired by (corridor, seed))",
+        "The snap1 arm's policy is trained by SnAp-1 itself, and the residual $J_t-S_t$ is the whole off-block-diagonal part it "
+        "discards, so it serves as the \"no sketch\" reference. Each cell is the paired difference `snap1 − skrtrl-r16`, mean±sd; final-stage checkpoints.",
         runs, ARM_KEYS[1], ARM_KEYS[0],
         [("r_eps10_over_n", "Δ r_eps10/n", 4), ("r_eps05_over_n", "Δ r_eps05/n", 4),
          ("mass_top16", "Δ mass_top16", 4), ("stable_rank", "Δ stable rank", 2),
@@ -775,16 +781,16 @@ def main():
     L += render_table_e(pooled, d1)
     L += render_table_f(runs, d1)
 
-    L.append("## 要点（自动生成，仅陈述数字）")
+    L.append("## Key numbers (auto-generated, numbers only)")
     L.append("")
     for line in render_summary(runs, pooled, d1, fracs):
         L.append("- %s" % line)
     L.append("")
-    L.append("## 图")
+    L.append("## Figures")
     L.append("")
     L.append("- `%s` — %s"
              % (os.path.normpath(figpath) if figpath else FIG_NAME,
-                "已生成" if figpath else "未生成: %s" % figwhy))
+                "written" if figpath else "not written: %s" % figwhy))
     L.append("")
 
     os.makedirs(os.path.dirname(os.path.abspath(outmd)), exist_ok=True)

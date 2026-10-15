@@ -26,7 +26,7 @@ GRU and on an LSTM.  It is the gated twin of `tests/test_numerics.py`.
 
 float64, CPU only.
 Run:
-  D:\\Anaconda\\envs\\multilingual_lora\\python.exe code/tests/test_gated_numerics.py
+  python code/tests/test_gated_numerics.py
 """
 import math
 import os

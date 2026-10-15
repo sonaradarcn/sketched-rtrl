@@ -1,11 +1,11 @@
-r"""D5 / R3-5 self-verification: analytic Jacobians of gated cells for SK-RTRL.
+r"""Self-verification: analytic Jacobians of gated cells for SK-RTRL.
 
 Standalone (imports nothing from `skrtrl`): it verifies, against torch.autograd,
-the derivation written up in paper/revise_r2/GRU_EXTENSION.tex, so that the
+the derivation in Section S5 of the supplement, so that the
 derivation and any future repo cell agree on the same conventions.
 
 Run:
-  D:\Anaconda\envs\multilingual_lora\python.exe code/tests/test_gated_jacobians.py
+  python code/tests/test_gated_jacobians.py
 
 What is checked (float64, CPU, tol 1e-8 absolute):
 
@@ -154,7 +154,7 @@ def gru_forward(flat, x, h_prev, n, m):
 
 
 def gru_analytic(flat, x, h_prev, n, m):
-    """Forward + analytic A_t and I_t, exactly as derived in GRU_EXTENSION.tex."""
+    """Forward + analytic A_t and I_t, exactly as derived in Section S5 of the supplement."""
     p, G = n + m + 1, GRU_G
     P = n * G * p
     B = x.shape[0]

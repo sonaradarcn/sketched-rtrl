@@ -1,0 +1,25 @@
+% Table 7 (clip cost), written by make_r2_clipcost_table.py
+% Inputs: results/r2/d4_eval (skrtrl-r16, seeds 0-4), results/r2/d2_clip (skrtrl-r16, seeds 0-4); per-run last-20% mean, then mean over seeds.
+
+\begin{table*}[t]
+\centering\small
+\caption{\textbf{What the spectral clip costs} (\skrtrl{} $r{=}16$, $n{=}64$, five seeds $0$--$4$; the arrow gives the direction of the raw metric and percentages are its relative change, so a negative entry means a worse accuracy or a lower error). Seed matching and the comparison with the ten-seed tables are discussed in \Cref{sec:exp-cert}.}
+\label{tab:r2clipcost}
+\begin{tabular}{llcccc}
+\toprule
+Task & metric & unclipped & clip $0.35$ & clip $0.7$ & clip $0.9$ \\
+\midrule
+copy & accuracy $\uparrow$ & $0.1514$ & $0.1264$ ($-16.5\%$) & $0.1253$ ($-17.2\%$) & $0.1271$ ($-16.0\%$) \\
+$a^nb^n$ & accuracy $\uparrow$ & $0.9237$ & $0.8891$ ($-3.7\%$) & $0.8891$ ($-3.7\%$) & $0.8888$ ($-3.8\%$) \\
+adding & MSE $\downarrow$ & $0.2144$ & $0.2373$ ($+10.7\%$) & $0.2274$ ($+6.1\%$) & $0.2238$ ($+4.4\%$) \\
+rotation & MSE $\downarrow$ & $0.1118$ & $0.1213$ ($+8.5\%$) & $0.1207$ ($+8.0\%$) & $0.1205$ ($+7.7\%$) \\
+\midrule
+H\'enon & NMSE $\downarrow$ & $0.0051$ & $0.0023$ ($-54.8\%$) & $0.0025$ ($-50.2\%$) & $0.0025$ ($-50.7\%$) \\
+Mackey--Glass & NMSE $\downarrow$ & $0.0023$ & $0.0061$ ($+161\%$) & $0.0051$ ($+119\%$) & $0.0048$ ($+106\%$) \\
+Lorenz & NMSE $\downarrow$ & $0.0014$ & $0.0050$ ($+257\%$) & $0.0039$ ($+182\%$) & $0.0036$ ($+160\%$) \\
+\midrule
+Sunspot & NMSE $\downarrow$ & $0.1338$ & $0.1425$ ($+6.5\%$) & $0.1401$ ($+4.7\%$) & $0.1396$ ($+4.3\%$) \\
+laser & NMSE $\downarrow$ & $0.0207$ & $0.0622$ ($+201\%$) & $0.0403$ ($+95\%$) & $0.0372$ ($+80\%$) \\
+\bottomrule
+\end{tabular}
+\end{table*}

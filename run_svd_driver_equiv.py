@@ -1,4 +1,4 @@
-"""A1 control: SVD-driver equivalence on a FROZEN trajectory.
+"""Control: SVD-driver equivalence on a frozen trajectory.
 
 The end-to-end regression (same seed, same steps, two drivers) is confounded: the
 learning loop is chaotic, so any float difference in the first SVD is amplified by

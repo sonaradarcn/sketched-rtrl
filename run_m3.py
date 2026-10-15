@@ -1,9 +1,9 @@
 """M3 main suite runner: one (task, algo, seed) online-learning run with optional exact shadow.
 
 Logs: task metric curve, gradient cosine vs exact (shadow), certificate trace (SK-RTRL),
-and (R2 / D2) the certificate-informativeness quantities:
+and the certificate-informativeness quantities (second round):
   per record  ||delta_t||, ||ghat_t||, ||g_t||, ||g_t - ghat_t||, ||J_t||_F
-  top level   `cert_summary` -- online counters accumulated at EVERY post-washout step
+  top level   `cert_summary` -- online counters accumulated at every post-washout step
               (independent of --log_every).
 
 Output: results/m3/<task>_<algo>_s<seed>.json          (--cell tanh, unchanged)
@@ -182,9 +182,9 @@ def sketch_efficiency(shadow, algo, ranks=(4, 8, 16, 32)):
 
 
 def holdout_pass(task, cell, readout, loss_fn, args):
-    """A11: stream the held-out tail of a time-series task exactly ONCE, online,
-    with no parameter updates and no estimator involved -- one-step-ahead tracking
-    on data that was never cycled during training.
+    """Temporal hold-out (Table 9): stream the held-out tail of a time-series task
+    exactly once, online, with no parameter updates and no estimator involved --
+    one-step-ahead tracking on data that was never cycled during training.
 
     The hidden state starts from zero and the same --washout reset period is applied
     inside the tail, so the evaluation protocol matches training step for step; the
@@ -217,9 +217,9 @@ def holdout_pass(task, cell, readout, loss_fn, args):
 
 
 def run_tbptt_nnrnn(args, task, out):
-    """R1 implementation of record: nn.RNN + autograd, window k, update at window end.
+    """First-round TBPTT implementation: nn.RNN + autograd, window k, update at window end.
 
-    Kept for the D4 fairness comparison only -- it uses a DIFFERENT parameterisation
+    Kept for the D4 fairness comparison only -- it uses a different parameterisation
     (nn.RNN has separate input and hidden biases) and a different initialisation from
     every other estimator.  `--algo tbptt` is the unified re-implementation below.
     """
@@ -357,9 +357,9 @@ def main():
     ap.add_argument("--steps", type=int, default=20000)
     ap.add_argument("--n", type=int, default=64)
     ap.add_argument("--cell", default="tanh", choices=["tanh", "gru", "lstm"],
-                    help="recurrent cell; tanh is the cell of record.  gru/lstm "
+                    help="recurrent cell; tanh is the default.  gru/lstm "
                          "run the same estimators through the SK-RTRL cell "
-                         "protocol (paper/revise_r2/GRU_EXTENSION.tex sec. 8); "
+                         "protocol (Section 4.4, Section S5 of the supplement); "
                          "kfrtrl is not applicable there and is refused")
     ap.add_argument("--batch", type=int, default=8)
     ap.add_argument("--lr", type=float, default=1e-3)
@@ -372,7 +372,7 @@ def main():
                          "gated cell the admissible width is scaled down so the "
                          "shadow costs no more than a vanilla cell of this width")
     ap.add_argument("--tbptt_k", type=int, default=25,
-                    help="deprecated alias of --tbptt_window (kept so the R1 commands "
+                    help="deprecated alias of --tbptt_window (kept so the first-round commands "
                          "still run); ignored when --tbptt_window is given")
     ap.add_argument("--tbptt_window", type=int, default=None,
                     help="truncation window of the TBPTT baselines, in STEPS "
@@ -386,13 +386,14 @@ def main():
     ap.add_argument("--causal", type=int, default=0)      # 1 = causal normalization
     ap.add_argument("--washout", type=int, default=200)   # reset period (0 = no reset)
     ap.add_argument("--holdout_frac", type=float, default=0.0,
-                    help="A11 time-ordered holdout for the time-series tasks: the last "
+                    help="time-ordered holdout for the time-series tasks (Table 9): the last "
                          "fraction of the stream is never cycled during training and is "
-                         "streamed exactly once afterwards, with NO parameter updates, "
+                         "streamed exactly once afterwards, with no parameter updates, "
                          "reported as metric_holdout")
     ap.add_argument("--svd_driver", choices=["gesvd", "auto"], default="gesvd",
-                    help="gesvd = kernel of record (all R1 numbers); auto = default "
-                         "cuSOLVER driver first, same fallback chain behind it")
+                    help="gesvd (default; every first-round run) or auto (passed by "
+                         "every second-round job): library default driver first, then "
+                         "gesvd, jittered gesvd and CPU SVD only on failure")
     # D2 certificate-informativeness counters
     ap.add_argument("--cert_warmup", type=int, default=200,
                     help="global burn-in: counters start at this step")
@@ -415,7 +416,7 @@ def main():
                     help="how far a sketch checkpoint may slip to get past a "
                          "synchronised episode reset (where J_t - S_t is exactly 0)")
     args = ap.parse_args()
-    # A10: one effective window, recorded in the json so the protocol is unambiguous
+    # one effective window, recorded in the json so the protocol is unambiguous
     args.tbptt_window = args.tbptt_k if args.tbptt_window is None else args.tbptt_window
     args.tbptt_k = args.tbptt_window
 
@@ -425,7 +426,7 @@ def main():
                 "KF-RTRL is NOT APPLICABLE to a gated cell: its Kronecker "
                 "factorisation J ~ u (x) B rests on A_t = D_t W and a rank-1 "
                 "immediate Jacobian, and a GRU's immediate Jacobian is not even "
-                "block diagonal (paper/revise_r2/GRU_EXTENSION.tex sec. 8).  "
+                "block diagonal (Section S5 of the supplement).  "
                 "Report it as not-applicable for --cell gru/lstm rather than "
                 "running a variant whose bias is undocumented.")
         if args.algo in ("tbptt_nnrnn", "tbptt-nnrnn"):

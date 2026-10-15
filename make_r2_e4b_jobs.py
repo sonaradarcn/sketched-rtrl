@@ -1,8 +1,7 @@
-"""Generate the D4b (E4b) common-trajectory job list for the R2 queue.
+"""Generate the common-trajectory control job list (Section 6.2, S7.2) for the
+second-round queue.
 
-Coverage (R2_EXPERIMENT_PLAN.md, D4 addition: "add a common-trajectory tracking
-comparison -- all estimators passively tracking one exact-trained trajectory per task,
-3 seeds"):
+Coverage: all estimators passively track one exact-trained trajectory per task, 3 seeds.
 
     9 non-RL tasks  x  n=64  x  seeds {0,1,2}  x  20 000 steps  x  batch 8
     trackers: skrtrl-r4, skrtrl-r16, skrtrl-r32, snap1, uoro, kfrtrl, rflo
@@ -15,8 +14,8 @@ launches nothing.
 Cost model (measured)
 ---------------------
 One RTX 3080, all 7 trackers, cert_every 1, svd_driver auto, n=64, batch 8, 3 000-step
-runs, driver 560.94, **with the other GPU running the R2 queue** (the realistic regime:
-the D4b list itself is run by two concurrent workers):
+runs, driver 560.94, with the other GPU running the second-round queue (the realistic
+regime: this list itself is run by two concurrent workers):
 
     rotation  n=64  ->  222.1 ms/step, peak 63 MB, 18 000 SVDs, no driver fallback
     henon     n=64  ->  270.3 ms/step, peak 59 MB, 18 000 SVDs, no driver fallback
@@ -38,7 +37,7 @@ Model for the tasks that were not timed:
 
 `label_density` is the fraction of steps at which the task emits a target (adding and
 copy are sparse, everything else is 1.0).  The per-task variation with p = n + n_in + 1
-is not resolvable against the run-to-run contention spread (rotation p=74 came out FASTER
+is not resolvable against the run-to-run contention spread (rotation p=74 came out faster
 than henon p=66), so BASE_MS is the mean of the two dense-label measurements and the
 per-task numbers below carry roughly a +/- 20 % uncertainty.
 
@@ -49,7 +48,7 @@ saves only ~7 %; halving `--steps` halves the cost, and dropping one SK-RTRL ran
 Usage
 -----
   python make_r2_e4b_jobs.py                                  # -> jobs/e4b_common.txt
-  python make_r2_e4b_jobs.py --py D:/Anaconda/envs/multilingual_lora/python.exe
+  python make_r2_e4b_jobs.py --py python
   python make_r2_e4b_jobs.py --status                         # which outputs exist
 """
 import argparse, os

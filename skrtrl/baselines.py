@@ -1,11 +1,11 @@
 """Stochastic / local baselines: UORO, KF-RTRL, RFLO. All per-batch-lane state.
 
-Cell genericity (see paper/revise_r2/GRU_EXTENSION.tex sec. 8):
+Cell genericity (see Section 4.4 and Section S5 of the supplement):
   UORO   needs only I_t^T nu and A_t s, so it is cell-agnostic once the FULL
          immediate Jacobian is used -- ``OnlineGrad._imm_vjp`` adds the GRU's
          off-block part I_t^perp from the cell's exact factorisation.
   RFLO   is the r = 0 block-diagonal local rule by construction; it generalises
-         directly, and (like SnAp-1 with a fixed leak) it does NOT see
+         directly, and (like SnAp-1 with a fixed leak) it does not see
          I_t^perp.  That is the method, not a plumbing gap.
   KFRTRL rests on A_t = D_t W and a rank-1, block-diagonal immediate Jacobian.
          Neither holds for a gated cell, so it refuses to construct rather than
@@ -66,8 +66,8 @@ class KFRTRL(OnlineGrad):
                 "KF-RTRL is not applicable to a gated cell: its Kronecker "
                 "factorisation J ~ u (x) B rests on A_t = D_t W and a rank-1 "
                 "immediate Jacobian, and a GRU's immediate Jacobian is not "
-                "even block diagonal (paper/revise_r2/GRU_EXTENSION.tex, "
-                "sec. 8).  Report KF-RTRL as not-applicable rather than "
+                "even block diagonal (Section S5 of the supplement).  "
+                "Report KF-RTRL as not-applicable rather than "
                 "running a variant whose bias is undocumented.")
         self.eps = eps
         self.reset()

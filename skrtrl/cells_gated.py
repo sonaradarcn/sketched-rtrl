@@ -1,8 +1,8 @@
 """Gated recurrent cells (GRU, LSTM) exposing everything SK-RTRL needs.
 
 New file: nothing here modifies `cells.py`, `algos.py` or `train.py`.
-The derivation these implement is `paper/revise_r2/GRU_EXTENSION.tex`; the
-numbers in the comments below refer to its propositions.
+The derivation is in Section 4.4 and Section S5 of the supplement.  The proposition
+numbers in the comments below follow the original derivation notes, not the paper.
 
 Why a gated cell needs more than `(A_t, imm)`
 ---------------------------------------------
@@ -77,9 +77,9 @@ Flat parameter layout (per-unit blocks -- the SnAp-1 view)
         j in [n, n+m)    -> W_a[i, j-n]    input,     acts on x_t
         j = n+m          -> b_a[i]
     Gate order: GRU ("z", "r", "h"); LSTM ("i", "f", "g", "o").
-NOTE the gated-RNN convention is used: U_. is recurrent and W_. is the input
-matrix, which is the OPPOSITE of TanhRNNCell's W/U. The layout above is
-authoritative.
+Note that the gated-RNN convention is used: U_. is recurrent and W_. is the input
+matrix, the opposite of TanhRNNCell's W/U. The layout above is the one used
+throughout.
 """
 import math
 
@@ -403,7 +403,7 @@ class GatedCellBase(nn.Module):
 # GRU
 # ---------------------------------------------------------------------------
 class GRUCell(GatedCellBase):
-    """h_t = (1-z_t) (.) h_{t-1} + z_t (.) h~_t   (the D5 / R2 plan convention)
+    """h_t = (1-z_t) (.) h_{t-1} + z_t (.) h~_t
 
         z_t  = sigmoid(U_z h_{t-1} + W_z x_t + b_z)
         r_t  = sigmoid(U_r h_{t-1} + W_r x_t + b_r)
@@ -619,7 +619,7 @@ class LSTMCell(GatedCellBase):
 
     @torch.no_grad()
     def trace_update(self, A, S_prev, imm_diag):
-        """Per-unit 2x2 product, NOT diag(A_t) (.) S_{t-1}.
+        """Per-unit 2x2 product, not diag(A_t) (.) S_{t-1}.
 
         The scalar-diagonal update would drop (A_t)_{i,n+i} = o (.) (1-th^2)
         (.) f, the intra-unit c->h memory path, which is O(1) with the forget

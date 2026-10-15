@@ -1,0 +1,284 @@
+% D4 full-matrix statistics (appendix table, part 1 of 3, rank skrtrl-r4)
+% Generated 2026-10-15 12:31:23 by code/make_r2_d4_tables.py -- do not edit by hand; re-run the script.
+% Inputs: results/r2/d4_eval
+% Aggregation: window20 (frac=0.8, tail=5), cross-seed ddof=0, protocol 10 seeds x 20000 steps.
+% LR selection: results/r2/D4_SELECT_stage2.json (81 of 81 pairs have a stage-2 winner, generated 2026-10-15 12:31:20)
+% CAS class note: the columns are plain l/c only (no p{}), as in the other tables of main_cas; cell text is kept to one line accordingly.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{\textbf{Paired comparisons of the full matrix, \skrtrl{} $r{=}4$} (part 1 of 3, the 90 comparisons at this rank): the paired mean advantage $\Delta$ with a $95\%$ bootstrap interval, the Holm-corrected Wilcoxon $p_{\mathrm{H}}$, the effect size $d_z$ and Cliff's $\delta$, over $10$ paired seeds. Column definitions, conventions and the sign convention on $\Delta$ are in \Cref{app:suppstats}.}
+\label{tab:r2stats}
+\begin{tabular}{lcccccccc}
+\toprule
+Comparison & \multicolumn{4}{c}{task metric} & \multicolumn{4}{c}{gradient cosine} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ \\
+\midrule
+\multicolumn{9}{l}{\textit{adding} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0049$ $[-0.0069, -0.0033]$ & \textbf{0.0352} & $-1.56$ & $-0.28$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0015$ $[-0.0054, +0.0116]$ & 1.0000 & $+0.10$ & $-0.06$ & $+0.319$ $[+0.266, +0.379]$ & \textbf{0.0234} & $+3.28$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0056$ $[+0.0010, +0.0103]$ & 0.2441 & $+0.70$ & $+0.24$ & $+0.284$ $[+0.236, +0.329]$ & \textbf{0.0234} & $+3.54$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0152$ $[+0.0099, +0.0207]$ & \textbf{0.0352} & $+1.64$ & $+0.60$ & $+0.313$ $[+0.263, +0.372]$ & \textbf{0.0234} & $+3.30$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0497$ $[+0.0173, +0.1065]$ & \textbf{0.0352} & $+0.57$ & $+0.94$ & $+0.725$ $[+0.692, +0.759]$ & \textbf{0.0234} & $+12.85$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $-0.0049$ $[-0.0069, -0.0033]$ & \textbf{0.0352} & $-1.56$ & $-0.28$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{copy} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $+0.0022$ $[-0.0090, +0.0127]$ & 1.0000 & $+0.12$ & $+0.12$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0149$ $[+0.0053, +0.0255]$ & 0.2461 & $+0.84$ & $+0.74$ & $+0.177$ $[+0.172, +0.182]$ & \textbf{0.0234} & $+20.09$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $-0.0075$ $[-0.0141, -0.0012]$ & 0.2461 & $-0.68$ & $-0.38$ & $+0.392$ $[+0.337, +0.453]$ & \textbf{0.0234} & $+3.97$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $-0.0432$ $[-0.0605, -0.0232]$ & 0.0586 & $-1.37$ & $-0.86$ & $+0.963$ $[+0.957, +0.969]$ & \textbf{0.0234} & $+96.43$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0128$ $[+0.0032, +0.0241]$ & 0.4512 & $+0.71$ & $+0.52$ & $+0.950$ $[+0.936, +0.963]$ & \textbf{0.0234} & $+40.85$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $+0.0136$ $[+0.0034, +0.0253]$ & 0.4512 & $+0.71$ & $+0.64$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{$a^nb^n$} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0191$ $[-0.0277, -0.0104]$ & \textbf{0.0352} & $-1.27$ & $-0.82$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0138$ $[+0.0071, +0.0207]$ & \textbf{0.0352} & $+1.18$ & $+0.72$ & $+0.501$ $[+0.430, +0.570]$ & \textbf{0.0234} & $+4.20$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0195$ $[+0.0110, +0.0286]$ & \textbf{0.0352} & $+1.30$ & $+0.88$ & $+0.531$ $[+0.498, +0.565]$ & \textbf{0.0234} & $+9.34$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0062$ $[-0.0015, +0.0141]$ & 0.3203 & $+0.47$ & $+0.36$ & $+0.456$ $[+0.422, +0.486]$ & \textbf{0.0234} & $+8.25$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0301$ $[+0.0224, +0.0383]$ & \textbf{0.0352} & $+2.25$ & $+1.00$ & $+0.880$ $[+0.872, +0.890]$ & \textbf{0.0234} & $+55.67$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $+0.0106$ $[+0.0002, +0.0216]$ & 0.3203 & $+0.57$ & $+0.48$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{rotation} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0026$ $[-0.0075, +0.0027]$ & 1.0000 & $-0.30$ & $-0.26$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $-0.0589$ $[-0.0634, -0.0537]$ & \textbf{0.0352} & $-7.01$ & $-1.00$ & $+0.268$ $[+0.234, +0.299]$ & \textbf{0.0234} & $+4.84$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0039$ $[-0.0019, +0.0093]$ & 1.0000 & $+0.41$ & $+0.28$ & $+0.300$ $[+0.262, +0.339]$ & \textbf{0.0234} & $+4.56$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $-0.0121$ $[-0.0193, -0.0033]$ & 0.3418 & $-0.90$ & $-0.58$ & $+0.535$ $[+0.503, +0.567]$ & \textbf{0.0234} & $+9.74$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0088$ $[+0.0054, +0.0120]$ & \textbf{0.0430} & $+1.59$ & $+0.84$ & $+0.645$ $[+0.611, +0.675]$ & \textbf{0.0234} & $+11.78$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $-0.0766$ $[-0.0824, -0.0713]$ & \textbf{0.0352} & $-8.16$ & $-1.00$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{H\'enon} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0008$ $[-0.0011, -0.0004]$ & \textbf{0.0352} & $-1.43$ & $-0.82$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $-0.0006$ $[-0.0010, -0.0002]$ & 0.1914 & $-0.80$ & $-0.62$ & $+0.196$ $[+0.173, +0.219]$ & \textbf{0.0234} & $+4.93$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0152$ $[+0.0055, +0.0331]$ & \textbf{0.0352} & $+0.55$ & $+1.00$ & $+0.347$ $[+0.300, +0.384]$ & \textbf{0.0234} & $+4.81$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0512$ $[+0.0407, +0.0642]$ & \textbf{0.0352} & $+2.50$ & $+1.00$ & $+0.584$ $[+0.552, +0.617]$ & \textbf{0.0234} & $+10.61$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.6506$ $[+0.6317, +0.6713]$ & \textbf{0.0352} & $+19.26$ & $+1.00$ & $+0.933$ $[+0.930, +0.936]$ & \textbf{0.0234} & $+180.36$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $-0.0007$ $[-0.0012, -0.0003]$ & 0.0781 & $-1.04$ & $-0.62$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Mackey--Glass} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0007$ $[-0.0010, -0.0005]$ & \textbf{0.0352} & $-1.50$ & $-0.86$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0004$ $[+0.0000, +0.0008]$ & 0.3867 & $+0.65$ & $+0.50$ & $+0.491$ $[+0.430, +0.553]$ & \textbf{0.0234} & $+4.65$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0012$ $[+0.0008, +0.0015]$ & \textbf{0.0352} & $+1.97$ & $+0.84$ & $+0.466$ $[+0.435, +0.500]$ & \textbf{0.0234} & $+8.20$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0040$ $[+0.0030, +0.0052]$ & \textbf{0.0352} & $+2.19$ & $+1.00$ & $+0.682$ $[+0.643, +0.717]$ & \textbf{0.0234} & $+10.81$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0023$ $[+0.0016, +0.0028]$ & \textbf{0.0352} & $+2.16$ & $+0.98$ & $+0.801$ $[+0.780, +0.818]$ & \textbf{0.0234} & $+25.11$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $+0.0096$ $[-0.0014, +0.0312]$ & 0.4199 & $+0.28$ & $-0.78$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Lorenz} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0001$ $[-0.0003, +0.0000]$ & 1.0000 & $-0.37$ & $-0.46$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0011$ $[+0.0007, +0.0016]$ & \textbf{0.0352} & $+1.51$ & $+0.96$ & $+0.506$ $[+0.472, +0.543]$ & \textbf{0.0234} & $+8.35$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0008$ $[+0.0005, +0.0009]$ & \textbf{0.0352} & $+2.10$ & $+0.98$ & $+0.380$ $[+0.354, +0.403]$ & \textbf{0.0234} & $+9.16$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0029$ $[+0.0023, +0.0034]$ & \textbf{0.0352} & $+3.15$ & $+1.00$ & $+0.639$ $[+0.597, +0.676]$ & \textbf{0.0234} & $+9.46$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0030$ $[+0.0026, +0.0033]$ & \textbf{0.0352} & $+5.11$ & $+1.00$ & $+0.785$ $[+0.763, +0.802]$ & \textbf{0.0234} & $+23.22$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $+0.0197$ $[+0.0001, +0.0417]$ & 1.0000 & $+0.58$ & $-0.10$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Sunspot} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $+0.0000$ $[-0.0001, +0.0001]$ & 1.0000 & $+0.01$ & $+0.02$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $+0.0062$ $[+0.0060, +0.0064]$ & \textbf{0.0352} & $+18.32$ & $+0.96$ & $+0.275$ $[+0.251, +0.299]$ & \textbf{0.0234} & $+6.72$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0029$ $[+0.0023, +0.0037]$ & \textbf{0.0352} & $+2.40$ & $+0.70$ & $+0.456$ $[+0.437, +0.475]$ & \textbf{0.0234} & $+14.19$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.0088$ $[+0.0081, +0.0097]$ & \textbf{0.0352} & $+6.30$ & $+1.00$ & $+0.561$ $[+0.522, +0.600]$ & \textbf{0.0234} & $+8.37$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.0053$ $[+0.0046, +0.0059]$ & \textbf{0.0352} & $+4.70$ & $+0.92$ & $+0.835$ $[+0.825, +0.844]$ & \textbf{0.0234} & $+51.01$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $+0.0007$ $[+0.0003, +0.0012]$ & \textbf{0.0488} & $+0.93$ & $+0.32$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Laser} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}4$ vs.\ Exact & $-0.0053$ $[-0.0074, -0.0036]$ & \textbf{0.0352} & $-1.66$ & $-0.88$ & --- & --- & --- & --- \\
+\quad $r{=}4$ vs.\ SnAp-1 & $-0.0013$ $[-0.0042, +0.0009]$ & 0.9844 & $-0.30$ & $-0.12$ & $+0.553$ $[+0.535, +0.575]$ & \textbf{0.0234} & $+16.42$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ KF-RTRL & $+0.0347$ $[+0.0214, +0.0555]$ & \textbf{0.0352} & $+1.10$ & $+1.00$ & $+0.456$ $[+0.427, +0.487]$ & \textbf{0.0234} & $+8.93$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ RFLO & $+0.1788$ $[+0.1245, +0.2418]$ & \textbf{0.0352} & $+1.78$ & $+1.00$ & $+0.884$ $[+0.857, +0.916]$ & \textbf{0.0234} & $+17.43$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ UORO & $+0.1296$ $[+0.1214, +0.1388]$ & \textbf{0.0352} & $+8.71$ & $+1.00$ & $+0.898$ $[+0.893, +0.904]$ & \textbf{0.0234} & $+100.97$ & $+1.00$ \\
+\quad $r{=}4$ vs.\ TBPTT & $-0.0046$ $[-0.0078, -0.0016]$ & 0.1172 & $-0.86$ & $-0.72$ & --- & --- & --- & --- \\
+\addlinespace
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+% D4 full-matrix statistics (appendix table, part 2 of 3, rank skrtrl-r16)
+% Generated 2026-10-15 12:31:23 by code/make_r2_d4_tables.py -- do not edit by hand; re-run the script.
+% Inputs: results/r2/d4_eval
+% Aggregation: window20 (frac=0.8, tail=5), cross-seed ddof=0, protocol 10 seeds x 20000 steps.
+% LR selection: results/r2/D4_SELECT_stage2.json (81 of 81 pairs have a stage-2 winner, generated 2026-10-15 12:31:20)
+% CAS class note: the columns are plain l/c only (no p{}), as in the other tables of main_cas; cell text is kept to one line accordingly.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{\textbf{Paired comparisons of the full matrix, \skrtrl{} $r{=}16$} (part 2 of 3, the 90 comparisons at this rank): the paired mean advantage $\Delta$ with a $95\%$ bootstrap interval, the Holm-corrected Wilcoxon $p_{\mathrm{H}}$, the effect size $d_z$ and Cliff's $\delta$, over $10$ paired seeds. Column definitions, conventions and the sign convention on $\Delta$ are in \Cref{app:suppstats}.}
+\label{tab:r2stats2}
+\begin{tabular}{lcccccccc}
+\toprule
+Comparison & \multicolumn{4}{c}{task metric} & \multicolumn{4}{c}{gradient cosine} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ \\
+\midrule
+\multicolumn{9}{l}{\textit{adding} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0051$ $[-0.0072, -0.0034]$ & \textbf{0.0352} & $-1.55$ & $-0.28$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0013$ $[-0.0056, +0.0114]$ & 1.0000 & $+0.09$ & $-0.06$ & $+0.328$ $[+0.277, +0.385]$ & \textbf{0.0234} & $+3.53$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0054$ $[+0.0007, +0.0102]$ & 0.4219 & $+0.66$ & $+0.24$ & $+0.293$ $[+0.246, +0.336]$ & \textbf{0.0234} & $+3.78$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0150$ $[+0.0097, +0.0205]$ & \textbf{0.0352} & $+1.61$ & $+0.60$ & $+0.321$ $[+0.275, +0.378]$ & \textbf{0.0234} & $+3.62$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0495$ $[+0.0170, +0.1063]$ & \textbf{0.0352} & $+0.57$ & $+0.92$ & $+0.734$ $[+0.703, +0.765]$ & \textbf{0.0234} & $+14.21$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $-0.0051$ $[-0.0072, -0.0034]$ & \textbf{0.0352} & $-1.55$ & $-0.28$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{copy} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $+0.0172$ $[+0.0024, +0.0336]$ & 0.4512 & $+0.65$ & $+0.42$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0300$ $[+0.0144, +0.0478]$ & 0.0586 & $+1.05$ & $+0.82$ & $+0.179$ $[+0.175, +0.182]$ & \textbf{0.0234} & $+28.78$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0075$ $[-0.0045, +0.0218]$ & 1.0000 & $+0.34$ & $+0.06$ & $+0.393$ $[+0.336, +0.456]$ & \textbf{0.0234} & $+3.87$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $-0.0282$ $[-0.0536, +0.0015]$ & 0.4512 & $-0.61$ & $-0.58$ & $+0.964$ $[+0.960, +0.969]$ & \textbf{0.0234} & $+126.24$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0278$ $[+0.0111, +0.0473]$ & 0.1172 & $+0.90$ & $+0.76$ & $+0.951$ $[+0.937, +0.964]$ & \textbf{0.0234} & $+39.92$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $+0.0287$ $[+0.0126, +0.0471]$ & 0.1172 & $+0.97$ & $+0.78$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{$a^nb^n$} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0110$ $[-0.0159, -0.0058]$ & \textbf{0.0391} & $-1.26$ & $-0.60$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0219$ $[+0.0171, +0.0266]$ & \textbf{0.0352} & $+2.70$ & $+1.00$ & $+0.512$ $[+0.439, +0.583]$ & \textbf{0.0234} & $+4.17$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0276$ $[+0.0237, +0.0314]$ & \textbf{0.0352} & $+4.22$ & $+1.00$ & $+0.542$ $[+0.508, +0.575]$ & \textbf{0.0234} & $+9.51$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0143$ $[+0.0094, +0.0188]$ & \textbf{0.0352} & $+1.78$ & $+0.86$ & $+0.467$ $[+0.432, +0.497]$ & \textbf{0.0234} & $+8.26$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0382$ $[+0.0329, +0.0437]$ & \textbf{0.0352} & $+4.06$ & $+1.00$ & $+0.891$ $[+0.881, +0.903]$ & \textbf{0.0234} & $+48.40$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $+0.0187$ $[+0.0139, +0.0234]$ & \textbf{0.0352} & $+2.34$ & $+0.92$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{rotation} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0057$ $[-0.0110, -0.0005]$ & 0.6328 & $-0.64$ & $-0.58$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $-0.0620$ $[-0.0651, -0.0582]$ & \textbf{0.0352} & $-10.56$ & $-1.00$ & $+0.430$ $[+0.396, +0.462]$ & \textbf{0.0234} & $+7.56$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0008$ $[-0.0042, +0.0054]$ & 1.0000 & $+0.10$ & $+0.04$ & $+0.462$ $[+0.390, +0.528]$ & \textbf{0.0234} & $+3.94$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $-0.0152$ $[-0.0226, -0.0067]$ & 0.1367 & $-1.11$ & $-0.64$ & $+0.697$ $[+0.667, +0.727]$ & \textbf{0.0234} & $+13.62$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0057$ $[+0.0022, +0.0091]$ & 0.1367 & $+0.98$ & $+0.70$ & $+0.807$ $[+0.770, +0.845]$ & \textbf{0.0234} & $+12.51$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $-0.0797$ $[-0.0852, -0.0741]$ & \textbf{0.0352} & $-8.37$ & $-1.00$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{H\'enon} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0006$ $[-0.0010, -0.0003]$ & 0.1914 & $-0.99$ & $-0.70$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $-0.0005$ $[-0.0008, -0.0001]$ & 0.1914 & $-0.83$ & $-0.54$ & $+0.196$ $[+0.172, +0.221]$ & \textbf{0.0234} & $+4.73$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0154$ $[+0.0057, +0.0331]$ & \textbf{0.0352} & $+0.56$ & $+1.00$ & $+0.348$ $[+0.300, +0.384]$ & \textbf{0.0234} & $+4.78$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0514$ $[+0.0407, +0.0643]$ & \textbf{0.0352} & $+2.50$ & $+1.00$ & $+0.585$ $[+0.552, +0.619]$ & \textbf{0.0234} & $+10.27$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.6508$ $[+0.6320, +0.6712]$ & \textbf{0.0352} & $+19.43$ & $+1.00$ & $+0.934$ $[+0.931, +0.937]$ & \textbf{0.0234} & $+190.80$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $-0.0006$ $[-0.0012, -0.0001]$ & 0.2520 & $-0.63$ & $-0.48$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Mackey--Glass} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0001$ $[-0.0003, +0.0000]$ & 0.4219 & $-0.50$ & $-0.32$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0010$ $[+0.0008, +0.0013]$ & \textbf{0.0352} & $+2.37$ & $+1.00$ & $+0.493$ $[+0.440, +0.543]$ & \textbf{0.0234} & $+5.53$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0018$ $[+0.0015, +0.0021]$ & \textbf{0.0352} & $+3.69$ & $+1.00$ & $+0.468$ $[+0.439, +0.499]$ & \textbf{0.0234} & $+9.10$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0046$ $[+0.0035, +0.0060]$ & \textbf{0.0352} & $+2.16$ & $+1.00$ & $+0.684$ $[+0.649, +0.715]$ & \textbf{0.0234} & $+12.12$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0029$ $[+0.0023, +0.0034]$ & \textbf{0.0352} & $+3.12$ & $+1.00$ & $+0.802$ $[+0.789, +0.816]$ & \textbf{0.0234} & $+34.76$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $+0.0102$ $[-0.0007, +0.0318]$ & 0.4219 & $+0.30$ & $-0.64$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Lorenz} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0001$ $[-0.0003, +0.0000]$ & 1.0000 & $-0.45$ & $-0.36$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0011$ $[+0.0007, +0.0015]$ & \textbf{0.0352} & $+1.60$ & $+0.88$ & $+0.506$ $[+0.475, +0.536]$ & \textbf{0.0234} & $+9.83$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0007$ $[+0.0005, +0.0010]$ & \textbf{0.0352} & $+1.76$ & $+0.92$ & $+0.380$ $[+0.350, +0.411]$ & \textbf{0.0234} & $+7.29$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0028$ $[+0.0021, +0.0034]$ & \textbf{0.0352} & $+2.61$ & $+1.00$ & $+0.639$ $[+0.609, +0.668]$ & \textbf{0.0234} & $+12.84$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0029$ $[+0.0026, +0.0033]$ & \textbf{0.0352} & $+5.36$ & $+1.00$ & $+0.785$ $[+0.767, +0.803]$ & \textbf{0.0234} & $+25.25$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $+0.0197$ $[+0.0001, +0.0418]$ & 1.0000 & $+0.58$ & $-0.06$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Sunspot} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0000$ $[-0.0001, +0.0001]$ & 1.0000 & $-0.03$ & $+0.04$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0062$ $[+0.0060, +0.0064]$ & \textbf{0.0352} & $+18.83$ & $+0.94$ & $+0.276$ $[+0.252, +0.300]$ & \textbf{0.0234} & $+6.68$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0029$ $[+0.0023, +0.0037]$ & \textbf{0.0352} & $+2.33$ & $+0.68$ & $+0.457$ $[+0.438, +0.476]$ & \textbf{0.0234} & $+14.10$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.0088$ $[+0.0081, +0.0097]$ & \textbf{0.0352} & $+6.13$ & $+1.00$ & $+0.562$ $[+0.523, +0.601]$ & \textbf{0.0234} & $+8.43$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.0053$ $[+0.0045, +0.0059]$ & \textbf{0.0352} & $+4.54$ & $+0.92$ & $+0.836$ $[+0.826, +0.845]$ & \textbf{0.0234} & $+50.42$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $+0.0007$ $[+0.0003, +0.0012]$ & \textbf{0.0488} & $+0.90$ & $+0.30$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Laser} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}16$ vs.\ Exact & $-0.0037$ $[-0.0055, -0.0024]$ & \textbf{0.0352} & $-1.38$ & $-0.80$ & --- & --- & --- & --- \\
+\quad $r{=}16$ vs.\ SnAp-1 & $+0.0003$ $[-0.0015, +0.0020]$ & 0.9844 & $+0.11$ & $+0.28$ & $+0.554$ $[+0.537, +0.573]$ & \textbf{0.0234} & $+18.65$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ KF-RTRL & $+0.0363$ $[+0.0218, +0.0577]$ & \textbf{0.0352} & $+1.13$ & $+1.00$ & $+0.457$ $[+0.427, +0.486]$ & \textbf{0.0234} & $+9.00$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ RFLO & $+0.1804$ $[+0.1266, +0.2422]$ & \textbf{0.0352} & $+1.81$ & $+1.00$ & $+0.885$ $[+0.859, +0.911]$ & \textbf{0.0234} & $+19.80$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ UORO & $+0.1312$ $[+0.1231, +0.1399]$ & \textbf{0.0352} & $+9.05$ & $+1.00$ & $+0.899$ $[+0.891, +0.906]$ & \textbf{0.0234} & $+70.72$ & $+1.00$ \\
+\quad $r{=}16$ vs.\ TBPTT & $-0.0030$ $[-0.0065, -0.0004]$ & 0.4199 & $-0.56$ & $-0.56$ & --- & --- & --- & --- \\
+\addlinespace
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+% D4 full-matrix statistics (appendix table, part 3 of 3, rank skrtrl-r32)
+% Generated 2026-10-15 12:31:23 by code/make_r2_d4_tables.py -- do not edit by hand; re-run the script.
+% Inputs: results/r2/d4_eval
+% Aggregation: window20 (frac=0.8, tail=5), cross-seed ddof=0, protocol 10 seeds x 20000 steps.
+% LR selection: results/r2/D4_SELECT_stage2.json (81 of 81 pairs have a stage-2 winner, generated 2026-10-15 12:31:20)
+% CAS class note: the columns are plain l/c only (no p{}), as in the other tables of main_cas; cell text is kept to one line accordingly.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{\textbf{Paired comparisons of the full matrix, \skrtrl{} $r{=}32$} (part 3 of 3, the 90 comparisons at this rank): the paired mean advantage $\Delta$ with a $95\%$ bootstrap interval, the Holm-corrected Wilcoxon $p_{\mathrm{H}}$, the effect size $d_z$ and Cliff's $\delta$, over $10$ paired seeds. Column definitions, conventions and the sign convention on $\Delta$ are in \Cref{app:suppstats}.}
+\label{tab:r2stats3}
+\begin{tabular}{lcccccccc}
+\toprule
+Comparison & \multicolumn{4}{c}{task metric} & \multicolumn{4}{c}{gradient cosine} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ & $\Delta$ $[95\%$ CI$]$ & $p_{\mathrm{H}}$ & $d_z$ & $\delta$ \\
+\midrule
+\multicolumn{9}{l}{\textit{adding} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $-0.0031$ $[-0.0047, -0.0019]$ & \textbf{0.0352} & $-1.27$ & $-0.18$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0034$ $[-0.0043, +0.0146]$ & 1.0000 & $+0.20$ & $+0.04$ & $+0.370$ $[+0.325, +0.421]$ & \textbf{0.0234} & $+4.50$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0074$ $[+0.0030, +0.0116]$ & 0.1172 & $+1.01$ & $+0.44$ & $+0.334$ $[+0.284, +0.379]$ & \textbf{0.0234} & $+4.10$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0171$ $[+0.0114, +0.0230]$ & \textbf{0.0352} & $+1.71$ & $+0.64$ & $+0.363$ $[+0.320, +0.417]$ & \textbf{0.0234} & $+4.32$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0516$ $[+0.0198, +0.1078]$ & \textbf{0.0352} & $+0.60$ & $+1.00$ & $+0.776$ $[+0.756, +0.800]$ & \textbf{0.0234} & $+20.43$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $-0.0031$ $[-0.0047, -0.0019]$ & \textbf{0.0352} & $-1.27$ & $-0.18$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{copy} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $+0.0341$ $[+0.0211, +0.0463]$ & 0.0586 & $+1.56$ & $+0.84$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0469$ $[+0.0361, +0.0603]$ & \textbf{0.0352} & $+2.23$ & $+1.00$ & $+0.175$ $[+0.169, +0.181]$ & \textbf{0.0234} & $+17.26$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0244$ $[+0.0101, +0.0385]$ & 0.1953 & $+1.00$ & $+0.76$ & $+0.389$ $[+0.331, +0.454]$ & \textbf{0.0234} & $+3.72$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $-0.0113$ $[-0.0312, +0.0077]$ & 1.0000 & $-0.34$ & $-0.30$ & $+0.961$ $[+0.953, +0.966]$ & \textbf{0.0234} & $+86.51$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0447$ $[+0.0336, +0.0586]$ & \textbf{0.0352} & $+2.05$ & $+1.00$ & $+0.947$ $[+0.932, +0.962]$ & \textbf{0.0234} & $+37.33$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $+0.0455$ $[+0.0359, +0.0572]$ & \textbf{0.0352} & $+2.46$ & $+1.00$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{$a^nb^n$} -- task metric: accuracy (higher is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $-0.0073$ $[-0.0139, -0.0011]$ & 0.1934 & $-0.66$ & $-0.42$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0256$ $[+0.0196, +0.0315]$ & \textbf{0.0352} & $+2.50$ & $+1.00$ & $+0.523$ $[+0.451, +0.592]$ & \textbf{0.0234} & $+4.33$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0313$ $[+0.0229, +0.0401]$ & \textbf{0.0352} & $+2.12$ & $+1.00$ & $+0.552$ $[+0.517, +0.587]$ & \textbf{0.0234} & $+9.27$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0180$ $[+0.0114, +0.0249]$ & \textbf{0.0352} & $+1.58$ & $+0.88$ & $+0.477$ $[+0.444, +0.506]$ & \textbf{0.0234} & $+8.92$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0419$ $[+0.0346, +0.0493]$ & \textbf{0.0352} & $+3.33$ & $+1.00$ & $+0.902$ $[+0.894, +0.910]$ & \textbf{0.0234} & $+69.35$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $+0.0223$ $[+0.0143, +0.0312]$ & \textbf{0.0352} & $+1.54$ & $+0.92$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{rotation} -- task metric: MSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $+0.0034$ $[-0.0021, +0.0091]$ & 1.0000 & $+0.35$ & $+0.22$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $-0.0530$ $[-0.0599, -0.0462]$ & \textbf{0.0352} & $-4.52$ & $-1.00$ & $+0.519$ $[+0.493, +0.542]$ & \textbf{0.0234} & $+12.32$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0098$ $[+0.0018, +0.0184]$ & 0.2188 & $+0.69$ & $+0.56$ & $+0.551$ $[+0.507, +0.593]$ & \textbf{0.0234} & $+7.54$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $-0.0062$ $[-0.0153, +0.0038]$ & 1.0000 & $-0.38$ & $-0.40$ & $+0.786$ $[+0.758, +0.815]$ & \textbf{0.0234} & $+15.84$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0148$ $[+0.0099, +0.0196]$ & \textbf{0.0352} & $+1.78$ & $+0.86$ & $+0.896$ $[+0.865, +0.924]$ & \textbf{0.0234} & $+17.82$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $-0.0706$ $[-0.0777, -0.0642]$ & \textbf{0.0352} & $-6.04$ & $-1.00$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{H\'enon} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $-0.0005$ $[-0.0010, -0.0000]$ & 0.1953 & $-0.65$ & $-0.66$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $-0.0004$ $[-0.0008, +0.0001]$ & 0.2520 & $-0.48$ & $-0.46$ & $+0.205$ $[+0.181, +0.229]$ & \textbf{0.0234} & $+5.01$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0155$ $[+0.0057, +0.0335]$ & \textbf{0.0352} & $+0.56$ & $+1.00$ & $+0.356$ $[+0.309, +0.393]$ & \textbf{0.0234} & $+4.94$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0515$ $[+0.0409, +0.0644]$ & \textbf{0.0352} & $+2.52$ & $+1.00$ & $+0.594$ $[+0.561, +0.627]$ & \textbf{0.0234} & $+10.51$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.6508$ $[+0.6320, +0.6715]$ & \textbf{0.0352} & $+19.33$ & $+1.00$ & $+0.943$ $[+0.940, +0.945]$ & \textbf{0.0234} & $+240.76$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $-0.0005$ $[-0.0010, -0.0000]$ & 0.3223 & $-0.57$ & $-0.34$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Mackey--Glass} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $+0.0000$ $[-0.0002, +0.0002]$ & 0.4316 & $+0.09$ & $+0.04$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0012$ $[+0.0008, +0.0016]$ & \textbf{0.0352} & $+1.91$ & $+1.00$ & $+0.551$ $[+0.496, +0.606]$ & \textbf{0.0234} & $+5.88$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0019$ $[+0.0015, +0.0023]$ & \textbf{0.0352} & $+3.05$ & $+1.00$ & $+0.525$ $[+0.501, +0.554]$ & \textbf{0.0234} & $+11.36$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0048$ $[+0.0038, +0.0061]$ & \textbf{0.0352} & $+2.44$ & $+1.00$ & $+0.742$ $[+0.704, +0.776]$ & \textbf{0.0234} & $+12.30$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0031$ $[+0.0025, +0.0036]$ & \textbf{0.0352} & $+3.03$ & $+1.00$ & $+0.860$ $[+0.854, +0.866]$ & \textbf{0.0234} & $+81.18$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $+0.0103$ $[-0.0006, +0.0319]$ & 0.4219 & $+0.30$ & $-0.48$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Lorenz} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $+0.0000$ $[-0.0000, +0.0001]$ & 1.0000 & $+0.11$ & $-0.02$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0012$ $[+0.0008, +0.0017]$ & \textbf{0.0352} & $+1.60$ & $+1.00$ & $+0.569$ $[+0.546, +0.596]$ & \textbf{0.0234} & $+13.56$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0009$ $[+0.0008, +0.0010]$ & \textbf{0.0352} & $+4.16$ & $+1.00$ & $+0.443$ $[+0.424, +0.464]$ & \textbf{0.0234} & $+12.76$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0030$ $[+0.0024, +0.0035]$ & \textbf{0.0352} & $+3.23$ & $+1.00$ & $+0.702$ $[+0.665, +0.735]$ & \textbf{0.0234} & $+11.89$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0031$ $[+0.0028, +0.0034]$ & \textbf{0.0352} & $+5.97$ & $+1.00$ & $+0.847$ $[+0.836, +0.858]$ & \textbf{0.0234} & $+44.65$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $+0.0198$ $[+0.0002, +0.0418]$ & 1.0000 & $+0.58$ & $-0.02$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Sunspot} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $+0.0001$ $[+0.0001, +0.0002]$ & 0.0586 & $+0.97$ & $+0.10$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0064$ $[+0.0062, +0.0066]$ & \textbf{0.0352} & $+21.39$ & $+0.96$ & $+0.309$ $[+0.286, +0.330]$ & \textbf{0.0234} & $+8.15$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0031$ $[+0.0024, +0.0039]$ & \textbf{0.0352} & $+2.39$ & $+0.76$ & $+0.489$ $[+0.470, +0.507]$ & \textbf{0.0234} & $+15.36$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.0090$ $[+0.0083, +0.0099]$ & \textbf{0.0352} & $+6.37$ & $+1.00$ & $+0.594$ $[+0.558, +0.630]$ & \textbf{0.0234} & $+9.58$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.0054$ $[+0.0048, +0.0059]$ & \textbf{0.0352} & $+5.41$ & $+0.92$ & $+0.868$ $[+0.857, +0.876]$ & \textbf{0.0234} & $+52.63$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $+0.0008$ $[+0.0005, +0.0013]$ & \textbf{0.0352} & $+1.27$ & $+0.38$ & --- & --- & --- & --- \\
+\addlinespace
+\multicolumn{9}{l}{\textit{Laser} -- task metric: NMSE (lower is better); Holm family: 18 comparisons on the metric, 12 on the cosine} \\
+\quad $r{=}32$ vs.\ Exact & $-0.0019$ $[-0.0029, -0.0008]$ & 0.0957 & $-1.09$ & $-0.62$ & --- & --- & --- & --- \\
+\quad $r{=}32$ vs.\ SnAp-1 & $+0.0021$ $[+0.0000, +0.0041]$ & 0.4219 & $+0.62$ & $+0.48$ & $+0.582$ $[+0.568, +0.599]$ & \textbf{0.0234} & $+21.95$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ KF-RTRL & $+0.0381$ $[+0.0242, +0.0596]$ & \textbf{0.0352} & $+1.17$ & $+1.00$ & $+0.485$ $[+0.459, +0.511]$ & \textbf{0.0234} & $+10.91$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ RFLO & $+0.1822$ $[+0.1274, +0.2465]$ & \textbf{0.0352} & $+1.78$ & $+1.00$ & $+0.913$ $[+0.889, +0.940]$ & \textbf{0.0234} & $+21.20$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ UORO & $+0.1330$ $[+0.1236, +0.1439]$ & \textbf{0.0352} & $+7.61$ & $+1.00$ & $+0.927$ $[+0.921, +0.933]$ & \textbf{0.0234} & $+93.86$ & $+1.00$ \\
+\quad $r{=}32$ vs.\ TBPTT & $-0.0012$ $[-0.0026, +0.0004]$ & 0.4219 & $-0.48$ & $-0.34$ & --- & --- & --- & --- \\
+\addlinespace
+\bottomrule
+\end{tabular}
+\end{table*}
+

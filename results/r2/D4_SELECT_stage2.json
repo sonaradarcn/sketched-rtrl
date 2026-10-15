@@ -1,0 +1,7029 @@
+{
+ "meta": {
+  "stage": 2,
+  "indir": "results/r2/d4_stage2",
+  "generated": "2026-10-15 12:31:20",
+  "frac": 0.8,
+  "seeds": [
+   100,
+   101
+  ],
+  "steps_expected": 20000,
+  "tie_rtol": 1e-12,
+  "max_extend": 2,
+  "allow_partial": false,
+  "allow_window_fallback": false,
+  "higher_is_better": [
+   "anbn",
+   "copy"
+  ],
+  "base_lrs": [
+   0.0001,
+   0.0003,
+   0.001,
+   0.003
+  ],
+  "tbptt_windows": [
+   25,
+   50
+  ],
+  "window_flag": "tbptt_window",
+  "tbptt_default_window": 25,
+  "tasks": [
+   "adding",
+   "copy",
+   "anbn",
+   "rotation",
+   "henon",
+   "mackeyglass",
+   "lorenz",
+   "sunspot",
+   "laser"
+  ],
+  "algos": [
+   "exact",
+   "snap1",
+   "skrtrl-r4",
+   "skrtrl-r16",
+   "skrtrl-r32",
+   "uoro",
+   "kfrtrl",
+   "rflo",
+   "tbptt"
+  ],
+  "n_runs": 324,
+  "n_pairs": 81,
+  "restricted_to_stage1_top2": true
+ },
+ "pairs": [
+  {
+   "task": "adding",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.1991927990821337,
+      "101": 0.22410335939280068
+     },
+     "score": 0.2116480792374672,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2116480792374672
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.27455412687868347,
+      "101": 0.22790403745056573
+     },
+     "score": 0.2512290821646246,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2512290821646246
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.2116480792374672,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.2116480792374672
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.2512290821646246
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.20570142210672643,
+      "101": 0.2397219206611063
+     },
+     "score": 0.22271167138391637,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.22271167138391637
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.20082009135099826,
+      "101": 0.22610756949859329
+     },
+     "score": 0.21346383042479578,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21346383042479578
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.21346383042479578,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.21346383042479578
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.22271167138391637
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.20104672259590284,
+      "101": 0.23095344603244547
+     },
+     "score": 0.21600008431417417,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21600008431417417
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.2278900776488262,
+      "101": 0.24226302844822112
+     },
+     "score": 0.23507655304852365,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.23507655304852365
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.21600008431417417,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.21600008431417417
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.23507655304852365
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.2011927645238467,
+      "101": 0.22985573696624903
+     },
+     "score": 0.21552425074504789,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21552425074504789
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.22553635738322889,
+      "101": 0.22514132513509255
+     },
+     "score": 0.2253388412591607,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2253388412591607
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.21552425074504789,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.21552425074504789
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.2253388412591607
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.19739733379601002,
+      "101": 0.2255336193363462
+     },
+     "score": 0.2114654765661781,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2114654765661781
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.23045955644089158,
+      "101": 0.2234780902237182
+     },
+     "score": 0.2269688233323049,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2269688233323049
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.2114654765661781,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.2114654765661781
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.2269688233323049
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.21826662201762448,
+      "101": 0.2723341241990482
+     },
+     "score": 0.24530037310833633,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.24530037310833633
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": null,
+     "tag": "lr3e-02",
+     "seed_scores": {
+      "100": 0.2611554237451666,
+      "101": 0.2643726998928597
+     },
+     "score": 0.26276406181901313,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 2,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.26276406181901313
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.24530037310833633,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.24530037310833633
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": null,
+     "tag": "lr3e-02",
+     "score": 0.26276406181901313
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.19883470014012536,
+      "101": 0.23233326208340324
+     },
+     "score": 0.2155839811117643,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2155839811117643
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.2187617268225388,
+      "101": 0.21664478028216966
+     },
+     "score": 0.21770325355235423,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21770325355235423
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.2155839811117643,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.2155839811117643
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.21770325355235423
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.20821962518885367,
+      "101": 0.24033918501620483
+     },
+     "score": 0.22427940510252925,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.22427940510252925
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.2164699790273292,
+      "101": 0.23863118731393873
+     },
+     "score": 0.22755058317063398,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.22755058317063398
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.22427940510252925,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.22427940510252925
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.22755058317063398
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "adding",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.199177111792327,
+      "101": 0.22410497591841752
+     },
+     "score": 0.21164104385537225,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21164104385537225
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "seed_scores": {
+      "100": 0.19918779777127413,
+      "101": 0.22410359585611692
+     },
+     "score": 0.21164569681369552,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21164569681369552
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": 25,
+    "tag": "lr3e-03",
+    "score": 0.21164104385537225,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "score": 0.21164104385537225
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "score": 0.21164569681369552
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "exact",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.14531249999999998,
+      "101": 0.149765625
+     },
+     "score": 0.14753906249999998,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.14753906249999998
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.1630078125,
+      "101": 0.15632812499999998
+     },
+     "score": 0.15966796875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.15966796875
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.15966796875,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.15966796875
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.14753906249999998
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "snap1",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-05",
+     "lr": 3.0000000000000004e-05,
+     "window": null,
+     "tag": "lr3e-05",
+     "seed_scores": {
+      "100": 0.11164062500000001,
+      "101": 0.1287890625
+     },
+     "score": 0.12021484375,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.12021484375
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.12507812499999998,
+      "101": 0.1264453125
+     },
+     "score": 0.12576171874999997,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.12576171874999997
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.12576171874999997,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.12576171874999997
+    },
+    {
+     "lrtag": "lr3e-05",
+     "lr": 3.0000000000000004e-05,
+     "window": null,
+     "tag": "lr3e-05",
+     "score": 0.12021484375
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "skrtrl-r4",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.1475,
+      "101": 0.1483203125
+     },
+     "score": 0.14791015624999998,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.14791015624999998
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.16027343750000003,
+      "101": 0.16269531249999997
+     },
+     "score": 0.161484375,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.161484375
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.161484375,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.161484375
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.14791015624999998
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "skrtrl-r16",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.143359375,
+      "101": 0.12124999999999997
+     },
+     "score": 0.1323046875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.1323046875
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.13374999999999998,
+      "101": 0.137578125
+     },
+     "score": 0.1356640625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.1356640625
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.1356640625,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.1356640625
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.1323046875
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "skrtrl-r32",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.124140625,
+      "101": 0.1256640625
+     },
+     "score": 0.12490234375,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.12490234375
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.1519140625,
+      "101": 0.15042968750000002
+     },
+     "score": 0.151171875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.151171875
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.151171875,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.151171875
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.12490234375
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "uoro",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.123125,
+      "101": 0.13046875
+     },
+     "score": 0.126796875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.126796875
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.12800781249999998,
+      "101": 0.1284765625
+     },
+     "score": 0.1282421875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.1282421875
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.1282421875,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.1282421875
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.126796875
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "kfrtrl",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.15218750000000003,
+      "101": 0.19699218749999997
+     },
+     "score": 0.17458984375,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.17458984375
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": null,
+     "tag": "lr3e-02",
+     "seed_scores": {
+      "100": 0.142734375,
+      "101": 0.12726562500000002
+     },
+     "score": 0.135,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 2,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.135
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": null,
+    "tag": "lr1e-02",
+    "score": 0.17458984375,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.17458984375
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": null,
+     "tag": "lr3e-02",
+     "score": 0.135
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "rflo",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.1541015625,
+      "101": 0.16621093750000002
+     },
+     "score": 0.16015625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.16015625
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.1662109375,
+      "101": 0.1476953125
+     },
+     "score": 0.156953125,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.156953125
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.16015625,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.16015625
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.156953125
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "copy",
+   "algo": "tbptt",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": 25,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.1257421875,
+      "101": 0.13222656249999998
+     },
+     "score": 0.12898437499999998,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.12898437499999998
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": 50,
+     "tag": "lr1e-04_w50",
+     "seed_scores": {
+      "100": 0.1257421875,
+      "101": 0.13222656249999998
+     },
+     "score": 0.12898437499999998,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.12898437499999998
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": 25,
+    "tag": "lr1e-04",
+    "score": 0.12898437499999998,
+    "extend_level": 0
+   },
+   "ties_with_selected": [
+    "lr1e-04_w50"
+   ],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": 25,
+     "tag": "lr1e-04",
+     "score": 0.12898437499999998
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": 50,
+     "tag": "lr1e-04_w50",
+     "score": 0.12898437499999998
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "exact",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.9009765625,
+      "101": 0.89953125
+     },
+     "score": 0.90025390625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.90025390625
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.91140625,
+      "101": 0.905703125
+     },
+     "score": 0.9085546875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9085546875
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.9085546875,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.9085546875
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.90025390625
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "snap1",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.901796875,
+      "101": 0.9081249999999998
+     },
+     "score": 0.9049609375,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9049609375
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.8986328125,
+      "101": 0.90328125
+     },
+     "score": 0.90095703125,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.90095703125
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.9049609375,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.9049609375
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.90095703125
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "skrtrl-r4",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.91640625,
+      "101": 0.9146875000000001
+     },
+     "score": 0.915546875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.915546875
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.8958984375000001,
+      "101": 0.8949609374999999
+     },
+     "score": 0.8954296875000001,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.8954296875000001
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.915546875,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.915546875
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.8954296875000001
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "skrtrl-r16",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.9233593749999999,
+      "101": 0.917421875
+     },
+     "score": 0.920390625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.920390625
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.89453125,
+      "101": 0.9089453125
+     },
+     "score": 0.90173828125,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.90173828125
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.920390625,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.920390625
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.90173828125
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "skrtrl-r32",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.9010546875000002,
+      "101": 0.9005859374999998
+     },
+     "score": 0.9008203125,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9008203125
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.9304296875,
+      "101": 0.9340624999999999
+     },
+     "score": 0.9322460937499999,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9322460937499999
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.9322460937499999,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.9322460937499999
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.9008203125
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "uoro",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.8857421875000001,
+      "101": 0.8909765624999999
+     },
+     "score": 0.8883593750000001,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.8883593750000001
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.8884375,
+      "101": 0.8887890624999999
+     },
+     "score": 0.8886132812499999,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.8886132812499999
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.8886132812499999,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.8886132812499999
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.8883593750000001
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "kfrtrl",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.8896484375,
+      "101": 0.902578125
+     },
+     "score": 0.89611328125,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.89611328125
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.9025,
+      "101": 0.8945703125
+     },
+     "score": 0.8985351562499999,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.8985351562499999
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.8985351562499999,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.8985351562499999
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.89611328125
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "rflo",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.9051171875000001,
+      "101": 0.904765625
+     },
+     "score": 0.9049414062500001,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9049414062500001
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.9036328124999999,
+      "101": 0.9089453124999999
+     },
+     "score": 0.9062890625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9062890625
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.9062890625,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.9062890625
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.9049414062500001
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "anbn",
+   "algo": "tbptt",
+   "direction": "higher_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 25,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.8837499999999999,
+      "101": 0.8902343750000001
+     },
+     "score": 0.8869921875,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.8869921875
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "seed_scores": {
+      "100": 0.9075390625,
+      "101": 0.9076171874999999
+     },
+     "score": 0.9075781249999999,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": -0.9075781249999999
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": 50,
+    "tag": "lr3e-03_w50",
+    "score": 0.9075781249999999,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "score": 0.9075781249999999
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 25,
+     "tag": "lr1e-03",
+     "score": 0.8869921875
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.10267695829388686,
+      "101": 0.11258069652714768
+     },
+     "score": 0.10762882741051727,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.10762882741051727
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.11011626121937297,
+      "101": 0.11551218185108153
+     },
+     "score": 0.11281422153522724,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11281422153522724
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.10762882741051727,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.10762882741051727
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11281422153522724
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.04940508123642303,
+      "101": 0.05712996623822846
+     },
+     "score": 0.053267523737325746,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.053267523737325746
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.07200141524117498,
+      "101": 0.07871849084738643
+     },
+     "score": 0.0753599530442807,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0753599530442807
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.053267523737325746,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.053267523737325746
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.0753599530442807
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.10679695717262802,
+      "101": 0.10953909156902228
+     },
+     "score": 0.10816802437082515,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.10816802437082515
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.11566823620971264,
+      "101": 0.1082193501457732
+     },
+     "score": 0.11194379317774292,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11194379317774292
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.10816802437082515,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.10816802437082515
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11194379317774292
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.11357632592400477,
+      "101": 0.11214258514752147
+     },
+     "score": 0.11285945553576313,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11285945553576313
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.14121933775546494,
+      "101": 0.13623267653667426
+     },
+     "score": 0.13872600714606959,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13872600714606959
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.11285945553576313,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11285945553576313
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.13872600714606959
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.10830433454422747,
+      "101": 0.09939899744233115
+     },
+     "score": 0.1038516659932793,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.1038516659932793
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.10362251684127843,
+      "101": 0.11737851014127955
+     },
+     "score": 0.11050051349127898,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11050051349127898
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.1038516659932793,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.1038516659932793
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11050051349127898
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.10453332678298466,
+      "101": 0.10453124346910046
+     },
+     "score": 0.10453228512604257,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.10453228512604257
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.12260719676385634,
+      "101": 0.12312413766980172
+     },
+     "score": 0.12286566721682904,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.12286566721682904
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.10453228512604257,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.10453228512604257
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.12286566721682904
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.10382106843520887,
+      "101": 0.11653720330155919
+     },
+     "score": 0.11017913586838403,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11017913586838403
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.11152840425609613,
+      "101": 0.1212492538569495
+     },
+     "score": 0.11638882905652281,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11638882905652281
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.11017913586838403,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11017913586838403
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.11638882905652281
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.10892941356927621,
+      "101": 0.08957208052219358
+     },
+     "score": 0.09925074704573489,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.09925074704573489
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.1206023845175514,
+      "101": 0.1236201751185581
+     },
+     "score": 0.12211127981805475,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.12211127981805475
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.09925074704573489,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.09925074704573489
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.12211127981805475
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "rotation",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 25,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.02808957239527444,
+      "101": 0.03535568779359891
+     },
+     "score": 0.031722630094436675,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.031722630094436675
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 50,
+     "tag": "lr1e-03_w50",
+     "seed_scores": {
+      "100": 0.02326360043443856,
+      "101": 0.04418295004434185
+     },
+     "score": 0.033723275239390206,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.033723275239390206
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": 25,
+    "tag": "lr1e-03",
+    "score": 0.031722630094436675,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 25,
+     "tag": "lr1e-03",
+     "score": 0.031722630094436675
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": 50,
+     "tag": "lr1e-03_w50",
+     "score": 0.033723275239390206
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.004096465448805873,
+      "101": 0.0045820393926786105
+     },
+     "score": 0.0043392524207422414,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0043392524207422414
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.007795182987024419,
+      "101": 0.006074442707391654
+     },
+     "score": 0.006934812847208037,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.006934812847208037
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.0043392524207422414,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.0043392524207422414
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.006934812847208037
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.004180311529910626,
+      "101": 0.004738443956837273
+     },
+     "score": 0.00445937774337395,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00445937774337395
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.007566283646881403,
+      "101": 0.0054895315779106115
+     },
+     "score": 0.006527907612396007,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.006527907612396007
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.00445937774337395,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.00445937774337395
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.006527907612396007
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.004438751723699567,
+      "101": 0.0046382628396798966
+     },
+     "score": 0.004538507281689731,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004538507281689731
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.007634948463642105,
+      "101": 0.009751980899472983
+     },
+     "score": 0.008693464681557544,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.008693464681557544
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.004538507281689731,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.004538507281689731
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.008693464681557544
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.004509369637128203,
+      "101": 0.004921422276744352
+     },
+     "score": 0.0047153959569362774,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0047153959569362774
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.00699855227302578,
+      "101": 0.00803847365046977
+     },
+     "score": 0.007518512961747775,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.007518512961747775
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.0047153959569362774,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.0047153959569362774
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.007518512961747775
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0040864117379615554,
+      "101": 0.005139974675724942
+     },
+     "score": 0.004613193206843249,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004613193206843249
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.008437082664779612,
+      "101": 0.007723343689772265
+     },
+     "score": 0.008080213177275938,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.008080213177275938
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.004613193206843249,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.004613193206843249
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.008080213177275938
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.7249508359772154,
+      "101": 0.7239462016173638
+     },
+     "score": 0.7244485187972896,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.7244485187972896
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.5783814043877646,
+      "101": 0.6601879406673835
+     },
+     "score": 0.619284672527574,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.619284672527574
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.619284672527574,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.619284672527574
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.7244485187972896
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0117997250599592,
+      "101": 0.007648443062178104
+     },
+     "score": 0.009724084061068651,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.009724084061068651
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.013790155572660298,
+      "101": 0.01717424880578619
+     },
+     "score": 0.015482202189223245,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.015482202189223245
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.009724084061068651,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.009724084061068651
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.015482202189223245
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.04994181619353186,
+      "101": 0.09355147810478229
+     },
+     "score": 0.07174664714915707,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.07174664714915707
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.1703857426346076,
+      "101": 0.32961729855305744
+     },
+     "score": 0.2500015205938325,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.2500015205938325
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": null,
+    "tag": "lr3e-03",
+    "score": 0.07174664714915707,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.07174664714915707
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": null,
+     "tag": "lr1e-02",
+     "score": 0.2500015205938325
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "henon",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.007454436662227409,
+      "101": 0.007930518753145177
+     },
+     "score": 0.007692477707686293,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.007692477707686293
+    },
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.005114850581069277,
+      "101": 0.004069639803047948
+     },
+     "score": 0.004592245192058612,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004592245192058612
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": 25,
+    "tag": "lr1e-02",
+    "score": 0.004592245192058612,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "score": 0.004592245192058612
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "score": 0.007692477707686293
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0020451937955363064,
+      "101": 0.0022425508687956607
+     },
+     "score": 0.0021438723321659837,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0021438723321659837
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0038944242965021653,
+      "101": 0.006590467019700556
+     },
+     "score": 0.005242445658101361,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.005242445658101361
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0021438723321659837,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0021438723321659837
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.005242445658101361
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.002985629575573512,
+      "101": 0.003748738071467414
+     },
+     "score": 0.003367183823520463,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.003367183823520463
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.003058030103727561,
+      "101": 0.004174228865017539
+     },
+     "score": 0.00361612948437255,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00361612948437255
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.003367183823520463,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.003367183823520463
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.00361612948437255
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.0026814054200394823,
+      "101": 0.0025919150241838908
+     },
+     "score": 0.0026366602221116866,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0026366602221116866
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.00216754038189606,
+      "101": 0.0025901722191906625
+     },
+     "score": 0.0023788563005433614,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0023788563005433614
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0023788563005433614,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0023788563005433614
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.0026366602221116866
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0021605203142360096,
+      "101": 0.0023185785505461355
+     },
+     "score": 0.0022395494323910726,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0022395494323910726
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.005379090661003829,
+      "101": 0.003677057866736959
+     },
+     "score": 0.004528074263870394,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004528074263870394
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0022395494323910726,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0022395494323910726
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.004528074263870394
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.00288236308648834,
+      "101": 0.002082184445749817
+     },
+     "score": 0.002482273766119079,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.002482273766119079
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.00434851373028323,
+      "101": 0.002750575939610371
+     },
+     "score": 0.0035495448349468005,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0035495448349468005
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.002482273766119079,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.002482273766119079
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.0035495448349468005
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.0061419112383737234,
+      "101": 0.005231942904629249
+     },
+     "score": 0.005686927071501487,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.005686927071501487
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0053694794070906935,
+      "101": 0.005520771968026565
+     },
+     "score": 0.005445125687558629,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.005445125687558629
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.005445125687558629,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.005445125687558629
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.005686927071501487
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.003475603697099814,
+      "101": 0.003718134644027487
+     },
+     "score": 0.0035968691705636504,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0035968691705636504
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.023694152939024205,
+      "101": 0.044640731965419025
+     },
+     "score": 0.034167442452221614,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.034167442452221614
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0035968691705636504,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0035968691705636504
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.034167442452221614
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.005700446073412877,
+      "101": 0.005331613373432447
+     },
+     "score": 0.0055160297234226625,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0055160297234226625
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.015015275766991177,
+      "101": 0.010650748907537491
+     },
+     "score": 0.012833012337264334,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.012833012337264334
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.0055160297234226625,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.0055160297234226625
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.012833012337264334
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "mackeyglass",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.0024355429640945656,
+      "101": 0.002317980324917244
+     },
+     "score": 0.002376761644505905,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.002376761644505905
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "seed_scores": {
+      "100": 0.012137692768210402,
+      "101": 0.0021823053833452378
+     },
+     "score": 0.00715999907577782,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 2,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00715999907577782
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": 25,
+    "tag": "lr1e-02",
+    "score": 0.002376761644505905,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "score": 0.002376761644505905
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "score": 0.00715999907577782
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0012278672929372195,
+      "101": 0.001467284217498559
+     },
+     "score": 0.0013475757552178893,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0013475757552178893
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.004226694897076868,
+      "101": 0.027727391270547627
+     },
+     "score": 0.01597704308381225,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.01597704308381225
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0013475757552178893,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0013475757552178893
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.01597704308381225
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0014302790039465662,
+      "101": 0.0020683127045327864
+     },
+     "score": 0.0017492958542396763,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0017492958542396763
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0028348046792905286,
+      "101": 0.0047046947202738915
+     },
+     "score": 0.00376974969978221,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00376974969978221
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0017492958542396763,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0017492958542396763
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.00376974969978221
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0011326583489767472,
+      "101": 0.0014320693838837427
+     },
+     "score": 0.001282363866430245,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.001282363866430245
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.003862804511051081,
+      "101": 0.006632749399682326
+     },
+     "score": 0.005247776955366703,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.005247776955366703
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.001282363866430245,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.001282363866430245
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.005247776955366703
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.0012008030033075555,
+      "101": 0.0037470155991741194
+     },
+     "score": 0.0024739093012408377,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0024739093012408377
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0019153128439506873,
+      "101": 0.0046962019323620995
+     },
+     "score": 0.0033057573881563936,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0033057573881563936
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0024739093012408377,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0024739093012408377
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.0033057573881563936
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.001266918459066062,
+      "101": 0.001411042508515834
+     },
+     "score": 0.0013389804837909479,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0013389804837909479
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.010301126820933747,
+      "101": 0.0073254687984325535
+     },
+     "score": 0.00881329780968315,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00881329780968315
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.0013389804837909479,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.0013389804837909479
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.00881329780968315
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.00520510338820941,
+      "101": 0.004151631315005489
+     },
+     "score": 0.004678367351607449,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004678367351607449
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.004130571701091413,
+      "101": 0.003691424421533611
+     },
+     "score": 0.003910998061312512,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.003910998061312512
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.003910998061312512,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.003910998061312512
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.004678367351607449
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.002202494846530385,
+      "101": 0.0021118395004873494
+     },
+     "score": 0.002157167173508867,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.002157167173508867
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0033989191566195136,
+      "101": 0.03475657921206222
+     },
+     "score": 0.019077749184340867,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.019077749184340867
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.002157167173508867,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.002157167173508867
+    },
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.019077749184340867
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.004578281783724379,
+      "101": 0.003861381312535741
+     },
+     "score": 0.00421983154813006,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.00421983154813006
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.002179755976960678,
+      "101": 0.006966120884653719
+     },
+     "score": 0.004572938430807198,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.004572938430807198
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.00421983154813006,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.00421983154813006
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.004572938430807198
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "lorenz",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.005606825792020799,
+      "101": 0.0014918378313865332
+     },
+     "score": 0.0035493318117036663,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0035493318117036663
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "seed_scores": {
+      "100": 0.01057214520144953,
+      "101": 0.0025591791889280555
+     },
+     "score": 0.006565662195188793,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 2,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.006565662195188793
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": 25,
+    "tag": "lr1e-02",
+    "score": 0.0035493318117036663,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "score": 0.0035493318117036663
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "score": 0.006565662195188793
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.1365369355096482,
+      "101": 0.13238798286605744
+     },
+     "score": 0.13446245918785282,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13446245918785282
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.13869433339103124,
+      "101": 0.13337297258636682
+     },
+     "score": 0.13603365298869902,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13603365298869902
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.13446245918785282,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.13446245918785282
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.13603365298869902
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.14235176384230724,
+      "101": 0.13850431610509986
+     },
+     "score": 0.14042803997370357,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.14042803997370357
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.1434489109547576,
+      "101": 0.1396958837103739
+     },
+     "score": 0.14157239733256574,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.14157239733256574
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.14042803997370357,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.14042803997370357
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.14157239733256574
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.1367784820270026,
+      "101": 0.13282497145133676
+     },
+     "score": 0.13480172673916968,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13480172673916968
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.1415062465489609,
+      "101": 0.13806478965692803
+     },
+     "score": 0.13978551810294448,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13978551810294448
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.13480172673916968,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.13480172673916968
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.13978551810294448
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.13627520941183321,
+      "101": 0.13255768393690232
+     },
+     "score": 0.13441644667436775,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13441644667436775
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.13930278065294258,
+      "101": 0.1347761651643668
+     },
+     "score": 0.1370394729086547,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.1370394729086547
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.13441644667436775,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.13441644667436775
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.1370394729086547
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.13637908971344587,
+      "101": 0.13231233069644077
+     },
+     "score": 0.13434571020494332,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13434571020494332
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.13911805429059312,
+      "101": 0.13479782202513885
+     },
+     "score": 0.136957938157866,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.136957938157866
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.13434571020494332,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.13434571020494332
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.136957938157866
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.1416701126348198,
+      "101": 0.13807328872615468
+     },
+     "score": 0.13987170068048724,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.13987170068048724
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.14598219358391362,
+      "101": 0.1442189512305777
+     },
+     "score": 0.14510057240724566,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.14510057240724566
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.13987170068048724,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.13987170068048724
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.14510057240724566
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.13887973670542123,
+      "101": 0.13352956702641677
+     },
+     "score": 0.136204651865919,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.136204651865919
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.14693790554752922,
+      "101": 0.13891619733723928
+     },
+     "score": 0.14292705144238427,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.14292705144238427
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.136204651865919,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.136204651865919
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.14292705144238427
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.14484860781682074,
+      "101": 0.14232340389135062
+     },
+     "score": 0.14358600585408568,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.14358600585408568
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.19377969695837238,
+      "101": 0.15057694343398909
+     },
+     "score": 0.17217832019618073,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.17217832019618073
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-04",
+    "lr": 0.0001,
+    "window": null,
+    "tag": "lr1e-04",
+    "score": 0.14358600585408568,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.14358600585408568
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.17217832019618073
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "sunspot",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.14048199939439657,
+      "101": 0.13458809567309798
+     },
+     "score": 0.1375350475337473,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.1375350475337473
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "seed_scores": {
+      "100": 0.13638082522069453,
+      "101": 0.1326360173719877
+     },
+     "score": 0.1345084212963411,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.1345084212963411
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-03",
+    "lr": 0.003,
+    "window": 50,
+    "tag": "lr3e-03_w50",
+    "score": 0.1345084212963411,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 50,
+     "tag": "lr3e-03_w50",
+     "score": 0.1345084212963411
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": 25,
+     "tag": "lr3e-03",
+     "score": 0.1375350475337473
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "exact",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.013403324564155808,
+      "101": 0.015752839314991433
+     },
+     "score": 0.01457808193957362,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.01457808193957362
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.0332775522454358,
+      "101": 0.03554207015120482
+     },
+     "score": 0.03440981119832031,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.03440981119832031
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.01457808193957362,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.01457808193957362
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.03440981119832031
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "snap1",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.022985835785007114,
+      "101": 0.02055185831837207
+     },
+     "score": 0.02176884705168959,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.02176884705168959
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.03108759300204838,
+      "101": 0.029836199337642033
+     },
+     "score": 0.030461896169845206,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.030461896169845206
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.02176884705168959,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.02176884705168959
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.030461896169845206
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "skrtrl-r4",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.014984192877691382,
+      "101": 0.01866298854009983
+     },
+     "score": 0.016823590708895608,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.016823590708895608
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.04138775521008938,
+      "101": 0.030078888596945037
+     },
+     "score": 0.03573332190351721,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.03573332190351721
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.016823590708895608,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.016823590708895608
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.03573332190351721
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "skrtrl-r16",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.019799235575144392,
+      "101": 0.017188642193668783
+     },
+     "score": 0.018493938884406588,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.018493938884406588
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.038315529447918384,
+      "101": 0.04372941548950621
+     },
+     "score": 0.041022472468712295,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.041022472468712295
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.018493938884406588,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.018493938884406588
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.041022472468712295
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "skrtrl-r32",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.016162491140321433,
+      "101": 0.018264096823318143
+     },
+     "score": 0.01721329398181979,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.01721329398181979
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.05507486197104299,
+      "101": 0.039658427507038144
+     },
+     "score": 0.047366644739040564,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.047366644739040564
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.01721329398181979,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.01721329398181979
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.047366644739040564
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "uoro",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.1956801108943182,
+      "101": 0.19624830218250278
+     },
+     "score": 0.19596420653841048,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.19596420653841048
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.14753984832426792,
+      "101": 0.15830035884369864
+     },
+     "score": 0.15292010358398328,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.15292010358398328
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.15292010358398328,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.15292010358398328
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.19596420653841048
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "kfrtrl",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "seed_scores": {
+      "100": 0.0436657890274455,
+      "101": 0.05699835092971625
+     },
+     "score": 0.050332069978580876,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.050332069978580876
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "seed_scores": {
+      "100": 0.08059048685125161,
+      "101": 0.10983355490374379
+     },
+     "score": 0.0952120208774977,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.0952120208774977
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-03",
+    "lr": 0.001,
+    "window": null,
+    "tag": "lr1e-03",
+    "score": 0.050332069978580876,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-03",
+     "lr": 0.001,
+     "window": null,
+     "tag": "lr1e-03",
+     "score": 0.050332069978580876
+    },
+    {
+     "lrtag": "lr3e-03",
+     "lr": 0.003,
+     "window": null,
+     "tag": "lr3e-03",
+     "score": 0.0952120208774977
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "rflo",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "seed_scores": {
+      "100": 0.23994141412840692,
+      "101": 0.1887730965123046
+     },
+     "score": 0.21435725532035577,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.21435725532035577
+    },
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "seed_scores": {
+      "100": 0.1267061991849914,
+      "101": 0.09853103532688692
+     },
+     "score": 0.11261861725593916,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 0,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.11261861725593916
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr3e-04",
+    "lr": 0.00030000000000000003,
+    "window": null,
+    "tag": "lr3e-04",
+    "score": 0.11261861725593916,
+    "extend_level": 0
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr3e-04",
+     "lr": 0.00030000000000000003,
+     "window": null,
+     "tag": "lr3e-04",
+     "score": 0.11261861725593916
+    },
+    {
+     "lrtag": "lr1e-04",
+     "lr": 0.0001,
+     "window": null,
+     "tag": "lr1e-04",
+     "score": 0.21435725532035577
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=0"
+   },
+   "missing": []
+  },
+  {
+   "task": "laser",
+   "algo": "tbptt",
+   "direction": "lower_is_better",
+   "candidates": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "seed_scores": {
+      "100": 0.017911208935279317,
+      "101": 0.019571774802498113
+     },
+     "score": 0.018741491868888717,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 1,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.018741491868888717
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "seed_scores": {
+      "100": 0.15747560093746868,
+      "101": 0.010881121342172263
+     },
+     "score": 0.08417836113982047,
+     "n_seeds": 2,
+     "complete": true,
+     "eligible": true,
+     "off_protocol": false,
+     "extend_level": 2,
+     "flags": [],
+     "extra_seeds": [],
+     "seeds_present": [
+      100,
+      101
+     ],
+     "key": 0.08417836113982047
+    }
+   ],
+   "n_eligible": 2,
+   "selected": {
+    "lrtag": "lr1e-02",
+    "lr": 0.01,
+    "window": 25,
+    "tag": "lr1e-02",
+    "score": 0.018741491868888717,
+    "extend_level": 1
+   },
+   "ties_with_selected": [],
+   "top2": [
+    {
+     "lrtag": "lr1e-02",
+     "lr": 0.01,
+     "window": 25,
+     "tag": "lr1e-02",
+     "score": 0.018741491868888717
+    },
+    {
+     "lrtag": "lr3e-02",
+     "lr": 0.03,
+     "window": 25,
+     "tag": "lr3e-02",
+     "score": 0.08417836113982047
+    }
+   ],
+   "boundary": {
+    "at": null,
+    "action": "none",
+    "exhausted": false,
+    "reason": "stage-2 winner is the final LR (no further extension); extend_level=1"
+   },
+   "missing": []
+  }
+ ],
+ "problems": []
+}

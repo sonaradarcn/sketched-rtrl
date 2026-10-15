@@ -1,12 +1,14 @@
-"""Aggregate + plot D3 adaptive-rank results (R2, Reviewer #3 point 3).
+"""Aggregate and plot the D3 adaptive-rank results.
 
-Two sub-campaigns, per R2_EXPERIMENT_PLAN.md D3 + section 4 ("saturation diagnosis
-first, then the one-at-a-time sweep"):
+This produces Table 8 and Fig 5 of the paper, plus the extra tables of Section S6.
+
+Two sub-campaigns, run in this order (saturation diagnosis first, then the
+one-at-a-time sweep):
 
   d3_diag  ceiling / saturation diagnosis.  rotation + anbn, the three kernel variants
            (c(r) rule vs fixed c=8 vs pre-projection off) crossed with the three cap
            cells (r_max=32 at n=64; r_max=64 at n=64 with --force_preproject; r_max=64
-           at n=128), 3 seeds -- plus a same-trajectory FIXED-rank sweep
+           at n=128), 3 seeds -- plus a same-trajectory fixed-rank sweep
            r in {4,8,16,24,32,48,64} that says which rank actually suffices.
   d3_oat   local sensitivity.  rotation/henon/sunspot/anbn/mackeyglass x {default + 9 single-knob
            variants: tau_high {0.01,0.04}, tau_low {0.0015,0.006}, M {2,5}, K {50,200},
@@ -15,20 +17,18 @@ first, then the one-at-a-time sweep"):
 Every configuration is identified from the run's own `args` block (never from the file
 name): the file name only supplies task/method/seed/tag for bookkeeping, and the tag is
 reported as a label hint.  A run whose args do not match any roster cell is still
-tabulated, in an explicit "off-roster" section -- nothing is silently dropped and
-nothing is fabricated.
+tabulated, in an explicit "off-roster" section, so nothing is silently dropped.
 
 Field tolerance (the D3 instrumentation of run_adaptive.py landed in stages)
 ---------------------------------------------------------------------------
 Top-level `frac_at_cap`, `n_up`, `n_down`, `n_ctrl_checks`, `rank_changes` and the
 `--c` / `--force_preproject` / `--preproject` args are read when present.  When they
-are absent (any run produced before that instrumentation, e.g. the R1 archives used as
-development stand-ins) the script falls back to the D3 definitions in the plan,
-evaluated on the logged `records` -- fraction of logged checkpoints at the cap, and
-up/down moves counted from the logged rank sequence -- and marks every such number with
-a trailing `*`.  Trigger attribution (tau_c vs tau_r) has NO fallback: without
-`rank_changes` it is reported as `n/a`, never guessed.  All substitutions are counted
-and listed in the report's "字段容错" section.
+are absent (any run produced before that instrumentation) the script falls back to the
+D3 definitions evaluated on the logged `records` -- fraction of logged checkpoints at
+the cap, and up/down moves counted from the logged rank sequence -- and marks every
+such number with a trailing `*`.  Trigger attribution (tau_c vs tau_r) has no fallback:
+without `rank_changes` it is reported as `n/a`, not guessed.  All substitutions are
+counted and listed in the report's "Field tolerance" section.
 
 Outputs
   <outmd>                             (default: <indir_diag>/../D3_SUMMARY.md)
@@ -40,19 +40,13 @@ Outputs
   <figdir>/fig_r2_adaptive_oat.pdf    one panel per OAT task: final error (left axis) and
                                       mean rank (right axis) per variant, default filled
 
-A table or figure whose inputs are entirely missing is skipped loudly, matching the
-convention of paper/figures/gen/regen_all.py -- whose style helpers (Okabe-Ito palette,
-print-physical figure sizes, legend-outside-axes, _save) this script imports and reuses
-rather than re-deriving.
+A table or figure whose inputs are missing is skipped and listed. The style helpers
+(Okabe-Ito palette, print-physical figure sizes, legend outside the axes, _save) come
+from figstyle.py and are reused here rather than re-derived.
 
 Usage
   python make_r2_d3_report.py                 # real data: results/r2/d3_diag + d3_oat
-  python make_r2_d3_report.py --dev            # stand-ins (see --help) while the GPU is down
   python make_r2_d3_report.py --indir_diag <d> --indir_oat <d> --outmd <p> --figdir <d>
-
---dev reads the R1 archives (<root>/results/ademo, <root>/code/results/round1/adapt_ablate)
-and, unless --figdir says otherwise, writes to results/r2/D3_SUMMARY_dev.md +
-results/r2/figs_dev/ -- stand-in numbers can never overwrite the manuscript's figures.
 """
 import argparse
 import glob
@@ -64,14 +58,21 @@ import sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, ".."))
-sys.path.insert(0, os.path.join(ROOT, "paper", "figures", "gen"))
-sys.path.insert(0, HERE)                 # fig_style_r1.py lives next to this file
+sys.path.insert(0, HERE)                 # figstyle.py and fig_style_r1.py live next to this file
 
 EPS = 1e-12
 
+
+def _show(p):
+    """A path for the report: relative to the working directory, forward slashes."""
+    try:
+        p = os.path.relpath(p)
+    except ValueError:
+        pass
+    return str(p).replace("\\", "/")
+
 # --------------------------------------------------------------------------------------
-# protocol constants (R2_EXPERIMENT_PLAN.md D3 and section 4 "Adopted / D3")
+# protocol constants of the D3 campaign
 # --------------------------------------------------------------------------------------
 DIAG_TASKS = ["rotation", "anbn"]
 OAT_TASKS = ["rotation", "henon", "sunspot", "anbn", "mackeyglass"]
@@ -92,15 +93,14 @@ OAT_GRID = [
     ("interval", [(2, 64)]),
 ]
 # `ctrl` is not part of the planned 9-variant grid, but a run that changes only --ctrl is
-# still a legitimate single-knob departure (R1's E5 ablation), so it is accepted as an
+# still a legitimate single-knob departure (the controller ablation), so it is accepted as an
 # off-roster OAT variant instead of being rejected as unidentifiable.
 OAT_KNOBS = ["tau_high", "tau_low", "M", "K", "interval", "ctrl"]
 
 # kernel axis of the saturation diagnosis, keyed on what the args say about c / preproject
 KERNEL_KEYS = ["cr", "c8", "ppoff"]
-KERNEL_LABEL = {"cr": "c(r) 规则", "c8": "固定 c=8", "ppoff": "预投影关"}
-# figure labels stay ASCII: the shipped matplotlib font (DejaVu Sans) has no CJK glyphs,
-# and the manuscript is in English anyway.
+KERNEL_LABEL = {"cr": "c(r) rule", "c8": "fixed c=8", "ppoff": "pre-projection off"}
+# figure labels are kept short so they fit the printed panel width.
 KERNEL_LABEL_EN = {"cr": "c(r) rule", "c8": "fixed c=8", "ppoff": "pre-proj. off"}
 
 # Panel titles for the OAT figure: each panel is ~0.5 in wide at the printed size, so a
@@ -128,14 +128,14 @@ FNAME_RE = re.compile(r"^(?P<task>[a-z0-9]+)_"
 # every fallback actually used, name -> count of runs
 TOLERANCE = defaultdict(int)
 TOL_NOTE = {
-    "frac_at_cap": "顶层 frac_at_cap 缺失 -> 用 records 中 rank>=r_max 的检查点占比代替",
-    "n_up_down": "顶层 n_up/n_down 缺失 -> 用 records 秩序列的升/降次数代替",
-    "rank_changes": "rank_changes 缺失 -> 触发方 (tau_c/tau_r) 记为 n/a，不猜测",
-    "peak_MB": "peak_MB 缺失或为 null（CPU 运行）",
-    "c_args": "args 无 --c/--force_preproject/--preproject（旧版 run_adaptive.py）"
-              " -> 按默认值 c=-1 / 0 / auto 处理",
-    "n_ctrl_checks": "顶层 n_ctrl_checks 缺失 -> 用 steps//K 估算",
-    "avg_rank": "顶层 avg_rank 缺失 -> 用 records 的 avg_rank 均值代替",
+    "frac_at_cap": "top-level frac_at_cap missing -> replaced by the fraction of checkpoints in records with rank>=r_max",
+    "n_up_down": "top-level n_up/n_down missing -> replaced by the up/down move counts of the rank sequence in records",
+    "rank_changes": "rank_changes missing -> trigger (tau_c/tau_r) reported as n/a, not guessed",
+    "peak_MB": "peak_MB missing or null (CPU run)",
+    "c_args": "args have no --c/--force_preproject/--preproject (older run_adaptive.py)"
+              " -> treated as the defaults c=-1 / 0 / auto",
+    "n_ctrl_checks": "top-level n_ctrl_checks missing -> estimated as steps//K",
+    "avg_rank": "top-level avg_rank missing -> replaced by the mean avg_rank over records",
 }
 
 
@@ -154,7 +154,7 @@ def mean_std(vals):
 
 
 def tail_mean(recs, field, frac=0.2):
-    """Mean of `field` over the last `frac` of the logged checkpoints ("末段")."""
+    """Mean of `field` over the last `frac` of the logged checkpoints (the "tail")."""
     v = [r[field] for r in recs
          if r.get(field) is not None
          and not (isinstance(r[field], float) and math.isnan(r[field]))]
@@ -239,7 +239,7 @@ def kernel_disp(key, m=None):
     if key in KERNEL_LABEL:
         lab = KERNEL_LABEL[key]
     elif re.fullmatch(r"c\d+", key or ""):
-        lab = f"固定 c={key[1:]}"
+        lab = f"fixed c={key[1:]}"
     else:
         lab = str(key)
     if m is not None and m.get("c_effective") is not None:
@@ -276,15 +276,15 @@ def oat_variant(m):
             if not same:
                 diffs.append((k, cur))
     if not diffs:
-        return "default", "默认", 0
+        return "default", "default", 0
     if len(diffs) == 1:
         k, v = diffs[0]
         if k == "interval":
-            return f"interval[{v[0]},{v[1]}]", f"区间 [{v[0]},{v[1]}]", 1
+            return f"interval[{v[0]},{v[1]}]", f"interval [{v[0]},{v[1]}]", 1
         vs = f"{v:g}" if isinstance(v, float) else str(v)
         return f"{k}={vs}", f"{k}={vs}", 1
     key = "+".join(f"{k}={v}" for k, v in diffs)
-    return f"multi:{key}", f"多因素变动 ({key})", len(diffs)
+    return f"multi:{key}", f"several knobs changed ({key})", len(diffs)
 
 
 def load_dir(indir):
@@ -299,20 +299,20 @@ def load_dir(indir):
             with open(p, encoding="utf-8") as fh:
                 d = json.load(fh)
         except Exception as e:                       # still being written, truncated, ...
-            bad.append((p, f"读取失败: {type(e).__name__}: {e}"))
+            bad.append((p, f"read failed: {type(e).__name__}: {e}"))
             continue
         if not isinstance(d, dict) or "args" not in d:
-            bad.append((p, "无 args 字段，非 run_adaptive.py 输出"))
+            bad.append((p, "no args field, not run_adaptive.py output"))
             continue
         if not d.get("records"):
-            bad.append((p, "无 records（可能仍在运行）"))
+            bad.append((p, "no records (possibly still running)"))
             continue
         m = meta_of(d, fm["task"] if fm else None, int(fm["seed"]) if fm else None)
         m["file"] = base
         m["fname_tag"] = (fm["tag"] or "") if fm else ""
         m["fname_method"] = fm["method"] if fm else ""
         if m["task"] is None or m["seed"] is None:
-            bad.append((p, "args 中无 task/seed 且文件名不可解析"))
+            bad.append((p, "no task/seed in args and the file name cannot be parsed"))
             continue
         runs.append({"path": p, "meta": m, "data": d})
     return runs, bad
@@ -403,7 +403,7 @@ def run_metrics(run):
 
 
 def agg(runs_):
-    """Aggregate the runs of ONE configuration over seeds."""
+    """Aggregate the runs of one configuration over seeds."""
     ms = [run_metrics(r) for r in runs_]
     flags = set().union(*[m["flags"] for m in ms]) if ms else set()
     a = {"n_seeds": len(runs_),
@@ -497,19 +497,19 @@ def _diag_sort_key(k):
 
 
 def render_table_a(ta, mra, target_cos, err_tol):
-    L = ["## 表 A 触顶诊断（D3 saturation diagnosis）", ""]
+    L = ["## Table A Ceiling diagnosis (D3 saturation diagnosis)", ""]
     if not ta["adaptive"] and not ta["fixed"]:
-        L.append("_无任何 d3_diag 结果文件，本表跳过（不编造数据）。_")
+        L.append("_No d3_diag result files; this table is skipped._")
         return "\n".join(L)
 
-    L.append("末段 = 最后 20% 的 log 检查点均值；误差口径：mse 任务为 MSE，"
-             "ce 任务（copy/anbn）为 1−accuracy。`*` = 该数字由 records 回退推算"
-             "（见“字段容错”）。")
+    L.append("Tail = mean over the last 20% of logged checkpoints. Error: MSE for mse tasks, "
+             "1−accuracy for ce tasks (copy/anbn). `*` = number derived by the records fallback "
+             "(see \"Field tolerance\").")
     L.append("")
-    L.append("### A-1 自适应控制器（每格 mean±s.d. over seeds）")
+    L.append("### A-1 Adaptive controller (each cell mean±s.d. over seeds)")
     L.append("")
-    L.append("| 任务 | 上限格 | 核变体 | seeds | frac_at_cap | n_up | n_down | 平均秩 | "
-             "末段误差 | grad_cos | 峰值内存 MB | 触发方 τ_c 占比 | τ_c/τ_r 归一均值 |")
+    L.append("| task | cap cell | kernel variant | seeds | frac_at_cap | n_up | n_down | mean rank | "
+             "tail error | grad_cos | peak memory MB | τ_c trigger share | τ_c/τ_r normalised mean |")
     L.append("|" + "---|" * 13)
     for key in sorted(ta["adaptive"], key=_diag_sort_key):
         task, cap, ker = key
@@ -522,7 +522,7 @@ def render_table_a(ta, mra, target_cos, err_tol):
         else:
             trig_c = fmt_pct(t["frac_tau_c"])
             if t["frac_tau_c_up"] is not None:
-                trig_c += f"（升秩 {fmt_pct(t['frac_tau_c_up'])}）"
+                trig_c += f" (rank up {fmt_pct(t['frac_tau_c_up'])})"
         taus = ("n/a" if not t or t["tau_c_norm"] is None else
                 f"{fmt(t['tau_c_norm'], 4)} / {fmt(t['tau_r_norm'], 4)}")
         L.append("| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
@@ -538,17 +538,17 @@ def render_table_a(ta, mra, target_cos, err_tol):
             trig_c, taus))
     L.append("")
 
-    L.append("### A-2 同轨迹固定秩扫描 vs 控制器实际平均秩")
+    L.append("### A-2 Same-trajectory fixed-rank sweep vs the controller's actual mean rank")
     L.append("")
     if not mra:
-        L.append("_无 fixed-r 扫描结果，跳过。_")
+        L.append("_No fixed-r sweep results; skipped._")
         L.append("")
     for (task, n), d in sorted(mra.items()):
-        L.append(f"**{task}, n={n}** —— 已完成秩 {d['ranks']}；扫描内最优末段误差 "
-                 f"{fmt(d['best_err'], 5)}；相对阈值 (1+{err_tol:g})×最优 = "
+        L.append(f"**{task}, n={n}** — completed ranks {d['ranks']}; best tail error in the sweep "
+                 f"{fmt(d['best_err'], 5)}; relative threshold (1+{err_tol:g})×best = "
                  f"{fmt(d['err_thr'], 5)}")
         L.append("")
-        L.append("| 固定 r | 末段误差 | grad_cos | 平均秩（核对） | seeds |")
+        L.append("| fixed r | tail error | grad_cos | mean rank (check) | seeds |")
         L.append("|" + "---|" * 5)
         for r in d["ranks"]:
             a = d["aggs"][r]
@@ -556,53 +556,53 @@ def render_table_a(ta, mra, target_cos, err_tol):
                 r, fmt_ms(*a["err"][:2], nd=5), fmt_ms(*a["grad_cos"][:2], nd=4),
                 fmt_ms(*a["avg_rank"][:2], nd=2), ",".join(map(str, a["seeds"]))))
         L.append("")
-        L.append(f"- 达到 grad_cos ≥ {target_cos:g} 的最小 r: **"
+        L.append(f"- smallest r reaching grad_cos ≥ {target_cos:g}: **"
                  + (str(d["r_cos"]) if d["r_cos"] is not None
-                    else "n/a（已完成秩内无一达标）") + "**")
-        L.append(f"- 末段误差 ≤ (1+{err_tol:g})×最优 的最小 r: **"
+                    else "n/a (no completed rank reaches it)") + "**")
+        L.append(f"- smallest r with tail error ≤ (1+{err_tol:g})×best: **"
                  + (str(d["r_err"]) if d["r_err"] is not None else "n/a") + "**")
         miss = [r for r in FIXED_SWEEP_R if r not in d["ranks"]]
         if miss:
-            L.append(f"- 注：秩 {miss} 尚缺，上述“最小 r”只在已完成秩集合 {d['ranks']} "
-                     "内成立，补齐后可能改变。")
+            L.append(f"- Note: ranks {miss} are still missing, so the \"smallest r\" above holds only within "
+                     f"the completed ranks {d['ranks']} and may change once they are filled in.")
         for (cap, ker), a in sorted(d["ctrl"].items(), key=lambda kv: str(kv[0])):
             s_cap = "*" if "frac_at_cap" in a["flags"] else ""
-            L.append(f"- 控制器 [{cap_disp(cap)} / {kernel_disp(ker)}] 实际平均秩 "
-                     f"{fmt_ms(*a['avg_rank'][:2], nd=2)}，frac_at_cap "
+            L.append(f"- controller [{cap_disp(cap)} / {kernel_disp(ker)}] actual mean rank "
+                     f"{fmt_ms(*a['avg_rank'][:2], nd=2)}, frac_at_cap "
                      f"{fmt_ms(*a['frac_at_cap'][:2], nd=3, star=s_cap)}")
         if not d["ctrl"]:
-            L.append("- （该任务/宽度暂无自适应运行可对照）")
+            L.append("- (no adaptive run for this task/width to compare with yet)")
         L.append("")
 
     if ta["offroster"]:
-        L.append("### A-3 roster 外的 d3_diag 运行（列出，不丢弃）")
+        L.append("### A-3 d3_diag runs outside the roster (listed, not dropped)")
         L.append("")
-        L.append("这些运行**仍计入上方对应的格**（seeds 列会显示实际用到的种子），"
-                 "此处只标出它们偏离 roster 的地方：")
+        L.append("These runs are still counted in the matching cells above (the seeds column shows "
+                 "the seeds actually used). This list only marks where they depart from the roster:")
         L.append("")
         for r, kind in ta["offroster"]:
             m = r["meta"]
             why = []
             if m["task"] not in DIAG_TASKS:
-                why.append(f"任务 {m['task']} 不在诊断 roster")
+                why.append(f"task {m['task']} not in the diagnosis roster")
             if m["seed"] not in SEEDS:
-                why.append(f"seed {m['seed']} 超出 {SEEDS}")
+                why.append(f"seed {m['seed']} outside {SEEDS}")
             if kind == "adaptive":
                 desc = f"adaptive, {cap_disp(cap_key(m))}, {kernel_disp(kernel_key(m), m)}"
                 if cap_key(m) not in DIAG_CAPS:
-                    why.append(f"上限格 {cap_key(m)} 不在 roster")
+                    why.append(f"cap cell {cap_key(m)} not in the roster")
                 if kernel_key(m) not in KERNEL_KEYS:
-                    why.append(f"核变体 {kernel_key(m)} 不在 roster")
+                    why.append(f"kernel variant {kernel_key(m)} not in the roster")
             else:
                 desc = f"fixed_r={m['fixed_r']}, n={m['n']}"
                 if int(m["fixed_r"]) not in FIXED_SWEEP_R:
-                    why.append(f"固定秩 {m['fixed_r']} 不在扫描点 {FIXED_SWEEP_R}")
+                    why.append(f"fixed rank {m['fixed_r']} not among the sweep points {FIXED_SWEEP_R}")
                 if m["n"] != FIXED_SWEEP_N:
-                    why.append(f"n={m['n']} 不是扫描宽度 {FIXED_SWEEP_N}")
+                    why.append(f"n={m['n']} is not the sweep width {FIXED_SWEEP_N}")
             tg = m["tag"] or m["fname_tag"]
             L.append(f"- `{m['file']}` — {m['task']}, s{m['seed']}, {desc}"
                      + (f", tag=`{tg}`" if tg else "")
-                     + "；偏离：" + ("、".join(why) if why else "未知"))
+                     + "; departs in: " + ("; ".join(why) if why else "unknown"))
         L.append("")
     return "\n".join(L)
 
@@ -626,7 +626,7 @@ def expected_oat_variants():
 def build_table_b(runs):
     cells = defaultdict(list)
     multi = []
-    # R3 point 3: every actual DOWN move, with the control signal that produced it.
+    # Every actual down move, with the control signal that produced it.
     # Read straight off `rank_changes`; runs without that field contribute nothing here
     # (the records fallback cannot recover c_t), and are counted separately.
     downs, no_rc = [], 0
@@ -640,7 +640,7 @@ def build_table_b(runs):
                 if c.get("direction") == "down":
                     downs.append((m, c))
         if not m["is_adaptive"]:
-            multi.append((r, f"fixed_r={m['fixed_r']} 运行出现在 OAT 目录，未计入 OAT 格"))
+            multi.append((r, f"fixed_r={m['fixed_r']} run found in the OAT directory, not counted in any OAT cell"))
             continue
         key, disp, nk = oat_variant(m)
         if nk > 1:
@@ -663,21 +663,21 @@ def _oat_variant_order(cells, task):
 
 
 def render_table_b(tb):
-    L = ["## 表 B OAT 单因素敏感性（D3 local sensitivity）", ""]
+    L = ["## Table B OAT one-at-a-time sensitivity (D3 local sensitivity)", ""]
     cells = tb["cells"]
     if not cells:
-        L.append("_无任何 d3_oat 结果文件，本表跳过（不编造数据）。_")
+        L.append("_No d3_oat result files; this table is skipped._")
         return "\n".join(L)
 
     tasks = _oat_task_order(cells)
     exp = expected_oat_variants()
-    L.append("⚑ = 任务或变体不在 D3 的 OAT roster 内（例如只改 `--ctrl` 的 R1/E5 消融），"
-             "仍作为合法的单因素变体列出，供参考。")
+    L.append("⚑ = task or variant outside the D3 OAT roster (for example the controller ablation that "
+             "changes only `--ctrl`). It is still listed as a legitimate single-knob variant, for reference.")
     L.append("")
 
-    L.append("### B-0 跨全部变体的极差（仅统计已完成变体）")
+    L.append("### B-0 Range across all variants (completed variants only)")
     L.append("")
-    L.append("| 任务 | 已完成变体 | 误差 min→max | 误差极差 | 平均秩 min→max | 秩极差 |")
+    L.append("| task | completed variants | error min→max | error range | mean rank min→max | rank range |")
     L.append("|" + "---|" * 6)
     for t in tasks:
         es = {k[1]: cells[k]["err"][0] for k in cells
@@ -693,10 +693,10 @@ def render_table_b(tb):
         L.append(f"| {t} | {n_done}/{len(exp)} | {e_rng} | {e_sp} | {r_rng} | {r_sp} |")
     L.append("")
 
-    L.append("### B-1 每任务 × 变体（mean±s.d. over seeds）")
+    L.append("### B-1 Per task × variant (mean±s.d. over seeds)")
     L.append("")
-    L.append("| 任务 | 变体 | seeds | 末段误差 | Δ误差 vs 默认 | 平均秩 | Δ秩 vs 默认 | "
-             "frac_at_cap | grad_cos | n_up | n_down | 证书 e_t | Δe_t | peak_MB | Δpeak |")
+    L.append("| task | variant | seeds | tail error | Δerror vs default | mean rank | Δrank vs default | "
+             "frac_at_cap | grad_cos | n_up | n_down | certificate e_t | Δe_t | peak_MB | Δpeak |")
     L.append("|" + "---|" * 15)
     for t in tasks:
         base = cells.get((t, "default"))
@@ -711,26 +711,26 @@ def render_table_b(tb):
             else:
                 de = f"{a['err'][0] - be:+.5f}"
                 if abs(be) > EPS:
-                    de += f"（{100 * (a['err'][0] - be) / abs(be):+.1f}%）"
+                    de += f" ({100 * (a['err'][0] - be) / abs(be):+.1f}%)"
             if br is None or a["avg_rank"][0] is None:
                 dr = "n/a"
             else:
                 dr = f"{a['avg_rank'][0] - br:+.2f}"
                 if abs(br) > EPS:
-                    dr += f"（{100 * (a['avg_rank'][0] - br) / abs(br):+.1f}%）"
+                    dr += f" ({100 * (a['avg_rank'][0] - br) / abs(br):+.1f}%)"
             def _rel(cur, bas):
                 """Relative change vs the default cell, or n/a when either side is missing."""
                 if bas is None or cur is None:
                     return "n/a"
                 s = f"{cur - bas:+.4g}"
                 if abs(bas) > EPS:
-                    s += f"（{100 * (cur - bas) / abs(bas):+.1f}%）"
+                    s += f" ({100 * (cur - bas) / abs(bas):+.1f}%)"
                 return s
             dc = _rel(a["e_t"][0], bc)
             dp = _rel(a["peak_MB"][0], bp)
             star = "*" if "frac_at_cap" in a["flags"] else ""
             ud_star = "*" if "n_up_down" in a["flags"] else ""
-            vlab = ("**默认**" if v == "default"
+            vlab = ("**default**" if v == "default"
                     else (v if v in exp else f"{v} ⚑"))
             L.append("| {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} | {} |".format(
                 t if t in OAT_TASKS else f"{t} ⚑", vlab, ",".join(map(str, a["seeds"])),
@@ -745,22 +745,22 @@ def render_table_b(tb):
     L.append("")
 
     # --- B-1b: did shrinking ever fire? -------------------------------------------------
-    L.append("### B-1b 降秩是否触发（R3 point 3 的核心问题）")
+    L.append("### B-1b Does rank reduction ever fire?")
     L.append("")
     downs, nr = tb["downs"], tb["n_runs"]
     if tb["no_rc"]:
-        L.append(f"注：{tb['no_rc']} 个运行没有 `rank_changes` 字段，无法统计降秩，已排除"
-                 "（`c_t` 没有回退口径）。")
+        L.append(f"Note: {tb['no_rc']} runs have no `rank_changes` field, so their rank reductions cannot be "
+                 "counted and they are excluded (`c_t` has no fallback).")
         L.append("")
     if not downs:
-        L.append(f"**{nr} 个 OAT 运行中没有任何一次降秩（n_down = 0 全体）。** "
-                 "控制器在本扫描内是单调棘轮。")
+        L.append(f"**None of the {nr} OAT runs reduces its rank (n_down = 0 for all).** "
+                 "Within this sweep the controller is a monotone ratchet.")
     else:
         nrun = len({(m["file"]) for m, _ in downs})
-        L.append(f"**降秩确实被触发：{nr} 个 OAT 运行中有 {nrun} 个发生降秩，共 "
-                 f"{len(downs)} 次。** 逐次列出，`c_t` 为触发当刻的控制信号：")
+        L.append(f"**Rank reduction does fire: of the {nr} OAT runs, {nrun} reduce their rank, "
+                 f"{len(downs)} times in total.** Each one is listed, with `c_t` the control signal at that moment:")
         L.append("")
-        L.append("| 运行文件 | 任务 | τ_low | M | K | step | r 变化 | c_t | τ_c | τ_r |")
+        L.append("| run file | task | τ_low | M | K | step | r change | c_t | τ_c | τ_r |")
         L.append("|" + "---|" * 10)
         for m, c in sorted(downs, key=lambda x: (str(x[0]["task"]), x[0]["file"], x[1]["step"])):
             def g(k):
@@ -770,12 +770,13 @@ def render_table_b(tb):
                      f"{m['K']} | {c['step']} | {c['r_before']}→{c['r_after']} | "
                      f"{g('c_t')} | {g('tau_c_norm')} | {g('tau_r_norm')} |")
     L.append("")
-    L.append("控制信号量级参考（仅在秩变化时刻被记录，见上表与表 A 的触发方列）："
-             "τ_low 的默认值 0.003 与所观测到的 `c_t` 的关系决定降秩能否发生。")
+    L.append("Scale of the control signal (recorded only at rank changes; see the table above and the "
+             "trigger columns of Table A): whether a rank reduction can happen depends on how the "
+             "default τ_low = 0.003 compares with the observed `c_t`.")
     L.append("")
 
     if tb["multi"]:
-        L.append("### B-2 非单因素 / 不可归类的运行（列出，不参与 OAT 聚合）")
+        L.append("### B-2 Multi-knob or unclassifiable runs (listed, left out of the OAT aggregation)")
         L.append("")
         for r, why in tb["multi"]:
             L.append(f"- `{r['meta']['file']}` — {why}")
@@ -822,17 +823,17 @@ def missing_oat(runs):
 
 
 def render_missing(md, mo, n_diag, n_oat):
-    L = ["## 缺失清单", ""]
-    L.append(f"d3_diag: 读入 {n_diag} 个可用文件；roster {len(diag_roster())} 项，"
-             f"缺 {len(md)} 项。d3_oat: 读入 {n_oat} 个可用文件；roster "
-             f"{len(oat_roster())} 项，缺 {len(mo)} 项。")
+    L = ["## Missing files", ""]
+    L.append(f"d3_diag: {n_diag} usable files read; roster {len(diag_roster())} entries, "
+             f"{len(md)} missing. d3_oat: {n_oat} usable files read; roster "
+             f"{len(oat_roster())} entries, {len(mo)} missing.")
     L.append("")
-    L.append("注：诊断 roster 按“核变体 × 上限格”的全交叉展开，而 "
-             "R2_EXPERIMENT_PLAN.md §2 只承诺其中一部分组合（n=64 固定 c=8 + 强制预投影、"
-             "n=128 自然 c=16），因此部分缺项可能是计划内本就不跑的。")
+    L.append("Note: the diagnosis roster is the full cross of kernel variant × cap cell, but the "
+             "campaign only commits to some of these combinations (n=64 with fixed c=8 + forced pre-projection, "
+             "n=128 with natural c=16), so some missing entries may be runs that were never planned.")
     L.append("")
     if md:
-        L.append("**d3_diag 缺失**")
+        L.append("**d3_diag missing**")
         L.append("")
         byc = defaultdict(list)
         for e in md:
@@ -847,10 +848,10 @@ def render_missing(md, mo, n_diag, n_oat):
                 L.append(f"- fixed · {k[1]} · n={k[2]}: {items}")
         L.append("")
     else:
-        L.append("d3_diag roster 全部完成。")
+        L.append("d3_diag roster complete.")
         L.append("")
     if mo:
-        L.append("**d3_oat 缺失**")
+        L.append("**d3_oat missing**")
         L.append("")
         byt = defaultdict(lambda: defaultdict(list))
         for t, v, s in mo:
@@ -861,38 +862,40 @@ def render_missing(md, mo, n_diag, n_oat):
             L.append(f"- **{t}**: {items}")
         L.append("")
     else:
-        L.append("d3_oat roster 全部完成。")
+        L.append("d3_oat roster complete.")
         L.append("")
     return "\n".join(L)
 
 
 def render_tolerance(bad_diag, bad_oat):
-    L = ["## 字段容错", ""]
+    L = ["## Field tolerance", ""]
     if not TOLERANCE:
-        L.append("所有运行都带齐 D3 新增字段（frac_at_cap / n_up / n_down / n_ctrl_checks / "
-                 "rank_changes / --c / --force_preproject / --preproject），未触发任何回退。")
+        L.append("All runs carry the fields added for D3 (frac_at_cap / n_up / n_down / n_ctrl_checks / "
+                 "rank_changes / --c / --force_preproject / --preproject); no fallback was used.")
     else:
-        L.append("下列字段在部分运行中缺失，已按 R2_EXPERIMENT_PLAN.md §4 D3 的定义回退处理；"
-                 "回退得到的数字在表中带 `*`：")
+        L.append("The fields below are missing in some runs and fall back to the D3 definitions. "
+                 "Numbers obtained by a fallback carry a `*` in the tables:")
         L.append("")
         for k, n in sorted(TOLERANCE.items(), key=lambda kv: -kv[1]):
-            L.append(f"- `{k}` — {n} 个运行 — {TOL_NOTE.get(k, '')}")
+            L.append(f"- `{k}` — {n} runs — {TOL_NOTE.get(k, '')}")
     L.append("")
-    L.append("回退口径说明：")
+    L.append("How the fallbacks are computed:")
     L.append("")
-    L.append("- `frac_at_cap`：顶层字段是逐 step 统计；回退值只能用 `records` 中每 "
-             "`log_every` 步一个的 `rank` 检查点，分辨率低得多，对短暂触顶会高估或低估，"
-             "只能当量级参考。")
-    L.append("- `n_up`/`n_down`：控制器每 `K` 步可改一次秩，而日志每 `log_every` 步才记一次，"
-             "因此回退计数是**下界**（同一日志间隔内的一升一降互相抵消）。")
-    L.append("- 触发方（τ_c 主导 / τ_r 主导）及归一化 τ_c、τ_r 只存在于 `rank_changes`，"
-             "没有可替代量，缺失时一律记 `n/a`，绝不推断。")
-    L.append("- `peak_MB` 在 `--device cpu` 下由 run_adaptive.py 写为 null，属正常。")
-    L.append("- 核变体判定优先用 `--preproject` / `--c` 参数；`c_effective` / "
-             "`preproject_effective`（由 run_adaptive.py 写回）若存在则作为核实际取值附注。")
+    L.append("- `frac_at_cap`: the top-level field is counted per step. The fallback can only use the "
+             "`rank` checkpoints in `records`, one every `log_every` steps. Its resolution is much lower "
+             "and it can over- or underestimate brief contact with the cap, so treat it as an order of magnitude only.")
+    L.append("- `n_up`/`n_down`: the controller can change the rank every `K` steps, but the log records it only "
+             "every `log_every` steps, so the fallback count is a lower bound (an up and a down move within one "
+             "logging interval cancel).")
+    L.append("- The trigger (τ_c dominant / τ_r dominant) and the normalised τ_c, τ_r exist only in "
+             "`rank_changes`. There is no substitute, so when they are missing they are reported as `n/a` and not inferred.")
+    L.append("- `peak_MB` is written as null by run_adaptive.py under `--device cpu`; this is expected.")
+    L.append("- The kernel variant is decided from the `--preproject` / `--c` arguments first. If "
+             "`c_effective` / `preproject_effective` (written back by run_adaptive.py) are present, they are "
+             "added as a note on the value the kernel actually used.")
     if bad_diag or bad_oat:
         L.append("")
-        L.append("**无法解析 / 无 records 的文件**（可能仍在写入）：")
+        L.append("**Files that cannot be parsed or have no records** (possibly still being written):")
         L.append("")
         for p, why in list(bad_diag) + list(bad_oat):
             L.append(f"- `{os.path.basename(p)}`: {why}")
@@ -913,25 +916,25 @@ def render_summary(ta, mra, tb, target_cos, err_tol):
         star = "*" if "frac_at_cap" in a["flags"] else ""
         star_ud = "*" if "n_up_down" in a["flags"] else ""
         B.append(f"{task} / {cap_disp(cap)} / {kernel_disp(ker)}: frac_at_cap "
-                 f"{fmt_pct(a['frac_at_cap'][0])}{star}，平均秩 "
-                 f"{fmt(a['avg_rank'][0], 2)}（上限 {cap[1]}），末段误差 "
-                 f"{fmt(a['err'][0], 5)}，n_up/n_down {fmt(a['n_up'][0], 1)}/"
-                 f"{fmt(a['n_down'][0], 1)}{star_ud}，峰值内存 "
+                 f"{fmt_pct(a['frac_at_cap'][0])}{star}, mean rank "
+                 f"{fmt(a['avg_rank'][0], 2)} (cap {cap[1]}), tail error "
+                 f"{fmt(a['err'][0], 5)}, n_up/n_down {fmt(a['n_up'][0], 1)}/"
+                 f"{fmt(a['n_down'][0], 1)}{star_ud}, peak memory "
                  f"{fmt(a['peak_MB'][0], 1)} MB")
         t = a["trig"]
         if t and t["frac_tau_c"] is not None:
-            B.append(f"{task} / {cap_disp(cap)} / {kernel_disp(ker)}: 共 "
-                     f"{t['n_changes']} 次秩变化，τ_c 主导占 {fmt_pct(t['frac_tau_c'])}"
-                     f"（升秩中 {fmt_pct(t['frac_tau_c_up'])}），归一化 τ_c 均值 "
-                     f"{fmt(t['tau_c_norm'], 4)}，τ_r 均值 {fmt(t['tau_r_norm'], 4)}")
+            B.append(f"{task} / {cap_disp(cap)} / {kernel_disp(ker)}: "
+                     f"{t['n_changes']} rank changes in total, τ_c dominant in {fmt_pct(t['frac_tau_c'])}"
+                     f" (among rank increases {fmt_pct(t['frac_tau_c_up'])}), normalised τ_c mean "
+                     f"{fmt(t['tau_c_norm'], 4)}, τ_r mean {fmt(t['tau_r_norm'], 4)}")
     for (task, n), d in sorted(mra.items()):
         ctrl = [a["avg_rank"][0] for a in d["ctrl"].values() if a["avg_rank"][0] is not None]
-        s = (f"{task}, n={n}: 固定秩扫描中达到 grad_cos ≥ {target_cos:g} 的最小 r = "
-             f"{d['r_cos'] if d['r_cos'] is not None else 'n/a'}；末段误差 ≤ "
-             f"(1+{err_tol:g})×最优（{fmt(d['best_err'], 5)}）的最小 r = "
-             f"{d['r_err'] if d['r_err'] is not None else 'n/a'}；已完成秩 {d['ranks']}")
+        s = (f"{task}, n={n}: in the fixed-rank sweep the smallest r reaching grad_cos ≥ {target_cos:g} = "
+             f"{d['r_cos'] if d['r_cos'] is not None else 'n/a'}; smallest r with tail error ≤ "
+             f"(1+{err_tol:g})×best ({fmt(d['best_err'], 5)}) = "
+             f"{d['r_err'] if d['r_err'] is not None else 'n/a'}; completed ranks {d['ranks']}")
         if ctrl:
-            s += f"；同任务同宽度控制器平均秩 {fmt(min(ctrl), 2)}–{fmt(max(ctrl), 2)}"
+            s += f"; controller mean rank for the same task and width {fmt(min(ctrl), 2)}–{fmt(max(ctrl), 2)}"
         B.append(s)
     cells = tb["cells"]
     for t in _oat_task_order(cells):
@@ -942,31 +945,31 @@ def render_summary(ta, mra, tb, target_cos, err_tol):
         if es:
             lo, hi = min(es, key=es.get), max(es, key=es.get)
             if abs(es[hi] - es[lo]) < 5e-6:
-                B.append(f"OAT {t}: {len(es)} 个变体的末段误差在 5 位小数上全部相同"
-                         f"（{fmt(es[lo], 5)}），极差 {fmt(es[hi] - es[lo], 5)}")
+                B.append(f"OAT {t}: the tail errors of all {len(es)} variants agree to 5 decimals"
+                         f" ({fmt(es[lo], 5)}), range {fmt(es[hi] - es[lo], 5)}")
             else:
-                B.append(f"OAT {t}: {len(es)} 个变体末段误差从 {fmt(es[lo], 5)}（{lo}）到 "
-                         f"{fmt(es[hi], 5)}（{hi}），极差 {fmt(es[hi] - es[lo], 5)}")
+                B.append(f"OAT {t}: tail error of the {len(es)} variants goes from {fmt(es[lo], 5)} ({lo}) to "
+                         f"{fmt(es[hi], 5)} ({hi}), range {fmt(es[hi] - es[lo], 5)}")
         if rk:
             lo, hi = min(rk, key=rk.get), max(rk, key=rk.get)
             if abs(rk[hi] - rk[lo]) < 5e-3:
-                B.append(f"OAT {t}: {len(rk)} 个变体的平均秩全部相同（{fmt(rk[lo], 2)}），"
-                         f"极差 {fmt(rk[hi] - rk[lo], 2)}")
+                B.append(f"OAT {t}: the mean ranks of all {len(rk)} variants are equal ({fmt(rk[lo], 2)}), "
+                         f"range {fmt(rk[hi] - rk[lo], 2)}")
             else:
-                B.append(f"OAT {t}: 平均秩从 {fmt(rk[lo], 2)}（{lo}）到 {fmt(rk[hi], 2)}"
-                         f"（{hi}），极差 {fmt(rk[hi] - rk[lo], 2)}")
+                B.append(f"OAT {t}: mean rank goes from {fmt(rk[lo], 2)} ({lo}) to {fmt(rk[hi], 2)}"
+                         f" ({hi}), range {fmt(rk[hi] - rk[lo], 2)}")
     if not B:
-        B = ["尚无任何已完成的结果文件，无法生成数值要点。"]
+        B = ["No completed result files yet, so no numeric summary can be generated."]
     return "\n".join(f"- {b}" for b in B)
 
 
 # --------------------------------------------------------------------------------------
-# figures (reuses paper/figures/gen/regen_all.py: Okabe-Ito palette, print-physical
+# figures (reuses figstyle.py: Okabe-Ito palette, print-physical
 # sizes, legend outside the axes, _save -> both .pdf and .png)
 # --------------------------------------------------------------------------------------
 # _kernel_style (colour+marker from the kernel) and _cap_ls (dash from r_max) used to
-# provide the series style here.  Together they broke the R1-2 rule: two series with the
-# same kernel shared BOTH colour and marker and differed only in the dash pattern, so they
+# provide the series style here.  Together they broke the two-attribute rule: two series with the
+# same kernel shared both colour and marker and differed only in the dash pattern, so they
 # were indistinguishable in grey-scale print.  fig_style_r1.distinct_table() now issues one
 # flat table over the series that actually appear and asserts the >=2-attribute guarantee.
 
@@ -1010,16 +1013,16 @@ def fig_adaptive_diag(ra, plt, np, diag_runs, task="rotation"):
         if m["is_adaptive"] and m["task"] == task:
             groups[(m["n"], m["r_max"], bool(m["forced_pp"]), kernel_key(m))].append(r)
     if not groups:
-        return name, f"无 {task} 的 adaptive d3_diag 运行"
+        return name, f"no adaptive d3_diag runs for {task}"
     widths = sorted({k[0] for k in groups if k[0] is not None})
     panels = [w for w in (64, 128) if w in widths] or widths
-    # Drawn at the width the .tex prints it at (0.49\linewidth of a figure* = 3.37 in),
+    # Drawn at the width the paper prints it at (0.49\linewidth of a figure* = 3.37 in),
     # not at 0.96 x \textwidth: the old size was scaled down by 0.53 on the page, which
     # printed the 7.5 pt labels at 4 pt.  Figure 5 is the reference for this rule.
     fs.register(ra, name, height=2.10)
     fig, axs = plt.subplots(1, len(panels), figsize=ra.figsize(name), squeeze=False)
     axes = list(axs[0])
-    # R1-2: the old table took colour AND marker from the kernel and only the dash
+    # The old table took both colour and marker from the kernel and only the dash
     # pattern from r_max, so "fixed c=8, r_max=32" and "fixed c=8, r_max=64, force_pp"
     # shared two of the three visual attributes.  One flat table over the series that
     # actually appear, asserted pairwise-distinct in >= 2 attributes, removes that.
@@ -1054,7 +1057,7 @@ def fig_adaptive_diag(ra, plt, np, diag_runs, task="rotation"):
                         xycoords=("axes fraction", "data"), ha="right", va="bottom",
                         fontsize=6.0, color=ra.OI["black"])
         if drew and caps_here:
-            # headroom above the highest cap (set AFTER axhline, which re-autoscales) so the
+            # headroom above the highest cap (set after axhline, which re-autoscales) so the
             # r_max annotation never collides with the top frame
             lo, hi = ax.get_ylim()
             ax.set_ylim(lo, max(hi, max(caps_here) * 1.5))
@@ -1080,13 +1083,13 @@ def fig_adaptive_oat(ra, plt, np, tb):
     cells = tb["cells"]
     tasks = _oat_task_order(cells)
     if not tasks:
-        return name, "无 d3_oat 结果"
+        return name, "no d3_oat results"
     # This figure is printed at 0.49\linewidth of a figure* = 3.37 in (Figure-5 rule:
     # authored at print size).  In the old orientation the OAT variants were x ticks, and
     # 12 rotated labels need >= 1.2 in of axis per panel -- five of those plus two y-axis
     # gutters each is ~10 in, which is why the figure was drawn at 6.5 in and then scaled
-    # down by 0.52, printing its 5.4 pt tick labels at 2.8 pt (the mush R3 complained
-    # about).  The panels are therefore TRANSPOSED: the variants run down a single shared
+    # down by 0.52, printing its 5.4 pt tick labels at 2.8 pt (unreadable in print).
+    # The panels are therefore transposed: the variants run down a single shared
     # y axis, labelled once and horizontally, and each task keeps its own panel with its
     # own error scale (bottom axis) and rank scale (top axis).  Same tasks, same
     # variants, same two quantities, same per-task scaling -- only the axes swap roles.
@@ -1112,8 +1115,8 @@ def fig_adaptive_oat(ra, plt, np, tb):
             a = cells[(t, v)]
             i = ypos[v]
             filled = (v == "default")
-            # The default row carries TWO visual channels, not one.  Fill alone
-            # (filled = default, open = variant) is a single attribute, and the R1-2
+            # The default row carries two visual channels, not one.  Fill alone
+            # (filled = default, open = variant) is a single attribute, and the
             # rule behind fig_style_r1.distinct_table asks for two; size is the second,
             # and it is Figure 5's own vocabulary rather than a new invention --
             # FIG5["lines"]["point_markersize"] is 7.0 for "a single highlighted point"
@@ -1148,7 +1151,7 @@ def fig_adaptive_oat(ra, plt, np, tb):
         axr.grid(False)
         ax.margins(x=0.22)
         axr.margins(x=0.22)
-    # The key states both channels the default row differs by (fill AND size), so the
+    # The key states both channels the default row differs by (fill and size), so the
     # reader is not left to infer the second one from the panels.
     handles = [
         plt.Line2D([], [], color=c_err, marker="o", linestyle="none", markersize=6.2,
@@ -1165,7 +1168,7 @@ def fig_adaptive_oat(ra, plt, np, tb):
     fig.canvas.draw()
     _r = fig.canvas.get_renderer()
     # NB: the mean-rank axis is a separate Axes (twiny), and its rotated tick labels sit
-    # ABOVE the panel -- so it has to be measured too, or the titles land on top of them.
+    # above the panel -- so it has to be measured too, or the titles land on top of them.
     _top = max(a.get_tightbbox(_r).transformed(fig.transFigure.inverted()).y1
                for a in list(axes) + twins)
     for ax, t in zip(axes, tasks):
@@ -1186,13 +1189,13 @@ def make_figures(diag_runs, tb, figdir, task_diag="rotation"):
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
         import numpy as np
-        import regen_all as ra
+        import figstyle as ra
         import fig_style_r1 as fs
         globals()["fs"] = fs
         fs.bind(ra)
         fs.apply_rc(plt)
     except Exception as e:
-        return [], [(n, f"作图依赖不可用: {type(e).__name__}: {e}") for n in names]
+        return [], [(n, f"plotting dependencies unavailable: {type(e).__name__}: {e}") for n in names]
     ra.OUT = figdir
     ra.GRAY = ""
     os.makedirs(figdir, exist_ok=True)
@@ -1204,7 +1207,7 @@ def make_figures(diag_runs, tb, figdir, task_diag="rotation"):
         try:
             nm, why = call()
         except Exception as e:
-            skipped.append((fn.__name__, f"异常: {type(e).__name__}: {e}"))
+            skipped.append((fn.__name__, f"exception: {type(e).__name__}: {e}"))
             continue
         if why:
             skipped.append((nm, why))
@@ -1216,41 +1219,29 @@ def make_figures(diag_runs, tb, figdir, task_diag="rotation"):
 # --------------------------------------------------------------------------------------
 def main():
     ap = argparse.ArgumentParser(
-        description="D3 自适应秩（触顶诊断 + OAT 敏感性）聚合与作图",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="--dev 使用替身数据：diag = <root>/results/ademo（R1 Table 5 的 40 个 "
-               "run_adaptive 输出），oat = <root>/code/results/round1/adapt_ablate。")
-    ap.add_argument("--indir_diag", default=os.path.join(HERE, "results", "r2", "d3_diag"))
-    ap.add_argument("--indir_oat", default=os.path.join(HERE, "results", "r2", "d3_oat"))
-    ap.add_argument("--dev", action="store_true",
-                    help="用 R1 归档做替身数据（D3 数据未产出时验证聚合/作图流程）")
-    ap.add_argument("--outmd", default=None, help="默认 <indir_diag 的父目录>/D3_SUMMARY.md")
+        description="Aggregate and plot the D3 adaptive-rank results (saturation diagnosis + OAT sensitivity)",
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--indir_diag", default=os.path.join("results", "r2", "d3_diag"))
+    ap.add_argument("--indir_oat", default=os.path.join("results", "r2", "d3_oat"))
+    ap.add_argument("--outmd", default=None, help="default: <parent of indir_diag>/D3_SUMMARY.md")
     ap.add_argument("--figdir", default=None,
-                    help="默认 <root>/paper/figures；--dev 下默认改为 "
-                         "<code>/results/r2/figs_dev，替身图绝不落进论文图目录")
+                    help="default: <code>/results/figures")
     ap.add_argument("--target_cos", type=float, default=0.95,
-                    help="固定秩扫描的 grad_cos 目标（默认 0.95）")
+                    help="grad_cos target of the fixed-rank sweep (default 0.95)")
     ap.add_argument("--err_tol", type=float, default=0.05,
-                    help="固定秩扫描的相对误差目标：误差 ≤ (1+tol)×扫描内最优（默认 0.05）")
-    ap.add_argument("--fig_task", default="rotation", help="秩轨迹图的任务（默认 rotation）")
+                    help="relative error target of the fixed-rank sweep: error <= (1+tol) x best in the sweep (default 0.05)")
+    ap.add_argument("--fig_task", default="rotation", help="task for the rank-trajectory figure (default rotation)")
     ap.add_argument("--no_figs", action="store_true")
     ap.add_argument("--skip_oat", action="store_true",
-                    help="只做诊断部分：不读 --indir_oat，表 B / OAT 图标注为 pending"
-                         "（OAT 90 个 run 未跑齐时用，避免半截数据被当成结果）")
+                    help="diagnosis part only: do not read --indir_oat, mark Table B / the OAT figure as pending"
+                         " (for use while the 90 OAT runs are incomplete, so partial data is not taken as a result)")
     args = ap.parse_args()
 
-    if args.dev:
-        indir_diag = os.path.join(ROOT, "results", "ademo")
-        indir_oat = os.path.join(ROOT, "code", "results", "round1", "adapt_ablate")
-        outmd = args.outmd or os.path.join(HERE, "results", "r2", "D3_SUMMARY_dev.md")
-        # stand-in figures must never overwrite the manuscript's figures
-        figdir = args.figdir or os.path.join(HERE, "results", "r2", "figs_dev")
-    else:
-        indir_diag, indir_oat = args.indir_diag, args.indir_oat
-        outmd = args.outmd or os.path.join(
-            os.path.dirname(os.path.normpath(os.path.abspath(indir_diag))),
-            "D3_SUMMARY.md")
-        figdir = args.figdir or os.path.join(ROOT, "paper", "figures")
+    indir_diag, indir_oat = args.indir_diag, args.indir_oat
+    outmd = args.outmd or os.path.join(
+        os.path.dirname(os.path.normpath(os.path.abspath(indir_diag))),
+        "D3_SUMMARY.md")
+    figdir = args.figdir or os.path.join("results", "figures")
 
     diag_runs, bad_diag = load_dir(indir_diag)
     oat_runs, bad_oat = ([], []) if args.skip_oat else load_dir(indir_oat)
@@ -1264,43 +1255,40 @@ def main():
     wrote, skipped = (([], []) if args.no_figs
                       else make_figures(diag_runs, tb, figdir, task_diag=args.fig_task))
 
-    L = ["# D3 自适应秩：触顶诊断 + 敏感性 (R2, Reviewer #3 point 3) —— 聚合报告", ""]
-    if args.dev:
-        L += ["**注：本报告由 `--dev` 替身数据生成（R1 归档的 run_adaptive 输出），"
-              "仅用于验证聚合/作图流程，不是 D3 结果，不得写入论文。**", ""]
-    L += [f"诊断数据目录: `{indir_diag}`（{len(diag_runs)} 个可用文件）", "",
-          (f"OAT 数据目录: `{indir_oat}`——**pending（--skip_oat：本次未读取，OAT 部分未产出）**"
+    L = ["# D3 adaptive rank: saturation diagnosis + sensitivity — aggregated report", ""]
+    L += [f"Diagnosis data directory: `{_show(indir_diag)}` ({len(diag_runs)} usable files)", "",
+          (f"OAT data directory: `{_show(indir_oat)}` — **pending (--skip_oat: not read in this run, no OAT output)**"
            if args.skip_oat else
-           f"OAT 数据目录: `{indir_oat}`（{len(oat_runs)} 个可用文件）"), "",
-          f"判据：grad_cos 目标 {args.target_cos:g}；相对误差目标 ≤ "
-          f"(1+{args.err_tol:g})×扫描内最优。末段 = 最后 20% log 检查点均值。", ""]
+           f"OAT data directory: `{_show(indir_oat)}` ({len(oat_runs)} usable files)"), "",
+          f"Criteria: grad_cos target {args.target_cos:g}; relative error target ≤ "
+          f"(1+{args.err_tol:g})×best in the sweep. Tail = mean over the last 20% of logged checkpoints.", ""]
     L.append(render_missing(md, mo, len(diag_runs), len(oat_runs)))
     L.append(render_table_a(ta, mra, args.target_cos, args.err_tol))
     L.append("")
     if args.skip_oat:
-        L += ["## 表 B OAT 单因素敏感性（D3 local sensitivity）", "",
-              "**PENDING —— 本次以 `--skip_oat` 运行，只聚合诊断部分（d3_diag）。**",
-              "", "OAT 敏感性（`" + indir_oat + "`，roster " + str(len(oat_roster())) +
-              " 项）仍在队列中；本报告不包含任何 OAT 数字，"
-              "跑齐后需去掉 `--skip_oat` 重跑本脚本。", ""]
+        L += ["## Table B OAT one-at-a-time sensitivity (D3 local sensitivity)", "",
+              "**Pending — this run used `--skip_oat` and aggregates only the diagnosis part (d3_diag).**",
+              "", "The OAT sensitivity runs (`" + indir_oat + "`, roster " + str(len(oat_roster())) +
+              " entries) are still queued. This report contains no OAT numbers. "
+              "Rerun this script without `--skip_oat` once they are complete.", ""]
     else:
         L.append(render_table_b(tb))
     L.append("")
-    L += ["## 要点（自动生成，仅陈述数字）", "",
+    L += ["## Key numbers (auto-generated, numbers only)", "",
           render_summary(ta, mra, tb, args.target_cos, args.err_tol), ""]
     L.append(render_tolerance(bad_diag, bad_oat))
-    L += ["## 图", ""]
+    L += ["## Figures", ""]
     for nm in wrote:
         fp = os.path.join(figdir, nm + ".pdf")
         try:
             fp = os.path.relpath(fp)
         except ValueError:
             fp = os.path.abspath(fp)
-        L.append(f"- `{fp}` — 已生成")
+        L.append(f"- `{_show(fp)}` — written")
     for nm, why in skipped:
-        L.append(f"- `{nm}` — 跳过：{why}")
+        L.append(f"- `{nm}` — skipped: {why}")
     if args.no_figs:
-        L.append("- （--no_figs：本次未作图）")
+        L.append("- (--no_figs: no figures drawn in this run)")
     L.append("")
 
     os.makedirs(os.path.dirname(os.path.abspath(outmd)) or ".", exist_ok=True)

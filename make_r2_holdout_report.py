@@ -1,20 +1,20 @@
-"""A11 temporal hold-out report for the second-round revision -- sunspot & laser.
+"""Temporal hold-out report (Table 9): sunspot and laser.
 
 Reads `results/r2/d4_holdout/` for the hold-out numbers and `results/r2/d4_eval/` for the
 published full-sequence reference, and writes `results/r2/HOLDOUT_SUMMARY.md`.  It launches
 nothing, touches no GPU, and never writes into an experiment directory.
 
-What the hold-out check has to show (R2 plan A11 / reply-letter R3-4: "the real series are
-streamed cyclically, so the reported numbers are in-sample")
+What the hold-out check has to show (the real series are streamed cyclically, so the
+full-sequence numbers are in-sample)
 -------------------------------------------------------------------------------------------
-  1. Whether the estimator ORDERING on data the optimiser never saw is the same ordering the
+  1. Whether the estimator ordering on data the optimiser never saw is the same ordering the
      published full-sequence tables report.  If SK-RTRL only looks competitive because the
      sketch memorises a cycled stream, the hold-out ordering has to break.
-  2. Whether SK-RTRL's gap to exact RTRL WIDENS out of sample.  The paired gap is computed
+  2. Whether SK-RTRL's gap to exact RTRL widens out of sample.  The paired gap is computed
      twice on the very same five seeds -- once on the training tail, once on the hold-out
      segment -- so "the gap widened" is a statement about one pair of numbers, not about two
      differently-powered experiments.
-  3. Whether any estimator COLLAPSES out of sample.  The collapse criterion is fixed here,
+  3. Whether any estimator collapses out of sample.  The collapse criterion is fixed here,
      before any number is read: hold-out / training-tail ratio > 2 on an error task (the
      estimator at least doubled its error off the training stream).
   4. Every anomaly: missing json, NaN/non-finite records, hold-out passes that ran for a
@@ -39,7 +39,7 @@ Protocol
   95 % CI           Student-t on the seed mean: mean +/- t_{.975,n-1} * s/sqrt(n) with the
                     SAMPLE std (ddof=1).  With 5 seeds t_{.975,4} = 2.776, so the hold-out
                     intervals are wider than the 10-seed D4 ones and are labelled with their n
-                    everywhere; they are NOT a substitute for the D4 intervals.
+                    everywhere; they are not a substitute for the D4 intervals.
   paired stats      SK-RTRL r=16 / r=32 against exact / SnAp-1 / TBPTT on the five shared
                     seeds: Wilcoxon signed-rank (two-sided, `zero_method="wilcox"`), a
                     bootstrap 95 % CI on the mean paired difference (10 000 resamples,
@@ -116,7 +116,7 @@ JOBS_HOLDOUT = "jobs/d4_holdout.txt"
 JOBS_EVAL = "jobs/d4_eval.txt"
 
 TASKS = ["sunspot", "laser"]
-# display order, matching the published tables (Table 3/6/7 order, restricted to the A11 grid)
+# display order, matching the published tables (Table S6-S8 order, restricted to the hold-out grid)
 ORDER = ["exact", "skrtrl-r32", "skrtrl-r16", "snap1", "tbptt"]
 SEEDS = [0, 1, 2, 3, 4]
 SEEDS_EVAL = list(range(10))
@@ -355,7 +355,7 @@ def build_cells(kept, fields, seeds, ddof, require_steps):
 
 
 def ratio_of_means(ho_cells, task, algo):
-    """Hold-out mean / training-tail mean, with each side's n.  A ratio of means -- NOT the
+    """Hold-out mean / training-tail mean, with each side's n.  A ratio of means, not the
     mean of the per-seed ratios, which is reported separately."""
     cn = ho_cells.get((task, algo, HO_FIELD))
     cd = ho_cells.get((task, algo, TRAIN_FIELD))
@@ -791,7 +791,7 @@ def run_checks(ho_cells, ev_cells, ho_kept, ev_kept, inv, meta):
 def write_report(path, meta, ho_cells, ev_cells, ho_kept, ev_kept, problems, inv, checks):
     L = []
     A = L.append
-    A("# A11 -- temporal hold-out on the measured series (sunspot, laser)")
+    A("# Temporal hold-out on the measured series (sunspot, laser), Table 9")
     A("")
     A("Generated %s by `make_r2_holdout_report.py` (reads `%s` and `%s`; writes nothing "
       "else)." % (meta["when"], HOLDOUT_DIR, EVAL_DIR))

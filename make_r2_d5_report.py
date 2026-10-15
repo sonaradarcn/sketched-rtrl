@@ -1,11 +1,11 @@
-"""D5 (gated cells) result tables for the second-round revision -- GRU, and LSTM when it lands.
+"""D5 (gated cells) result tables, the feed of Table 11: GRU, and LSTM when present.
 
 Reads `results/r2/d5_gated/` alone for the gated numbers and `results/r2/d4_eval/` for the
 tanh reference, and writes `results/r2/D5_SUMMARY.md`.  It launches nothing, touches no GPU,
 and never writes into the experiment directories.
 
-What D5 has to show (R2 plan D5 / R3-5: "applicability of the method to gated cells")
-------------------------------------------------------------------------------------
+What D5 has to show
+-------------------
   1. SK-RTRL at r in {4, 16, 32} against exact / SnAp-1 / UORO / RFLO on a gated cell, on the
      same 4 tasks (2 diagnostic + 1 chaotic + 1 real) as the tanh protocol.
   2. KF-RTRL is structurally absent, not missing: its Kronecker factorisation needs
@@ -25,20 +25,20 @@ Protocol (kept deliberately identical to `make_r2_d4_tables.py` so the two can b
 by side; the aggregation helpers are imported from it, not re-implemented)
   per-run value     mean of the field over every logged record with `step >= 0.8*steps`
                     (the last-20 % window).  `--agg tail5` switches to the last five records.
-  across seeds      mean +/- POPULATION std (`--ddof 0`, the published convention), the seed
+  across seeds      mean +/- population std (`--ddof 0`, the published convention), the seed
                     being the unit of aggregation -- never the pooled record set.
   95 % CI           Student-t on the seed mean: mean +/- t_{.975,n-1} * s/sqrt(n) with the
-                    SAMPLE std (ddof=1).  With 3 seeds t_{.975,2} = 4.303, so these intervals
-                    are wide by construction and are reported as such; they are NOT a
+                    sample std (ddof=1).  With 3 seeds t_{.975,2} = 4.303, so these intervals
+                    are wide by construction and are reported as such; they are not a
                     substitute for the 10-seed D4 intervals.
   effect size       paired against exact RTRL on the same seed: Cohen's d_z on the signed
                     difference (positive = the estimator is better than exact under the task's
                     own direction), plus a paired-t p.  No Wilcoxon and no Holm correction:
                     at n=3 the signed-rank test has a minimum two-sided p of 0.25 and a
                     multiplicity correction over 4 tasks x 6 estimators would make every cell
-                    n/a, which would be less honest than reporting d_z with its n.
+                    n/a, which says less than d_z reported with its n.
   heavy-tailed      `e_t` (the certificate bound) spans >20 orders of magnitude within one
-                    run, so its per-run value is the MEDIAN over the window and its across-seed
+                    run, so its per-run value is the median over the window and its across-seed
                     summary is reported in log10.  Means of `e_t` are meaningless and are not
                     printed anywhere.
 
@@ -49,7 +49,7 @@ Confounds this script prints rather than hides
   * the tanh reference in `d4_eval` was run at the D4 stage-2 learning rate and 10 seeds; the
     D5 grid ran at the `--default-lr` 1e-3 for every row with 3 seeds (the D5 job file says so
     in its header: `D4_SELECT_stage2.json` did not exist when the grid was generated).  Task
-    metrics are therefore NOT a like-for-like tanh/GRU comparison and the tanh/GRU metric
+    metrics are therefore not a like-for-like tanh/GRU comparison and the tanh/GRU metric
     column is labelled accordingly; the certificate, sketch-spectrum, memory and per-step-cost
     comparisons do not depend on the learning rate in the same way.
   * `wall_s` was collected on a shared GPU.  The ratio column is flagged whenever the two
@@ -102,7 +102,7 @@ STEPS = d5j.STEPS_D5
 D5_DIR = d5j.OUTDIR_D5
 TANH_DIR = sel.EVAL_DIR
 REPORT_DIR = sel.REPORT_DIR
-JOBS_FILES = ["jobs/d5_gru.txt", "jobs/d5_gated.txt", "jobs/d5_lstm.txt"]
+JOBS_FILES = ["jobs/d5_gated.txt"]
 
 HIGHER_IS_BETTER = set(sel.HIGHER_IS_BETTER)
 WINDOW_FRAC = sel.WINDOW_FRAC
@@ -471,7 +471,7 @@ def paired_vs_ref(cells, cell, task, field, algo, ref=REF_ALGO, boot=10000, boot
 
 
 def cross_cell_ratio(cells, task, algo, field, num="gru", den="tanh"):
-    """Ratio of the across-seed means, num/den, with the per-cell n.  Seeds do NOT pair
+    """Ratio of the across-seed means, num/den, with the per-cell n.  Seeds do not pair
     across cells (different grids), so this is a ratio of means, not a paired statistic."""
     cn = cells.get((num, task, algo, field))
     cd = cells.get((den, task, algo, field))
@@ -485,7 +485,7 @@ def cross_cell_ratio(cells, task, algo, field, num="gru", den="tanh"):
 
 # ---------------------------------------------------------------- inventory
 def job_outs(jobs_files):
-    """-> {path: line_no} from every `# out=` annotation, the authoritative expectation."""
+    """-> {path: line_no} from every `# out=` annotation, i.e. the expected outputs."""
     outs = {}
     found = []
     for jf in jobs_files:
@@ -991,11 +991,11 @@ def run_checks(cells, kept, inv, present_cells, meta):
 
     # ---- divergence screen (d5 cells only; the tanh reference is D4's business)
     #
-    # NOT "ends worse than step 0": on the accuracy tasks the step-0 record is a degenerate
+    # Not "ends worse than step 0": on the accuracy tasks the step-0 record is a degenerate
     # 1.000 (the untrained net emits the majority symbol before any `b` is due), so every run
     # ever logged "ends worse than it starts" and the screen would fire 84/84.  The real
     # question is whether a run walked away from its own best, so the criterion is the
-    # last-20 % window mean against the best value the run reached AFTER step 0:
+    # last-20 % window mean against the best value the run reached after step 0:
     #   accuracy task   window mean < 0.80 * best        (lost a fifth of its peak accuracy)
     #   error task      window mean > 2.0 * best         (doubled its best error)
     for (cell, task, algo, seed), r in sorted(kept.items()):
@@ -1047,8 +1047,7 @@ def run_checks(cells, kept, inv, present_cells, meta):
                            else "partly applicable"))
     absent_cells = [c for c in CELLS if c not in present_cells]
     if absent_cells:
-        head.append("Cells NOT run: %s -- the corresponding rows of Table 11 stay `\\PH{}` "
-                    "and the paper must say the derivation is given but not run."
+        head.append("Cells not run: %s -- the corresponding rows of Table 11 are empty."
                     % ", ".join(absent_cells))
     n_kf = sum(1 for k in kept if k[0] in present_cells and k[2] == "kfrtrl")
     head.append("KF-RTRL is absent by derivation on every gated row (see section 1); "

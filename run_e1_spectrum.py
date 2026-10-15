@@ -1,15 +1,16 @@
-"""E1 / D1 (R2, Reviewer #3 point 1): spectrum of the TRUE SnAp-1 residual R_t = J_t - S_t.
+"""Residual spectrum R_t = J_t - S_t of the SnAp-1 trace (Section 6.4, Table 4, Fig. 4).
 
-Definition of record (R2_EXPERIMENT_PLAN.md, D1):
+Definition:
     R_t := J_t - S_t
 where J_t = dh_t/dtheta is the exact influence matrix (ExactRTRL, "shadow") and S_t is the
 SnAp-1 trace the paper actually maintains, S_{t,i} = A_{ii} S_{t-1,i} + imm_i (SnAp1.S).
 S_t lives in the block-diagonal support, so R_t = J_t - blockdiag_embed(S_t) differs from the
-R1 quantity J_t - blockdiag(J_t): the latter zeroes the diagonal blocks, the former subtracts
-the *recursively propagated* trace from them. The R1 quantity is still logged, under the
-`bd_` prefix, so the new figure remains comparable with R1's Fig. 2 (fig_pilot_residual).
+first-round quantity J_t - blockdiag(J_t): the latter zeroes the diagonal blocks, the former
+subtracts the *recursively propagated* trace from them. The first-round quantity is still
+logged, under the `bd_` prefix, so the new figure remains comparable with Fig. S5
+(fig_pilot_residual).
 
-Training protocol (identical to the R1 pilot, run_m1_spectrum.py): the network is trained
+Training protocol (identical to the first-round pilot, run_m1_spectrum.py): the network is trained
 online with **exact RTRL**, so the residual measured is a property of the network/task pair
 and not of the approximation being tested.  A SnAp-1 instance is attached as a passive
 tracker: it receives exactly the same (A_t, imm_t) and the same lane resets, and never
@@ -23,7 +24,7 @@ Metrics at each checkpoint, per batch lane, then mean/std over lanes:
     stable_rank        ||R||_F^2 / ||R||_2^2
     res_frac_of_J      ||R_t||_F / ||J_t||_F
     diag_gap_*         ||blockdiag(J) - S||_F, the entire difference between the two conventions
-    bd_*               the same quantities for J_t - blockdiag(J_t)   (R1 comparability)
+    bd_*               the same quantities for J_t - blockdiag(J_t)   (first-round comparability)
 
 Checkpoints are stratified two ways (--ckpt_align age, the default): training stage
 (--ckpt_fracs) x age of the influence matrix within its reset interval
@@ -114,8 +115,8 @@ def checkpoint_spectrum(J, S, n, p, method, fp64_check=False):
         bv[idx, idx, :] -= S[b]
         sv = _svals(buf, method)
         m, svlist = _metrics_from_sv(sv, n)
-        # ||blockdiag(J) - S||_F: the whole difference between the reviewer's object
-        # (J - S) and the R1 object (J - blockdiag(J)) sits in the diagonal blocks
+        # ||blockdiag(J) - S||_F: the whole difference between J - S and the first-round
+        # object J - blockdiag(J) sits in the diagonal blocks
         m["diag_gap"] = bv[idx, idx, :].norm().double().item()
         per_lane.append(m)
         svs.append(svlist)
@@ -144,7 +145,7 @@ def checkpoint_spectrum(J, S, n, p, method, fp64_check=False):
                     "stable_rank_fp64": m64["stable_rank"],
                     "n_sv_compared": k,
                 }
-        # ---- bd residual = J - blockdiag(J)  (R1 quantity; reuse the same buffer) ----
+        # ---- bd residual = J - blockdiag(J)  (first-round quantity; reuse the same buffer) ----
         bv[idx, idx, :] = 0.0
         sv_bd = _svals(buf, method)
         m_bd, svlist_bd = _metrics_from_sv(sv_bd, n)

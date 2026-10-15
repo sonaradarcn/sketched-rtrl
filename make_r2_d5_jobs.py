@@ -1,20 +1,20 @@
-"""Generate R2 plan D5 (gated cells) job files for run_r2_queue.ps1 / .sh.
+"""Generate the D5 (gated cells, Table 11) job files for run_r2_queue.ps1 / .sh.
 
 Same line format as make_r2_jobs.py / make_r2_d2_jobs.py: bare script name plus
 flags, terminated by a `# out=<path>` annotation the queue uses for exists-skip
-(authoritative -- the queue never re-derives the filename from the flags).
+(the queue never re-derives the filename from the flags).
 
-Grid (R2 plan D5 / paper/revise_r2/GRU_EXTENSION.tex sec. 8)
------------------------------------------------------------
+Grid (derivations in Section 4.4 and Section S5 of the supplement)
+------------------------------------------------------------------
   cells   gru  (primary; append width omega = 2n, p_cell = 3 p_gate)
-          lstm (secondary, emitted AFTER every gru row so a truncated queue
+          lstm (secondary, emitted after every gru row so a truncated queue
                 still delivers the complete GRU table -- the LSTM block is
                 droppable)
   tasks   rotation, anbn (episodic) + henon, sunspot (time series)
   algos   exact, snap1, skrtrl-r4, skrtrl-r16, skrtrl-r32, rflo, uoro
   seeds   0, 1, 2      steps 20000      shadow 1      svd_driver auto
 
-  KF-RTRL is deliberately ABSENT: its Kronecker factorisation rests on
+  KF-RTRL is deliberately absent: its Kronecker factorisation rests on
   A_t = D_t W and a rank-1 immediate Jacobian, neither of which holds for a
   gated cell (a GRU's immediate Jacobian is not even block diagonal), so
   run_m3.py refuses `--cell gru|lstm --algo kfrtrl` and D5 reports it as

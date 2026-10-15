@@ -1,0 +1,959 @@
+{
+ "source": "paper/submitted_r2_frozen (the R2 submission), unless an entry says otherwise",
+ "entries": [
+  {
+   "key": "fidelity_wins_of_108",
+   "paper": 108,
+   "tol": 0,
+   "source": "main_cas.tex:57",
+   "note": "SK-RTRL r in {4,16,32} vs SnAp-1/KF-RTRL/RFLO/UORO on 9 tasks, gradient cosine; Cliff's delta = 1"
+  },
+  {
+   "key": "wtl_task_r4",
+   "paper": [
+    24,
+    18,
+    3
+   ],
+   "tol": 0,
+   "source": "secs/6_experiments.tex:507",
+   "note": ""
+  },
+  {
+   "key": "wtl_task_r16",
+   "paper": [
+    26,
+    16,
+    3
+   ],
+   "tol": 0,
+   "source": "secs/6_experiments.tex:507",
+   "note": ""
+  },
+  {
+   "key": "wtl_task_r32",
+   "paper": [
+    30,
+    12,
+    3
+   ],
+   "tol": 0,
+   "source": "secs/6_experiments.tex:507",
+   "note": ""
+  },
+  {
+   "key": "cert_supervised_runs",
+   "paper": 240,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:245",
+   "note": ""
+  },
+  {
+   "key": "cert_supervised_counted_steps",
+   "paper": 3614460,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:245",
+   "note": ""
+  },
+  {
+   "key": "cert_supervised_bound_finite",
+   "paper": 2575736,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:245",
+   "note": ""
+  },
+  {
+   "key": "cert_rl_runs",
+   "paper": 27,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:245",
+   "note": ""
+  },
+  {
+   "key": "cert_rl_counted_steps",
+   "paper": 1974600,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:245",
+   "note": ""
+  },
+  {
+   "key": "cert_all_runs",
+   "paper": 267,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:239",
+   "note": ""
+  },
+  {
+   "key": "cert_all_counted_steps",
+   "paper": 5589060,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:239",
+   "note": ""
+  },
+  {
+   "key": "cert_theorem1_violations",
+   "paper": 0,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:239",
+   "note": ""
+  },
+  {
+   "key": "lemma1_failures_total",
+   "paper": 93,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:252",
+   "note": ""
+  },
+  {
+   "key": "lemma1_failing_runs",
+   "paper": [
+    "copy_skrtrl-r16_s2"
+   ],
+   "tol": 0,
+   "source": "secs/8_conclusion.tex:99",
+   "note": ""
+  },
+  {
+   "key": "lemma1_failing_run_counted_steps",
+   "paper": 1980,
+   "tol": 0,
+   "source": "secs/6_experiments.tex:252",
+   "note": ""
+  },
+  {
+   "key": "memory_ratio_n512",
+   "paper": 13.5,
+   "tol": 0.05,
+   "source": "main_cas.tex:58",
+   "note": "membench anbn n=512: exact RTRL peak MB / SK-RTRL r=16 peak MB (8293 / 614)"
+  },
+  {
+   "key": "memory_exact_n512_MB",
+   "paper": 8293,
+   "tol": 0.5,
+   "source": "secs/6_experiments.tex:560",
+   "note": ""
+  },
+  {
+   "key": "memory_r16_n512_MB",
+   "paper": 614,
+   "tol": 0.5,
+   "source": "secs/6_experiments.tex:560",
+   "note": ""
+  },
+  {
+   "key": "table5",
+   "paper": {
+    "diagnostic|none": {
+     "runs": 40,
+     "rel_lt1": [
+      0.023,
+      0.064
+     ],
+     "rel_lt05": [
+      0.022,
+      0.061
+     ],
+     "tight_le10": [
+      0.03,
+      0.056
+     ],
+     "rhobar_lt1": [
+      0.034,
+      0.089
+     ]
+    },
+    "diagnostic|0.35": {
+     "runs": 20,
+     "rel_lt1": [
+      0.741,
+      0.412
+     ],
+     "rel_lt05": [
+      0.642,
+      0.389
+     ],
+     "tight_le10": [
+      0.996,
+      0.006
+     ],
+     "rhobar_lt1": [
+      0.997,
+      0.005
+     ]
+    },
+    "diagnostic|0.7": {
+     "runs": 20,
+     "rel_lt1": [
+      0.285,
+      0.396
+     ],
+     "rel_lt05": [
+      0.158,
+      0.254
+     ],
+     "tight_le10": [
+      0.729,
+      0.337
+     ],
+     "rhobar_lt1": [
+      0.827,
+      0.275
+     ]
+    },
+    "diagnostic|0.9": {
+     "runs": 20,
+     "rel_lt1": [
+      0.195,
+      0.324
+     ],
+     "rel_lt05": [
+      0.037,
+      0.06
+     ],
+     "tight_le10": [
+      0.336,
+      0.405
+     ],
+     "rhobar_lt1": [
+      0.431,
+      0.392
+     ]
+    },
+    "chaotic|none": {
+     "runs": 39,
+     "rel_lt1": [
+      0.0,
+      0.0
+     ],
+     "rel_lt05": [
+      0.0,
+      0.0
+     ],
+     "tight_le10": [
+      0.009,
+      0.005
+     ],
+     "rhobar_lt1": [
+      0.0,
+      0.0
+     ]
+    },
+    "chaotic|0.35": {
+     "runs": 15,
+     "rel_lt1": [
+      0.998,
+      0.004
+     ],
+     "rel_lt05": [
+      0.973,
+      0.025
+     ],
+     "tight_le10": [
+      1.0,
+      0.0
+     ],
+     "rhobar_lt1": [
+      1.0,
+      0.0
+     ]
+    },
+    "chaotic|0.7": {
+     "runs": 15,
+     "rel_lt1": [
+      0.844,
+      0.046
+     ],
+     "rel_lt05": [
+      0.552,
+      0.081
+     ],
+     "tight_le10": [
+      0.988,
+      0.006
+     ],
+     "rhobar_lt1": [
+      1.0,
+      0.0
+     ]
+    },
+    "chaotic|0.9": {
+     "runs": 15,
+     "rel_lt1": [
+      0.283,
+      0.331
+     ],
+     "rel_lt05": [
+      0.162,
+      0.223
+     ],
+     "tight_le10": [
+      0.611,
+      0.28
+     ],
+     "rhobar_lt1": [
+      0.863,
+      0.079
+     ]
+    },
+    "real|none": {
+     "runs": 26,
+     "rel_lt1": [
+      0.0,
+      0.0
+     ],
+     "rel_lt05": [
+      0.0,
+      0.0
+     ],
+     "tight_le10": [
+      0.008,
+      0.004
+     ],
+     "rhobar_lt1": [
+      0.0,
+      0.0
+     ]
+    },
+    "real|0.35": {
+     "runs": 10,
+     "rel_lt1": [
+      0.999,
+      0.001
+     ],
+     "rel_lt05": [
+      0.994,
+      0.004
+     ],
+     "tight_le10": [
+      1.0,
+      0.0
+     ],
+     "rhobar_lt1": [
+      1.0,
+      0.0
+     ]
+    },
+    "real|0.7": {
+     "runs": 10,
+     "rel_lt1": [
+      0.524,
+      0.21
+     ],
+     "rel_lt05": [
+      0.189,
+      0.14
+     ],
+     "tight_le10": [
+      0.91,
+      0.114
+     ],
+     "rhobar_lt1": [
+      0.995,
+      0.005
+     ]
+    },
+    "real|0.9": {
+     "runs": 10,
+     "rel_lt1": [
+      0.009,
+      0.009
+     ],
+     "rel_lt05": [
+      0.004,
+      0.004
+     ],
+     "tight_le10": [
+      0.041,
+      0.026
+     ],
+     "rhobar_lt1": [
+      0.066,
+      0.071
+     ]
+    },
+    "rl|none": {
+     "runs": 9,
+     "rel_lt1": [
+      0.115,
+      0.23
+     ],
+     "rel_lt05": [
+      0.096,
+      0.196
+     ],
+     "tight_le10": [
+      0.08,
+      0.159
+     ],
+     "rhobar_lt1": [
+      0.136,
+      0.267
+     ]
+    },
+    "rl|0.5": {
+     "runs": 9,
+     "rel_lt1": [
+      0.945,
+      0.038
+     ],
+     "rel_lt05": [
+      0.822,
+      0.082
+     ],
+     "tight_le10": [
+      1.0,
+      0.0
+     ],
+     "rhobar_lt1": [
+      1.0,
+      0.0
+     ]
+    }
+   },
+   "tol": 0.0015,
+   "source": "secs/6_experiments.tex:339",
+   "note": "per-run fractions from cert_summary, mean +- s.d. over runs; tolerance applies to means and s.d."
+  },
+  {
+   "key": "table6",
+   "paper": {
+    "copy": {
+     "none": [
+      0.092,
+      0.102
+     ],
+     "0.35": [
+      0.969,
+      0.01
+     ],
+     "0.7": [
+      0.026,
+      0.006
+     ],
+     "0.9": [
+      0.0,
+      0.0
+     ]
+    },
+    "anbn": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.997,
+      0.001
+     ],
+     "0.7": [
+      0.924,
+      0.006
+     ],
+     "0.9": [
+      0.741,
+      0.019
+     ]
+    },
+    "adding": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.952,
+      0.021
+     ],
+     "0.7": [
+      0.174,
+      0.218
+     ],
+     "0.9": [
+      0.0,
+      0.0
+     ]
+    },
+    "rotation": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.046,
+      0.027
+     ],
+     "0.7": [
+      0.018,
+      0.006
+     ],
+     "0.9": [
+      0.039,
+      0.015
+     ]
+    },
+    "henon": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.994,
+      0.005
+     ],
+     "0.7": [
+      0.888,
+      0.049
+     ],
+     "0.9": [
+      0.729,
+      0.097
+     ]
+    },
+    "mackeyglass": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      1.0,
+      0.0
+     ],
+     "0.7": [
+      0.802,
+      0.021
+     ],
+     "0.9": [
+      0.057,
+      0.023
+     ]
+    },
+    "lorenz": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.999,
+      0.0
+     ],
+     "0.7": [
+      0.841,
+      0.005
+     ],
+     "0.9": [
+      0.064,
+      0.042
+     ]
+    },
+    "sunspot": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      0.999,
+      0.0
+     ],
+     "0.7": [
+      0.475,
+      0.257
+     ],
+     "0.9": [
+      0.0,
+      0.0
+     ]
+    },
+    "laser": {
+     "none": [
+      0.0,
+      0.0
+     ],
+     "0.35": [
+      1.0,
+      0.0
+     ],
+     "0.7": [
+      0.574,
+      0.165
+     ],
+     "0.9": [
+      0.017,
+      0.002
+     ]
+    }
+   },
+   "tol": 0.0015,
+   "source": "secs/tab_r2_certtask.tex:12",
+   "note": ""
+  },
+  {
+   "key": "table9",
+   "paper": {
+    "sunspot|exact": {
+     "holdout": [
+      0.1318,
+      0.0032
+     ],
+     "train_tail": [
+      0.1343,
+      0.0016
+     ],
+     "ratio": 0.982
+    },
+    "sunspot|skrtrl-r32": {
+     "holdout": [
+      0.1318,
+      0.003
+     ],
+     "train_tail": [
+      0.1341,
+      0.0016
+     ],
+     "ratio": 0.983
+    },
+    "sunspot|skrtrl-r16": {
+     "holdout": [
+      0.132,
+      0.0032
+     ],
+     "train_tail": [
+      0.1342,
+      0.0015
+     ],
+     "ratio": 0.984
+    },
+    "sunspot|snap1": {
+     "holdout": [
+      0.1385,
+      0.0034
+     ],
+     "train_tail": [
+      0.1405,
+      0.0016
+     ],
+     "ratio": 0.985
+    },
+    "sunspot|tbptt": {
+     "holdout": [
+      0.1332,
+      0.0028
+     ],
+     "train_tail": [
+      0.1348,
+      0.0017
+     ],
+     "ratio": 0.988
+    },
+    "laser|exact": {
+     "holdout": [
+      0.0169,
+      0.0048
+     ],
+     "train_tail": [
+      0.0161,
+      0.0012
+     ],
+     "ratio": 1.049
+    },
+    "laser|skrtrl-r32": {
+     "holdout": [
+      0.0166,
+      0.0068
+     ],
+     "train_tail": [
+      0.0174,
+      0.0011
+     ],
+     "ratio": 0.952
+    },
+    "laser|skrtrl-r16": {
+     "holdout": [
+      0.0168,
+      0.0044
+     ],
+     "train_tail": [
+      0.0199,
+      0.0004
+     ],
+     "ratio": 0.843
+    },
+    "laser|snap1": {
+     "holdout": [
+      0.0164,
+      0.0043
+     ],
+     "train_tail": [
+      0.0178,
+      0.0012
+     ],
+     "ratio": 0.92
+    },
+    "laser|tbptt": {
+     "holdout": [
+      0.0163,
+      0.0047
+     ],
+     "train_tail": [
+      0.0164,
+      0.0014
+     ],
+     "ratio": 0.989
+    }
+   },
+   "tol": 0.00015,
+   "source": "secs/tab_r2_holdout.tex:13",
+   "note": "tolerance on NMSE means and s.d.; ratio checked to 0.0015"
+  },
+  {
+   "key": "table11_cosine",
+   "paper": {
+    "gru|snap1|rotation": [
+     0.186,
+     0.027
+    ],
+    "gru|snap1|anbn": [
+     0.457,
+     0.089
+    ],
+    "gru|snap1|henon": [
+     0.487,
+     0.018
+    ],
+    "gru|snap1|sunspot": [
+     0.431,
+     0.043
+    ],
+    "gru|rflo|rotation": [
+     0.64,
+     0.067
+    ],
+    "gru|rflo|anbn": [
+     0.423,
+     0.062
+    ],
+    "gru|rflo|henon": [
+     0.419,
+     0.082
+    ],
+    "gru|rflo|sunspot": [
+     0.26,
+     0.056
+    ],
+    "gru|uoro|rotation": [
+     0.031,
+     0.037
+    ],
+    "gru|uoro|anbn": [
+     0.031,
+     0.002
+    ],
+    "gru|uoro|henon": [
+     0.03,
+     0.006
+    ],
+    "gru|uoro|sunspot": [
+     -0.006,
+     0.032
+    ],
+    "gru|skrtrl-r4|rotation": [
+     0.731,
+     0.122
+    ],
+    "gru|skrtrl-r4|anbn": [
+     0.784,
+     0.043
+    ],
+    "gru|skrtrl-r4|henon": [
+     0.958,
+     0.001
+    ],
+    "gru|skrtrl-r4|sunspot": [
+     0.727,
+     0.014
+    ],
+    "gru|skrtrl-r16|rotation": [
+     0.856,
+     0.087
+    ],
+    "gru|skrtrl-r16|anbn": [
+     0.881,
+     0.019
+    ],
+    "gru|skrtrl-r16|henon": [
+     0.974,
+     0.004
+    ],
+    "gru|skrtrl-r16|sunspot": [
+     0.747,
+     0.009
+    ],
+    "gru|skrtrl-r32|rotation": [
+     0.94,
+     0.048
+    ],
+    "gru|skrtrl-r32|anbn": [
+     0.937,
+     0.012
+    ],
+    "gru|skrtrl-r32|henon": [
+     0.99,
+     0.002
+    ],
+    "gru|skrtrl-r32|sunspot": [
+     0.893,
+     0.012
+    ],
+    "lstm|snap1|rotation": [
+     0.334,
+     0.027
+    ],
+    "lstm|snap1|anbn": [
+     0.909,
+     0.023
+    ],
+    "lstm|snap1|henon": [
+     0.667,
+     0.027
+    ],
+    "lstm|snap1|sunspot": [
+     0.635,
+     0.011
+    ],
+    "lstm|rflo|rotation": [
+     0.545,
+     0.06
+    ],
+    "lstm|rflo|anbn": [
+     0.432,
+     0.05
+    ],
+    "lstm|rflo|henon": [
+     0.397,
+     0.022
+    ],
+    "lstm|rflo|sunspot": [
+     0.334,
+     0.07
+    ],
+    "lstm|uoro|rotation": [
+     0.022,
+     0.004
+    ],
+    "lstm|uoro|anbn": [
+     0.041,
+     0.003
+    ],
+    "lstm|uoro|henon": [
+     0.036,
+     0.002
+    ],
+    "lstm|uoro|sunspot": [
+     0.022,
+     0.001
+    ],
+    "lstm|skrtrl-r4|rotation": [
+     0.873,
+     0.031
+    ],
+    "lstm|skrtrl-r4|anbn": [
+     0.969,
+     0.011
+    ],
+    "lstm|skrtrl-r4|henon": [
+     0.982,
+     0.002
+    ],
+    "lstm|skrtrl-r4|sunspot": [
+     0.959,
+     0.015
+    ],
+    "lstm|skrtrl-r16|rotation": [
+     0.96,
+     0.016
+    ],
+    "lstm|skrtrl-r16|anbn": [
+     0.967,
+     0.009
+    ],
+    "lstm|skrtrl-r16|henon": [
+     0.986,
+     0.004
+    ],
+    "lstm|skrtrl-r16|sunspot": [
+     0.969,
+     0.005
+    ],
+    "lstm|skrtrl-r32|rotation": [
+     0.979,
+     0.005
+    ],
+    "lstm|skrtrl-r32|anbn": [
+     0.991,
+     0.001
+    ],
+    "lstm|skrtrl-r32|henon": [
+     0.993,
+     0.001
+    ],
+    "lstm|skrtrl-r32|sunspot": [
+     0.991,
+     0.001
+    ]
+   },
+   "tol": 0.0015,
+   "source": "secs/6_experiments.tex:693",
+   "note": "gradient cosine to exact RTRL, per-run last-20% window, mean +- s.d. over seeds 0-2"
+  },
+  {
+   "key": "table8_avg_rank",
+   "paper": {
+    "rotation|vA_default": [
+     31.43,
+     null
+    ],
+    "rotation|vB_rmax64_c8fp": [
+     62.36,
+     null
+    ],
+    "anbn|vA_default": [
+     5.19,
+     2.06
+    ],
+    "anbn|vB_rmax64_c8fp": [
+     5.19,
+     2.06
+    ]
+   },
+   "tol": 0.006,
+   "source": "secs/tab_r2_adaptive.tex:8",
+   "note": "avg_rank of the adaptive runs, mean +- sample s.d. over seeds 0-2"
+  },
+  {
+   "key": "rp_adding_r16",
+   "paper": 0.881,
+   "tol": 0.0006,
+   "source": "secs/6_experiments.tex (R3 text)",
+   "note": "results/m3, seeds 0-2, last 20% of the run"
+  },
+  {
+   "key": "rp_adding_rp16",
+   "paper": 0.614,
+   "tol": 0.0006,
+   "source": "secs/6_experiments.tex (R3 text)",
+   "note": ""
+  },
+  {
+   "key": "rp_rotation_r16",
+   "paper": 0.98,
+   "tol": 0.0006,
+   "source": "secs/6_experiments.tex (R3 text; frozen R2 text printed 0.979)",
+   "note": ""
+  },
+  {
+   "key": "rp_rotation_rp16",
+   "paper": 0.389,
+   "tol": 0.0006,
+   "source": "secs/6_experiments.tex (R3 text; frozen R2 text printed 0.397)",
+   "note": ""
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-"""Generate R2 plan D2 (certificate informativeness) job files for run_r2_queue.ps1.
+"""Generate the D2 (certificate informativeness, Tables 5-7) job files for run_r2_queue.ps1.
 
 Same line format as make_r2_jobs.py / jobs/d4_tune.txt: bare script name + flags,
 terminated by a `# out=<path>` annotation the queue uses for exists-skip (the
@@ -12,8 +12,7 @@ Stages
               truncated queue still finishes one full clip level across every
               task before starting the next. LR per (task, algo) comes from the
               D4 selection file (see --lr-json); the "none" clip level is not
-              generated here -- it is read back from the D4 shadow-on logs
-              (R2_EXPERIMENT_PLAN.md D2 / sec. 2).
+              generated here -- it is read back from the D4 shadow-on logs.
   d2_noreset  TS tasks (henon, mackeyglass, lorenz, sunspot, laser) x
               skrtrl-r16 x --washout 0 x seeds 0-2 x 20000 steps, shadow on,
               default (no) spectral clip.
@@ -32,7 +31,7 @@ import os
 from make_r2_jobs import (PY_M3, N_HID, BATCH, LOG_EVERY, TS_TASKS, REAL_TASKS,
                           WASHOUT, HORIZON, lr_tag)
 
-# --- protocol constants (R2_EXPERIMENT_PLAN.md D2 / sec. 2 and 4) ---
+# --- protocol constants ---
 TASKS_D2 = ["adding", "copy", "anbn", "rotation",
             "henon", "mackeyglass", "lorenz", "sunspot", "laser"]
 ALGO_D2 = "skrtrl-r16"
@@ -44,7 +43,7 @@ NORESET_TASKS = ["henon", "mackeyglass", "lorenz", "sunspot", "laser"]
 SEEDS_NORESET = [0, 1, 2]
 STEPS_NORESET = 20000
 
-MS_PER_STEP = 30.0   # measured: n=64 skrtrl-r16, shadow on, svd_driver auto (sec. 2)
+MS_PER_STEP = 30.0   # measured: n=64 skrtrl-r16, shadow on, svd_driver auto
 
 DEFAULT_LR_JSON = "results/r2/D4_SELECT_stage2.json"
 DEFAULT_LR = 1e-3

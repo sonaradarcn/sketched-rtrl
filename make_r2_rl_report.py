@@ -1,7 +1,7 @@
-"""RL (T-maze) certificate + task aggregation for the R2 revision (plan D2, RL part).
+"""RL (T-maze) certificate and task report (the RL rows of Table 5).
 
 `make_r2_d2_report.py` already reads both RL directories and produces the family and
-per-task rows that Table 7 of the manuscript needs.  This script adds the granularity
+per-task rows that Table 5 needs.  This script adds the granularity
 that report deliberately does not carry: the per-seed rows, the paired clip cost on the
 task metric, the SnAp-1 control next to SK-RTRL at the same corridor, and the anomaly
 scan over the logged records.
@@ -29,7 +29,7 @@ Finite-bound fraction
 ---------------------
 `cert_summary.n_bound_finite` is written by run_m3 only (see make_r2_d2_report.py
 table E).  For the RL runs the only available evidence is the logged records, so this
-script reports `frac_bound_finite (log)` = the fraction of LOG POINTS with a finite
+script reports `frac_bound_finite (log)` = the fraction of log points with a finite
 `bound_norm` among the signal-bearing ones, sampled every `--log_every` steps.  It is
 labelled `(log)` everywhere and must not be quoted as a step-level counter.
 
@@ -37,7 +37,7 @@ Task performance
 ----------------
 `success` and `ret` are averaged over the last 20% of the run (`WINDOW_FRAC`, the D4
 selection rule, imported from make_r2_d4_select.py when importable).  The clip cost is
-computed PAIRED by (corridor, seed) and reported as an absolute difference plus a
+computed paired by (corridor, seed) and reported as an absolute difference plus a
 percentage of |clip-0 value|, since the T-maze return is negative and a ratio of
 negative numbers is not readable on its own.
 
@@ -49,7 +49,7 @@ skipped (same rule as make_r2_d2_report.py).  No figure is written: the RL runs 
 already in fig_r2_cert_* through the D2 report.
 
 Usage
-  D:/Anaconda/envs/multilingual_lora/python.exe make_r2_rl_report.py
+  python make_r2_rl_report.py
 """
 import argparse
 import glob
@@ -379,9 +379,9 @@ def sec_per_cell(runs):
 
 
 def sec_family(runs):
-    L = ["## Table RL-C -- the Table-7 rows (family average over the 9 runs)", "",
+    L = ["## Table RL-C -- the Table-5 rows (family average over the 9 runs)", "",
          "One row per arm, averaging the per-run fractions over all three corridors "
-         "and three seeds (9 runs), which is the aggregation Table 7 of the "
+         "and three seeds (9 runs), which is the aggregation Table 5 of the "
          "manuscript uses for the other families.  The per-corridor split is Table "
          "RL-B; the corridor-10/20-only numbers are given as well, because the RL row "
          "in the current draft is those six runs.", ""]

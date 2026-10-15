@@ -1,0 +1,171 @@
+{
+ "args": {
+  "task": "sunspot",
+  "algo": "tbptt",
+  "steps": 6000,
+  "n": 64,
+  "cell": "tanh",
+  "batch": 8,
+  "lr": 0.003,
+  "seed": 101,
+  "log_every": 250,
+  "shadow": 1,
+  "shadow_max_n": 256,
+  "tbptt_k": 50,
+  "tbptt_window": 50,
+  "device": "cuda",
+  "outdir": "results/r2/d4_tune",
+  "tag": "lr3e-03_w50",
+  "clip": 0.0,
+  "horizon": 1,
+  "causal": 1,
+  "washout": 200,
+  "holdout_frac": 0.0,
+  "svd_driver": "auto",
+  "cert_warmup": 200,
+  "cert_min_age": 1,
+  "cert_every": 1,
+  "cert_stages": 3,
+  "cert_age_span": 0,
+  "sketch_ckpts": "0.01,0.05,0.25,0.5,0.75,1.0",
+  "sketch_defer": 50
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.6563996076583862,
+   "grad_cos": null
+  },
+  {
+   "step": 250,
+   "metric": 0.6530269819125533,
+   "grad_cos": 0.9997904658317566
+  },
+  {
+   "step": 500,
+   "metric": 0.2230801000073552,
+   "grad_cos": 0.9996818482875824
+  },
+  {
+   "step": 750,
+   "metric": 0.16676542656496168,
+   "grad_cos": 0.9995333552360535
+  },
+  {
+   "step": 1000,
+   "metric": 0.2003430975973606,
+   "grad_cos": 0.9990885943174362
+  },
+  {
+   "step": 1250,
+   "metric": 0.156522610578686,
+   "grad_cos": 0.9985770463943482
+  },
+  {
+   "step": 1500,
+   "metric": 0.15983300882391632,
+   "grad_cos": 0.9986791431903839
+  },
+  {
+   "step": 1750,
+   "metric": 0.15687859191559256,
+   "grad_cos": 0.9987696834972927
+  },
+  {
+   "step": 2000,
+   "metric": 0.13078644270077347,
+   "grad_cos": 0.9983051285147667
+  },
+  {
+   "step": 2250,
+   "metric": 0.17767996550537646,
+   "grad_cos": 0.9984298706054687
+  },
+  {
+   "step": 2500,
+   "metric": 0.13750549817457794,
+   "grad_cos": 0.9984009444713593
+  },
+  {
+   "step": 2750,
+   "metric": 0.15599580156616866,
+   "grad_cos": 0.9977344024181366
+  },
+  {
+   "step": 3000,
+   "metric": 0.1422630802425556,
+   "grad_cos": 0.997495790719986
+  },
+  {
+   "step": 3250,
+   "metric": 0.1461765098758042,
+   "grad_cos": 0.9971395707130433
+  },
+  {
+   "step": 3500,
+   "metric": 0.13557278738357126,
+   "grad_cos": 0.9969498479366302
+  },
+  {
+   "step": 3750,
+   "metric": 0.12215124025475234,
+   "grad_cos": 0.9971802866458893
+  },
+  {
+   "step": 4000,
+   "metric": 0.16195625498425215,
+   "grad_cos": 0.995713186264038
+  },
+  {
+   "step": 4250,
+   "metric": 0.13269381382968276,
+   "grad_cos": 0.9955355906486512
+  },
+  {
+   "step": 4500,
+   "metric": 0.14077918212860824,
+   "grad_cos": 0.9951545464992523
+  },
+  {
+   "step": 4750,
+   "metric": 0.1350891991565004,
+   "grad_cos": 0.9947791004180908
+  },
+  {
+   "step": 5000,
+   "metric": 0.11950545464642345,
+   "grad_cos": 0.9943784987926483
+  },
+  {
+   "step": 5250,
+   "metric": 0.16315275657456368,
+   "grad_cos": 0.9949950838088989
+  },
+  {
+   "step": 5500,
+   "metric": 0.12877946401946247,
+   "grad_cos": 0.9949849605560303
+  },
+  {
+   "step": 5750,
+   "metric": 0.14213412390090524,
+   "grad_cos": 0.9952523410320282
+  }
+ ],
+ "wall_s": 7.8994550704956055,
+ "peak_MB": 33.59130859375,
+ "cert_summary": null,
+ "tbptt_impl": "tanhrnncell_autograd",
+ "svd_stats": {
+  "default": 0,
+  "gesvd": 0,
+  "gesvd_after_default": 0,
+  "jitter": 0,
+  "cpu": 0
+ },
+ "svd_fallbacks": {
+  "gesvd_after_default": 0,
+  "jitter": 0,
+  "cpu": 0
+ }
+}

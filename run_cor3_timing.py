@@ -1,12 +1,12 @@
-"""Corollary 3 demo: SK-RTRL(r=n) reproduces EXACT RTRL. Reports per-step time, memory
+"""Corollary 3 demo: SK-RTRL(r=n) reproduces exact RTRL. Reports per-step time, memory
 and exactness across n, for the factored path against textbook exact RTRL.
 
-NOTE ON COMPLEXITY.  An earlier version of this file claimed the factored path runs at
-O(n^3)/step against the textbook O(n^4)/step.  That claim was withdrawn during the
-Neurocomputing revision and is wrong: at r = n the rotation term is O(n^2 r^2) = O(n^4),
-so the factored path matches the textbook order and is slower by a constant factor.
-Corollary 3 is an exactness result, not a speed-up -- see Sec. 4.2 and Table 2 of the
-manuscript, and the measured comparison in Table 8.  This script measures exactly that:
+Note on complexity.  An earlier version of this file claimed the factored path runs at
+O(n^3)/step against the textbook O(n^4)/step.  That claim was wrong: at r = n the
+rotation term is O(n^2 r^2) = O(n^4), so the factored path matches the textbook order and
+is slower by a constant factor.
+Corollary 3 is an exactness result, not a speed-up -- see Sec. 4.2 and Table 3 of the
+manuscript, and the measured comparison in Table 10.  This script measures exactly that:
 it is the original round-1 measurement, superseded for the paper by
 run_cor3_timing_revise.py (CUDA events, warmup, repeats).
 """

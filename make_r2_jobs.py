@@ -1,12 +1,12 @@
-"""Generate R2 job files for run_r2_queue.ps1.
+"""Generate second-round job files for run_r2_queue.ps1.
 
 One line per job: the full python command line, plus a trailing `# out=<path>`
-annotation that the queue uses for exists-skip (authoritative -- the queue never
-re-derives the filename from the flags).
+annotation that the queue uses for exists-skip (the queue never re-derives the
+filename from the flags).
 
 Implemented stages
 ------------------
-  d4_tune   R2 plan D4, learning-rate tuning stage:
+  d4_tune   learning-rate tuning stage (Section 6.11 / S2.2):
             9 tasks x 9 estimators x lr {1e-4, 3e-4, 1e-3, 3e-3} x tuning seeds
             {100, 101} x 6000 steps, shadow on, svd_driver auto, and for TBPTT the
             truncation-window grid TBPTT_WINDOWS_D4 = {25, 50}  ->  720 jobs
@@ -19,14 +19,14 @@ d1_width, d3_oat, d5_gru.
 Usage
 -----
   python make_r2_jobs.py --stage d4_tune --out jobs/d4_tune.txt
-  python make_r2_jobs.py --stage d4_tune --limit 2 --out jobs/smoke.txt
+  python make_r2_jobs.py --stage d4_tune --limit 2 --out jobs/dev/smoke.txt
 """
 import argparse
 import os
 
 PY_M3 = "run_m3.py"
 
-# --- protocol constants (R2_EXPERIMENT_PLAN.md sections D4 / section 2) ---
+# --- protocol constants ---
 TASKS_D4 = ["adding", "copy", "anbn", "rotation",
             "henon", "mackeyglass", "lorenz", "sunspot", "laser"]
 ALGOS_D4 = ["exact", "snap1", "skrtrl-r4", "skrtrl-r16", "skrtrl-r32",
@@ -35,9 +35,10 @@ LRS_D4 = [1e-4, 3e-4, 1e-3, 3e-3]
 SEEDS_TUNE = [100, 101]
 STEPS_TUNE = 6000
 
-# A12 -- TBPTT truncation-window grid.  25 is run_m3's default window, so those jobs
+# TBPTT truncation-window grid.  25 is run_m3's default window, so those jobs
 # keep the bare `lrNe-NN` tag and carry no --tbptt_window flag, which makes them
-# byte-identical to the pre-A12 grid; every other window gets an explicit flag and a
+# byte-identical to the grid before the window was tuned; every other window gets an
+# explicit flag and a
 # `_w<W>` tag suffix.  make_r2_d4_select.py imports both names.
 TBPTT_WINDOWS_D4 = [25, 50]
 TBPTT_DEFAULT_WINDOW = 25

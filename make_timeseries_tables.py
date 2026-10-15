@@ -1,16 +1,16 @@
-"""Rebuild the two time-series tables of the paper from the released raw runs, and check
-every cell against the published value.
+"""Rebuild the two first-round time-series tables from the released raw runs, and check
+every cell against the published value.  Both tables are superseded by Tables S7-S8.
 
-  Table 6 (tab:timeseries)  chaotic systems, from results/ts/
-  Table 7 (tab:realts)      Sunspot + Santa Fe laser, from results/round1/real/
+  chaotic systems (first-round tab:timeseries), from results/ts/
+  Sunspot + Santa Fe laser (first-round tab:realts), from results/round1/real/
 
-Convention, which is the one the paper's tables use and which make_ts_report.py /
-make_m3_report.py do NOT use (those take a 20%-tail mean and a sample standard deviation,
+Convention, which is the one those tables used and which make_ts_report.py /
+make_m3_report.py do not use (those take a 20%-tail mean and a sample standard deviation,
 and therefore print numbers a little different from the tables):
 
-  * per run, the reported value is the mean of the LAST FIVE logged records of the field
+  * per run, the reported value is the mean of the last five logged records of the field
     (`metric` for NMSE, `grad_cos` for the gradient cosine);
-  * across seeds, mean +/- POPULATION standard deviation (ddof = 0);
+  * across seeds, mean +/- population standard deviation (ddof = 0);
   * the "grad cosine" column is a single number per method: the same per-run last-five mean,
     averaged over every run of the block, i.e. over all seeds and all systems at once.
 
@@ -128,10 +128,10 @@ def main():
     ap.add_argument("--out", default=os.path.join("results", "TIMESERIES_TABLES.md"))
     args = ap.parse_args()
     t6, bad6 = build(TS_DIR, TS_TASKS, PUBLISHED_TS,
-                     "## Table 6 - online next-step prediction on chaotic systems",
+                     "## First-round chaotic-system table (superseded by Table S7)",
                      ["Henon NMSE", "Mackey-Glass NMSE", "Lorenz NMSE"])
     t7, bad7 = build(REAL_DIR, REAL_TASKS, PUBLISHED_REAL,
-                     "## Table 7 - Sunspot and Santa Fe laser",
+                     "## First-round Sunspot and Santa Fe laser table (superseded by Table S8)",
                      ["Sunspot NMSE", "Laser NMSE"])
     body = ("# Time-series tables rebuilt from the released raw runs\n\n"
             "Per run: mean of the last five logged records. Across seeds: mean +/- population\n"
@@ -148,7 +148,7 @@ def main():
         for b in bad:
             print("  -", b)
         raise SystemExit(1)
-    print("all cells of Tables 6 and 7 match the published values")
+    print("all cells of both first-round tables match the published values")
 
 
 if __name__ == "__main__":

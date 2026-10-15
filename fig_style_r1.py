@@ -1,45 +1,27 @@
-"""The R1 figure style of the SK-RTRL manuscript, factored out so the second-round
-figures can be drawn in exactly the style Figure 5 established.
+"""Print-size helpers shared by the report scripts.
 
-Why this module exists
-----------------------
-The first-round revision fixed the "figure quality" complaint by adopting one rule above
-all others (see the header of ``paper/figures/gen/regen_all.py``):
+Each figure is drawn at the width it is printed at, so the 6.8-7.5 pt type of the axis labels
+survives into the PDF unscaled. Figure 3 of the paper (``fig_fidelity_bars`` in a 0.60\linewidth
+minipage beside ``fig_rinterp_rotation`` in a 0.38\linewidth one) is the reference; its
+parameters are in ``FIG5`` below (the name predates the final figure numbering).
 
-    **A figure is authored at the physical size it is printed at.**
-
-Every R1 figure obeys it -- ``fig_fidelity_bars.pdf`` is 3.94 in wide and is printed at
-0.60 x \\textwidth = 4.12 in, so its 7.5 pt axis labels land on the page at 7.5 pt.  The
-second-round figures were authored at 0.85--0.98 x \\textwidth (5.7--6.5 in) but dropped
-into 0.49\\linewidth minipages (3.37 in), i.e. scaled down by ~0.55, which put their type
-back at the 4 pt the revision had just eliminated.  This module makes the printed width
-the *input* to ``figsize`` instead of a hand-typed guess, so that regression cannot recur.
-
-Figure 5 is the reference.  It is ``\\label{fig:fidelity}`` in ``secs/6_experiments.tex``:
-a ``figure*`` holding two single-panel PDFs side by side, ``fig_fidelity_bars`` in a
-0.60\\linewidth minipage and ``fig_rinterp_rotation`` in a 0.38\\linewidth one.  Its style
-parameters are listed in ``FIG5`` below and are the ones this module hands out.
-
-What is here
-------------
-``RC``              the rcParams of the R1 style (identical to regen_all's).
-``FIG5``            the documented Figure-5 reference parameter sheet.
-``TW`` / ``CW``     \\textwidth / \\columnwidth of cas-dc.cls, in inches.
-``TEX_WIDTH``       printed width of every data figure, read off the .tex.
+Contents
+--------
+``RC``              rcParams, identical to those in figstyle.py.
+``FIG5``            the reference parameter sheet (Figure 3 of the paper).
+``TW`` / ``CW``     \textwidth / \columnwidth of cas-dc.cls, in inches.
+``TEX_WIDTH``       printed width of every data figure.
 ``print_size()``    (width, height) in inches for a figure, derived from TEX_WIDTH.
 ``grid_for()``      how many panel columns fit at a given printed width.
 ``legend_below_fit`` / ``legend_above_fit``
-                    regen_all's externalised keys, but with the column count reduced
-                    until the placement check actually passes.
-``distinct_table()`` builds a (colour, linestyle, marker) table for an arbitrary list of
-                    series keys that is guaranteed pairwise-distinct in >= 2 attributes
-                    (the R1-2 rule), so new figures cannot introduce a collision.
-``load_regen()``    imports ``paper/figures/gen/regen_all.py`` by path (it is not a
-                    package) and returns it; that module owns the Okabe-Ito palette, the
-                    per-method STYLE/LABEL tables, ``legend_below``/``legend_above`` with
-                    their hard placement checks, and ``_save`` (vector PDF + 300 dpi PNG).
+                    figstyle's externalised keys, with the column count reduced until the
+                    placement check passes.
+``distinct_table()`` a (colour, linestyle, marker) table for any list of series keys, pairwise
+                    distinct in at least two attributes.
+``load_regen()``    returns the figstyle module (palette, method tables, ``legend_below``,
+                    ``_save``).
 
-Nothing here draws anything and nothing here touches data: it is style only.
+Nothing here draws anything or reads data.
 """
 import importlib.util
 import math
@@ -48,7 +30,7 @@ import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # --------------------------------------------------------------------------------------
-# 1. rcParams -- byte-identical to paper/figures/gen/regen_all.py
+# 1. rcParams -- identical to figstyle.py
 # --------------------------------------------------------------------------------------
 RC = {
     "pdf.fonttype": 42,          # embed TrueType so the PDF text stays selectable
@@ -73,7 +55,7 @@ RC = {
 }
 
 # --------------------------------------------------------------------------------------
-# 2. The Figure-5 reference sheet (secs/6_experiments.tex, \label{fig:fidelity})
+# 2. The reference sheet of Figure 3 (secs/6_experiments.tex, \label{fig:fidelity})
 # --------------------------------------------------------------------------------------
 FIG5 = {
     "tex": {
@@ -118,10 +100,10 @@ TW, CW = 6.87, 3.35
 # for a single-column figure.  `source` records where the number comes from, so a figure
 # whose .tex slot later changes is easy to find.
 TEX_WIDTH = {
-    # ---- R1 figures, unchanged (these are the reference) -------------------------------
+    # ---- first-round figures, unchanged (these are the reference) ----------------------
     "fig_pilot_residual":       (0.92, "TW", "secs/3_prelim.tex:59"),
-    "fig_fidelity_bars":        (0.60, "TW", "secs/6_experiments.tex:128 (Fig. 5 left)"),
-    "fig_rinterp_rotation":     (0.38, "TW", "secs/6_experiments.tex:130 (Fig. 5 right)"),
+    "fig_fidelity_bars":        (0.60, "TW", "secs/6_experiments.tex:128 (Fig. 3 left)"),
+    "fig_rinterp_rotation":     (0.38, "TW", "secs/6_experiments.tex:130 (Fig. 3 right)"),
     "fig_cert_c2sweep":         (0.78, "CW", "secs/6_experiments.tex:605"),
     "fig_adaptive_trajectory":  (1.00, "CW", "secs/6_experiments.tex:615"),
     "fig_horizon_nmse":         (0.64, "TW", "secs/6_experiments.tex:741"),
@@ -129,7 +111,7 @@ TEX_WIDTH = {
     "fig_scaling":              (0.92, "TW", "secs/6_experiments.tex:855"),
     "fig_memory_time_pareto":   (0.82, "CW", "secs/6_experiments.tex:865"),
     "fig_rl_curves":            (0.80, "TW", "secs/D_rlcase.tex:47"),
-    # ---- R2 figures ------------------------------------------------------------------
+    # ---- second-round figures --------------------------------------------------------
     # Six sit in 0.49\linewidth minipages of a figure*, two per figure environment, so
     # their printed width is 0.49 x \textwidth = 3.37 in -- not the 0.85-0.98 they were
     # authored at.
@@ -146,7 +128,7 @@ TEX_WIDTH = {
     "fig_r2_cert_stage":        (0.92, "TW", "NOT IN .tex -- recommended own figure*"),
 }
 
-# Heights in inches.  Figure 5's panels are 2.05-2.10 in tall, and every R1 figure is
+# Heights in inches.  Figure 3's panels are 2.05-2.10 in tall, and every first-round figure is
 # 1.80-2.20; a multi-row grid is the only reason to exceed that.
 DEFAULT_HEIGHT = 2.10
 
@@ -196,23 +178,21 @@ def grid_for(name, n_panels, min_panel_in=1.45, max_cols=None):
 
 
 # --------------------------------------------------------------------------------------
-# 4. regen_all: the module that owns the palette, the method tables and the checked keys
+# 4. figstyle: the module that owns the palette, the method tables and the checked keys
 # --------------------------------------------------------------------------------------
 _REGEN = None
-REGEN_PATH = os.path.normpath(os.path.join(HERE, "..", "paper", "figures", "gen",
-                                           "regen_all.py"))
+REGEN_PATH = os.path.join(HERE, "figstyle.py")
 
 
 def load_regen(path=None):
-    """Import paper/figures/gen/regen_all.py by path and cache it."""
+    """Import figstyle.py (next to this file) by path and cache it."""
     global _REGEN
     if _REGEN is not None and path is None:
         return _REGEN
     p = path or REGEN_PATH
     if not os.path.isfile(p):
-        raise FileNotFoundError("regen_all.py not found at %s -- the manuscript style "
-                                "cannot be guaranteed without it" % p)
-    spec = importlib.util.spec_from_file_location("regen_all_style", p)
+        raise FileNotFoundError("figstyle.py not found at %s" % p)
+    spec = importlib.util.spec_from_file_location("figstyle_loaded", p)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)          # module level = rcParams + style tables only
     if path is None:
@@ -221,9 +201,9 @@ def load_regen(path=None):
 
 
 def bind(ra):
-    """Adopt an already-imported regen_all module as the one this module uses.
+    """Adopt an already-imported figstyle module as the one this module uses.
 
-    The R2 report scripts import regen_all themselves (by sys.path or by file path).
+    The second-round report scripts import figstyle themselves (by sys.path or by file path).
     Binding their instance keeps ``LEGEND_ISSUES``, ``WROTE`` and ``OUT`` on one object,
     instead of silently splitting the run across two copies of the same file.
     """
@@ -233,7 +213,7 @@ def bind(ra):
 
 
 def apply_rc(plt):
-    """Push the R1 rcParams (idempotent; regen_all already did it on import)."""
+    """Push the paper's rcParams (idempotent; figstyle already did it on import)."""
     plt.rcParams.update(RC)
 
 
@@ -241,7 +221,7 @@ def register(ra, name, height=DEFAULT_HEIGHT, rows=1, row_height=None):
     """Set ra.PRINT_SIZE[name] from the .tex printed width and return the figsize.
 
     Replaces the `ra.PRINT_SIZE.setdefault(name, (0.92 * ra.TW, 2.2))` guesses that put
-    the R2 figures ~1.85x too wide.
+    the second-round figures ~1.85x too wide.
     """
     size = print_size(name, height=height, rows=rows, row_height=row_height)
     ra.PRINT_SIZE[name] = size
@@ -252,12 +232,12 @@ def register(ra, name, height=DEFAULT_HEIGHT, rows=1, row_height=None):
 # 5. Legend placement: the checked, externalised key with an auto-fitted column count
 # --------------------------------------------------------------------------------------
 def _fit(placer, fig, axes, handles, labels, ncol, name, **kw):
-    """Call regen_all's legend_below/legend_above, reducing ncol until the check passes.
+    """Call figstyle's legend_below/legend_above, reducing ncol until the check passes.
 
     ``_check_legend_outside`` rejects a key that is wider than the axes span, because
     bbox_inches='tight' would then widen the exported PDF and \\includegraphics would scale
-    the whole figure -- and the type with it -- back down.  At Figure 5's printed widths
-    (2.6-4.1 in) the honest fix is fewer columns and more rows, which costs height only.
+    the whole figure -- and the type with it -- back down.  At Figure 3's printed widths
+    (2.6-4.1 in) the fix is fewer columns and more rows, which costs height only.
     """
     ra = load_regen()
     n = max(1, int(ncol))
@@ -285,7 +265,7 @@ def legend_above_fit(fig, axes, handles, labels, ncol, name, **kw):
 
 
 # --------------------------------------------------------------------------------------
-# 6. R1-2: a (colour, linestyle, marker) table that cannot collide
+# 6. Distinct styles: a (colour, linestyle, marker) table that cannot collide
 # --------------------------------------------------------------------------------------
 # Ordered so that consecutive entries differ in all three attributes and any two entries
 # differ in at least two: the colour cycle has length 8, the dash cycle 5 and the marker
@@ -299,7 +279,7 @@ def distinct_table(keys, oi=None):
     """(colour, linestyle, marker) per key, pairwise distinct in >= 2 attributes.
 
     Raises if the guarantee fails, so a figure with a new series set cannot silently break
-    the R1-2 rule the way ``fig_r2_adaptive_diag`` did (two series shared both colour and
+    the two-attribute rule the way ``fig_r2_adaptive_diag`` did (two series shared both colour and
     marker and differed only in the dash pattern).
     """
     oi = oi or load_regen().OI
@@ -322,8 +302,8 @@ def distinct_table(keys, oi=None):
 
 # --------------------------------------------------------------------------------------
 def describe():
-    """The Figure-5 parameter sheet as printable lines (used by make_fig_style_check.py)."""
-    L = ["Figure 5 (secs/6_experiments.tex, \\label{fig:fidelity}) -- style of record", ""]
+    """The Figure-3 parameter sheet as printable lines (used by make_fig_style_check.py)."""
+    L = ["Figure 3 (secs/6_experiments.tex, \\label{fig:fidelity}) -- reference style", ""]
     L.append("  environment      figure* (two columns), two single-panel PDFs side by side")
     L.append("  panel a          fig_fidelity_bars     minipage 0.60\\linewidth -> 4.12 in")
     L.append("  panel b          fig_rinterp_rotation  minipage 0.38\\linewidth -> 2.61 in")

@@ -6,18 +6,18 @@ actor-critic reference (tbptt).
 Output: results/m5/tmaze<len>_<algo>_s<seed>.json  (saved every --log_every steps:
 running mean episode return, episode length, success rate over last 400 episodes).
 
---shadow (R2, plan D1/D2, tanh cores only) adds an exact-RTRL shadow and a SnAp-1
+--shadow (second round, tanh cores only) adds an exact-RTRL shadow and a SnAp-1
 tracker on the same cell (skrtrl.rl.TanhCore), which do not touch the parameters:
   records      grad_cos, delta_norm, ghat_norm, bound_norm, g_norm, gerr_norm,
                J_norm, true_E, e_t, rho_bar, rho_hat, eta, rho_g, tight
-  cert_summary D2 online counters over EVERY gradient step (definitions and keys
+  cert_summary D2 online counters over every gradient step (definitions and keys
                as in run_m3.CertCounters, plus n_no_signal / n_rhobar_lt1 and the
                same counters bucketed into --cert_stages training stages)
   spectrum     D1 residual spectrum of R_t = J_t - S_t at --spectrum_ckpts
                (fractions of --steps): sv, mass_top{1,4,8,16,32,64}, stable_rank,
                res_frac_of_J
 With --shadow off nothing above is computed and the run is bit-identical to the
-pre-R2 driver.
+first-round driver.
 """
 import argparse, json, os, time
 from collections import deque
@@ -211,7 +211,7 @@ def main():
     ap.add_argument("--log_every", type=int, default=2000)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--outdir", default="results/m5")
-    # ---- R2 shadow instrumentation (plan D1/D2); default off = pre-R2 behaviour ----
+    # ---- shadow instrumentation (second round); default off = first-round behaviour ----
     ap.add_argument("--shadow", type=int, default=0,
                     help="1 = exact-RTRL shadow + SnAp-1 tracker (tanh cores only)")
     ap.add_argument("--spectrum_ckpts", default="0.05,0.25,0.5,0.75,1.0",
@@ -236,11 +236,12 @@ def main():
     ap.add_argument("--cert_every", type=int, default=1,
                     help="stride of the D2 counters (1 = every gradient step)")
     ap.add_argument("--clip", type=float, default=0.0,
-                    help="spectral clip of W after each update (0 = off, as in R1); "
+                    help="spectral clip of W after each update (0 = off, as in the first round); "
                          "the D2 knob that keeps rho_bar_t from making e_t vacuous")
     ap.add_argument("--svd_driver", choices=["gesvd", "auto"], default="gesvd",
-                    help="SK-RTRL SVD driver: gesvd = kernel of record (all R1 "
-                         "numbers), auto = library default first, same fallbacks")
+                    help="SK-RTRL SVD driver: gesvd (default; every first-round run) "
+                         "or auto (passed by every second-round job): library default "
+                         "first, then gesvd, jittered gesvd and CPU SVD only on failure")
     args = ap.parse_args()
 
     if args.shadow and (args.algo in DIAG_ALGOS or args.algo == "tbptt"):

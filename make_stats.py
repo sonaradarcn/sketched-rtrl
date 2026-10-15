@@ -8,9 +8,9 @@ then compares a reference method against the others on the common seeds with:
   * Cohen's d_z paired effect size,
   * Holm step-down correction across each task's comparison family.
 
-With ~5 seeds the Wilcoxon floor is p>=0.0625 (two-sided); this is reported honestly
-and the bootstrap CI / effect size carry the quantitative weight. No values are
-fabricated: a comparison is emitted only when both methods have >=3 common seeds.
+With ~5 seeds the Wilcoxon floor is p>=0.0625 (two-sided); this is reported as such
+and the bootstrap CI / effect size carry the quantitative weight. A comparison is
+emitted only when both methods have >=3 common seeds.
 
 Usage:
   python make_stats.py --dirs results/round1/real results/ts \

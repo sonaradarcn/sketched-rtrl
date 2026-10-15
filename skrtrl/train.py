@@ -10,11 +10,11 @@ from .algos import ExactRTRL, SKRTRL, SnAp1
 
 def make_cell(kind, n_in, n_hid, device=None, dtype=torch.float32,
               spectral_clip=0.0):
-    """Build the recurrent cell.  ``kind="tanh"`` is the cell of record.
+    """Build the recurrent cell.  ``kind="tanh"`` is the default tanh cell.
 
     The gated cells (``"gru"``, ``"lstm"``) implement the same SK-RTRL cell
     protocol, so nothing downstream branches on the cell type; see
-    skrtrl/cells_gated.py and paper/revise_r2/GRU_EXTENSION.tex.
+    skrtrl/cells_gated.py and Section S5 of the supplement.
     """
     if kind in (None, "tanh"):
         return TanhRNNCell(n_in, n_hid, device=device, dtype=dtype,
@@ -28,7 +28,7 @@ def make_algo(name, cell, batch, **kw):
 
     Recognised keyword arguments (all optional):
       r                 fallback rank when the name carries none
-      svd_driver        "gesvd" (kernel of record) | "auto"   -- SK-RTRL only
+      svd_driver        "gesvd" (default, first round) | "auto" (second round)   -- SK-RTRL only
       c                 explicit append budget, overrides max(4, ceil(r/4))
       force_preproject  keep pre-projection + c even when r >= n
       disable_preproject  switch the top-c pre-projection off entirely (c = n)
@@ -40,7 +40,7 @@ def make_algo(name, cell, batch, **kw):
     if name == "snap1":
         return SnAp1(cell, batch, svd_driver=svd_driver)
     # "am-" prefix selects the amortised-rotation kernel (skrtrl.algos_amortised);
-    # it is mathematically equivalent to the kernel of record, see
+    # it is mathematically equivalent to the released kernel, see
     # tests/test_amortised_kernel.py.  E.g. "am-skrtrl-r16", "am-skrtrl-rp16".
     amortised = name.startswith("am-")
     if amortised:

@@ -1,6 +1,6 @@
 """Amortised-rotation kernel for SK-RTRL (paper Sec. 4.3, "Amortised rotation").
 
-The kernel of record in :mod:`skrtrl.algos` applies the rank-r rotation of
+The released kernel in :mod:`skrtrl.algos` applies the rank-r rotation of
 Eq. (7) eagerly::
 
     R_t <- [ R_{t-1} | Qperp_t ] W_t ,
@@ -124,7 +124,7 @@ class SKRTRLAmortised(SKRTRL):
                 "rotation buffers the (Snorm, Vc) pair of the vanilla "
                 "row-normalised append, which a gated cell does not have "
                 "(the GRU append has width 2n and carries I_t^perp).  Use the "
-                "kernel of record (skrtrl.algos.SKRTRL) for --cell gru/lstm.")
+                "released kernel (skrtrl.algos.SKRTRL) for --cell gru/lstm.")
         self._collapse_every = collapse_every
         self._max_buffer = max_buffer
         self.width_mult = width_mult
@@ -312,7 +312,7 @@ class SKRTRLAmortised(SKRTRL):
                 Bc = Ub[:, :, :c] * sb[:, :c].unsqueeze(1)
                 Vc = Vbh[:, :c, :].transpose(1, 2)
                 if path == "jitter":
-                    # factors of B0 + Delta: the perturbed tail is NOT the discarded
+                    # factors of B0 + Delta: the perturbed tail is not the discarded
                     # mass of B0 -- measure it on the original matrix (see
                     # skrtrl.algos._robust_svd_ex).
                     tau_c = torch.linalg.matrix_norm(
@@ -419,7 +419,7 @@ class SKRTRLAmortised(SKRTRL):
 
 def make_skrtrl(cell, batch, r, c=None, mode="svd", kernel="naive",
                 svd_driver="gesvd", force_preproject=False, **kw):
-    """Factory: ``kernel='naive'`` (implementation of record) or ``'amortised'``."""
+    """Factory: ``kernel='naive'`` (released implementation) or ``'amortised'``."""
     if kernel in ("naive", "eager", None):
         return SKRTRL(cell, batch, r=r, c=c, mode=mode, svd_driver=svd_driver,
                       force_preproject=force_preproject)

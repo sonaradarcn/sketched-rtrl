@@ -1,10 +1,13 @@
-"""Aggregate + plot D1 residual-spectrum results (R2, Reviewer #3 point 1).
+"""Aggregate and plot the D1 residual-spectrum results.
+
+This produces Table 4 and Fig 4 of the paper, plus the extra tables and figures of
+Section S7.
 
 Reads results/r2/d1_spectrum/<task>_n<n>_s<seed>[_tag].json, written by
-run_e1_spectrum.py (R_t = J_t - S_t, plus the R1-comparable bd_ = J_t - blockdiag(J_t)
-quantities). The real job runs on GPU1 and lands files gradually; this script is written
-to be robust to that -- any missing file is simply absent from the pooled statistics and
-listed at the top of the markdown report, never fabricated or interpolated.
+run_e1_spectrum.py (R_t = J_t - S_t, plus the block-diagonal comparison quantities
+bd_ = J_t - blockdiag(J_t)). Result files may arrive gradually while the job runs, and
+the script handles that: a missing file is left out of the pooled statistics and listed
+at the top of the markdown report. Nothing is interpolated.
 
 Outputs
   <outmd>                              (default: <indir>/D1_SUMMARY.md)
@@ -17,10 +20,9 @@ Outputs
   <figdir>/fig_r2_spectrum_age.pdf     rotation, final stage, r_eps10/n and res_frac_of_J
                                        vs age-within-reset-interval
 
-A figure whose inputs are entirely missing is skipped loudly (never fabricated), matching
-the convention in paper/figures/gen/regen_all.py -- whose style helpers (Okabe-Ito palette,
-per-task colour/dash/marker, legend-outside-axes, print-size figures) this script imports
-and reuses rather than re-deriving.
+A figure whose inputs are missing is skipped and listed. The style helpers (Okabe-Ito
+palette, per-task colour/dash/marker, legend outside the axes, print-size figures) come
+from figstyle.py and are reused here rather than re-derived.
 
 Usage
   python make_r2_d1_report.py                  # real data: results/r2/d1_spectrum
@@ -37,8 +39,16 @@ import sys
 from collections import defaultdict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, "..", "paper", "figures", "gen"))
-sys.path.insert(0, HERE)                 # fig_style_r1.py lives next to this file
+sys.path.insert(0, HERE)                 # figstyle.py and fig_style_r1.py live next to this file
+
+
+def _show(p):
+    """A path for the report: relative to the working directory, forward slashes."""
+    try:
+        p = os.path.relpath(p)
+    except ValueError:
+        pass
+    return str(p).replace("\\", "/")
 
 # --------------------------------------------------------------------------------------
 # roster (mirrors make_r2_d1_jobs.py: n=64 all tasks + width sweep on the 4 diagnostics)
@@ -207,13 +217,13 @@ def build_table_a(runs):
 
 def render_table_a(rows_out):
     lines = [
-        "### 表 A — n=64，9 任务，末阶段 (frac=1.0) 与全阶段聚合",
+        "### Table A — n=64, 9 tasks, final stage (frac=1.0) and pooled over all stages",
         "",
-        "mean±std over seeds x ages (末阶段列) 或 over seeds x ages x fracs (全阶段列)。"
-        " `n_seeds` = 该任务已完成的 seed 数 (/3)。",
+        "mean±std over seeds x ages (final-stage columns) or over seeds x ages x fracs (all-stage columns)."
+        " `n_seeds` = number of completed seeds for the task (/3).",
         "",
-        "| task | family | n_seeds | mass_top16 (末/全) | stable_rank (末/全) | "
-        "r_eps10/n (末/全) | r_eps05/n (末/全) | res_frac_of_J (末/全) |",
+        "| task | family | n_seeds | mass_top16 (final/all) | stable_rank (final/all) | "
+        "r_eps10/n (final/all) | r_eps05/n (final/all) | res_frac_of_J (final/all) |",
         "|---|---|---|---|---|---|---|---|",
     ]
     for e in rows_out:
@@ -230,9 +240,9 @@ def render_table_a(rows_out):
                      f"{cell('res_frac_of_J')} |")
     lines += [
         "",
-        "早 (frac<=0.05) / 中 (0.25-0.5) / 晚 (>=0.75) 三档 r_eps10/n:",
+        "Early (frac<=0.05) / mid (0.25-0.5) / late (>=0.75) stage bins of r_eps10/n:",
         "",
-        "| task | 早 | 中 | 晚 |",
+        "| task | early | mid | late |",
         "|---|---|---|---|",
     ]
     for e in rows_out:
@@ -270,7 +280,7 @@ def build_table_b(runs):
 
 def render_table_b(rows_out):
     lines = [
-        "### 表 B — 宽度扫描，诊断 4 任务 x n∈{64,128,256,512}，末阶段 (frac=1.0)",
+        "### Table B — width sweep, 4 diagnostic tasks x n∈{64,128,256,512}, final stage (frac=1.0)",
         "",
         "| task | n | n_seeds | mass_top16 | mass_topn4 | stable_rank | r_eps10 | "
         "r_eps10/n | r_eps05/n |",
@@ -287,10 +297,10 @@ def render_table_b(rows_out):
                      f"{fmt(*e['final_r_eps10_over_n'])} | {fmt(*e['final_r_eps05_over_n'])} |")
     lines += [
         "",
-        "训练前 (第一个已跑到的阶段, frac=stage_lo) vs 收敛端 (frac=1.0) 的 r_eps10/n"
-        " —— 直接读出所需秩是否随宽度线性增长、训练是否压缩它:",
+        "Before training (first stage reached, frac=stage_lo) vs at convergence (frac=1.0), r_eps10/n"
+        " — shows directly whether the required rank grows linearly with width and whether training compresses it:",
         "",
-        "| task | n | frac(前) | r_eps10/n (训练前) | r_eps10/n (收敛端) | Δ (收敛-训练前) |",
+        "| task | n | frac (pre) | r_eps10/n (pre-training) | r_eps10/n (converged) | Δ (converged - pre) |",
         "|---|---|---|---|---|---|",
     ]
     for e in rows_out:
@@ -340,7 +350,7 @@ def run_stability(d):
     ends within 1.5% of its best, the two that blew up end 2.3x and 2.5x above it -- so
     the threshold is not doing any delicate work there.
 
-    It is deliberately NOT offered as a general health check on every run in the roster,
+    It is deliberately not offered as a general health check on every run in the roster,
     and this is why the verdict is only ever printed inside a single (task, width) cell
     rather than as a column of Table A/B. On tasks whose training metric plateaus at a
     very small value (lorenz, mackeyglass, anbn) the last few logged points wander by tens
@@ -442,21 +452,21 @@ def build_tagged(runs, tagged):
             one the manuscript quotes a seed count from, and a seed can contribute two
             files, so "7 files" alone is ambiguous about how many seeds that is and which
             budget each ran under -- name them and the arithmetic is checkable."""
-            return "含 " + ", ".join(sorted(os.path.basename(p).replace(".json", "")
+            return "includes " + ", ".join(sorted(os.path.basename(p).replace(".json", "")
                                             for _, p, _ in rows))
 
         seeds_untagged = {s for s, _, _ in untagged_rows}
         seeds_tagged = {s for s, _, _ in tagged_rows}
         overlap = sorted(seeds_untagged & seeds_tagged)
         note_union = ("" if not overlap else
-                      "seed " + ",".join(str(s) for s in overlap) + " 同时出现在未 tag 与 tagged 文件中，两份都计入")
+                      "seed " + ",".join(str(s) for s in overlap) + " appears in both untagged and tagged files; both are counted")
         groups = [
-            grp("roster（未 tag，= 表 B 该行）", untagged_rows),
-            grp("tagged 集合", tagged_rows),
-            grp("并集（全部文件）", untagged_rows + tagged_rows, note_union),
-            grp("并集中跑完 (final/best <= %.2f)" % STAB_RATIO, stable_rows,
+            grp("roster (untagged, = this row of Table B)", untagged_rows),
+            grp("tagged set", tagged_rows),
+            grp("union (all files)", untagged_rows + tagged_rows, note_union),
+            grp("union, trained to completion (final/best <= %.2f)" % STAB_RATIO, stable_rows,
                 seed_note(stable_rows)),
-            grp("并集中失稳 (final/best > %.2f)" % STAB_RATIO, unstable_rows,
+            grp("union, destabilised (final/best > %.2f)" % STAB_RATIO, unstable_rows,
                 seed_note(unstable_rows)),
         ]
         rows_out[(task, n)] = {"files": files, "groups": groups}
@@ -472,28 +482,30 @@ def _step_frac(step, frac):
 
 def render_tagged(rows_out):
     lines = [
-        "### 表 B' — tagged 文件的单独核算（**不进入表 A/B/C 的任何均值**）",
+        "### Table B' — separate accounting for tagged files (these enter no mean of Table A/B/C)",
         "",
-        "表 A/B/C 只读 roster 约定的未 tag 文件（每任务每宽度 3 个 seed，每 seed 一个文件）；"
-        "本节把带后缀的文件单独列出，供正文引用额外 seed 时使用。稳定性判据取自各自的训练"
-        f"曲线：final/best > {STAB_RATIO:.2f} 记为失稳，`turn` 为曲线最后一次取得最优的 step"
-        "（开始转折处），`cross` 为此后首次超过阈值的 step，括号内为占该 run 自身步数预算的比例。"
-        "该判据只用于在**同一 (task, n) cell 内**区分哪些 run 彼此可比；它不是跨任务的通用"
-        "健康检查（训练指标收敛到极小值的任务，末段相对抖动本来就可能超过阈值），"
-        "因此不作为表 A/B 的列出现。",
+        "Tables A/B/C read only the untagged roster files (3 seeds per task and width, one file per seed). "
+        "This section lists the files with a suffix separately, for use when the text quotes the extra seeds. "
+        f"Stability is judged from each run's own training curve: final/best > {STAB_RATIO:.2f} counts as destabilised. "
+        "`turn` is the last step at which the curve reached its best value (where it turned), "
+        "`cross` is the first later step above the threshold, and the value in brackets is the fraction of the run's own step budget. "
+        "The criterion only tells which runs within the same (task, n) cell are comparable with each other. "
+        "It is not a general cross-task health check (on tasks whose training metric converges to a very small value, "
+        "relative jitter at the end can exceed the threshold anyway), "
+        "so it does not appear as a column of Table A/B.",
         "",
     ]
     if not rows_out:
-        lines.append("本次没有任何 tagged 文件，无需单独核算。")
+        lines.append("There are no tagged files in this run, so there is nothing to account for separately.")
         return "\n".join(lines)
     for (task, n), cell in rows_out.items():
         lines += [
-            f"**{task}, n={n}** — 逐文件（末阶段 frac=1.0，池化该文件的 5 个 age"
-            " checkpoint）；tag 栏为 `roster` 的行即表 B 所池化的未 tag 文件，列在此处只为"
-            "让下面的稳定性划分可核对，其数值与表 B 完全一致:",
+            f"**{task}, n={n}** — per file (final stage frac=1.0, pooled over the file's 5 age"
+            " checkpoints). Rows tagged `roster` are the untagged files that Table B pools. They are listed here only "
+            "so that the stability split below can be checked, and their numbers match Table B exactly:",
             "",
             "| file | seed | tag | steps | r_eps10/n | r_eps05/n | r_eps10 | stable_rank | "
-            "mass_top16 | best | final | final/best | turn | cross | 判定 |",
+            "mass_top16 | best | final | final/best | turn | cross | verdict |",
             "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
         ]
         for e in cell["files"]:
@@ -504,7 +516,7 @@ def render_tagged(rows_out):
             ratio = "—" if st["ratio"] is None else f"{st['ratio']:.3f}"
             turn = _step_frac(st["best_step"], st["best_frac"])
             cross = _step_frac(st["cross_step"], st["cross_frac"])
-            verdict = "失稳" if st["unstable"] else "跑完"
+            verdict = "destabilised" if st["unstable"] else "completed"
             lines.append(
                 f"| `{os.path.basename(e['path'])}` | {e['seed']} | {e['tag']} | {steps} | "
                 f"{fmt(*e['r_eps10_over_n'])} | {fmt(*e['r_eps05_over_n'])} | "
@@ -513,10 +525,10 @@ def render_tagged(rows_out):
                 f"{turn} | {cross} | {verdict} |")
         lines += [
             "",
-            f"**{task}, n={n}** — 各口径池化对照（末阶段 frac=1.0）:",
+            f"**{task}, n={n}** — pooled readings side by side (final stage frac=1.0):",
             "",
-            "| 口径 | n_files | n_seeds | r_eps10/n | r_eps05/n | r_eps10 | stable_rank | "
-            "mass_top16 | 备注 |",
+            "| set | n_files | n_seeds | r_eps10/n | r_eps05/n | r_eps10 | stable_rank | "
+            "mass_top16 | note |",
             "|---|---|---|---|---|---|---|---|---|",
         ]
         for g in cell["groups"]:
@@ -556,12 +568,12 @@ def build_table_c(runs):
 
 def render_table_c(rows_out):
     lines = [
-        "### 表 C — 主口径 (J−S_t) vs bd 口径 (J−blockdiag(J)) 在 r_eps10 上的差异，n=64，全阶段全 age 池化",
+        "### Table C — main measure (J−S_t) vs bd measure (J−blockdiag(J)) on r_eps10, n=64, pooled over all stages and ages",
         "",
-        "diff = r_eps10 − bd_r_eps10，逐 checkpoint 配对后再取 mean±std；pct = diff 均值"
-        " 相对 bd 均值的百分比。",
+        "diff = r_eps10 − bd_r_eps10, paired per checkpoint before taking mean±std; pct = mean diff"
+        " as a percentage of the bd mean.",
         "",
-        "| 任务族 | n_records | r_eps10 (main) | r_eps10 (bd) | diff (main−bd) | diff / bd |",
+        "| task family | n_records | r_eps10 (main) | r_eps10 (bd) | diff (main−bd) | diff / bd |",
         "|---|---|---|---|---|---|",
     ]
     for e in rows_out:
@@ -586,8 +598,8 @@ def render_summary(table_a, table_b, table_c):
         if m16:
             hi = max(m16, key=lambda x: x[1])
             lo = min(m16, key=lambda x: x[1])
-            bullets.append(f"n=64 末阶段 mass_top16：最高 {hi[0]} ({hi[1]:.4f})，"
-                           f"最低 {lo[0]} ({lo[1]:.4f})，{len(m16)}/9 任务已有数据。")
+            bullets.append(f"n=64 final-stage mass_top16: highest {hi[0]} ({hi[1]:.4f}), "
+                           f"lowest {lo[0]} ({lo[1]:.4f}), data for {len(m16)}/9 tasks.")
         r10 = [(e["task"], e["late_r10n"][0]) for e in have_a if e["late_r10n"][0] is not None]
         r10e = [(e["task"], e["early_r10n"][0]) for e in have_a if e["early_r10n"][0] is not None]
         if r10 and r10e:
@@ -596,8 +608,8 @@ def render_summary(table_a, table_b, table_c):
             deltas = [(t, r10d[t] - r10ed[t]) for t in r10d if t in r10ed]
             if deltas:
                 mean_delta = sum(v for _, v in deltas) / len(deltas)
-                bullets.append(f"晚 (>=0.75) 相对早 (<=0.05) 阶段 r_eps10/n 的平均变化: "
-                               f"{mean_delta:+.4f}（{len(deltas)} 个任务，逐任务见表 A）。")
+                bullets.append(f"Late (>=0.75) vs early (<=0.05) stage, mean change of r_eps10/n: "
+                               f"{mean_delta:+.4f} ({len(deltas)} tasks, per task in Table A).")
 
     have_b = [e for e in table_b if e["n_seeds"] > 0 and "final_r_eps10_over_n" in e]
     if have_b:
@@ -608,29 +620,29 @@ def render_summary(table_a, table_b, table_c):
             pts = sorted(pts)
             if len(pts) >= 2:
                 (n0, v0), (n1, v1) = pts[0], pts[-1]
-                bullets.append(f"{t}: r_eps10/n 在 n={n0}→{n1} 间从 {v0:.4f} 变为 {v1:.4f} "
-                               f"({len(pts)}/{len(WIDTHS)} 宽度已有数据)。")
+                bullets.append(f"{t}: r_eps10/n over n={n0}→{n1} goes from {v0:.4f} to {v1:.4f} "
+                               f"(data for {len(pts)}/{len(WIDTHS)} widths).")
 
     have_c = [e for e in table_c if e["n_records"] and e["family"] != "all"]
     for e in have_c:
-        bullets.append(f"{e['family']} 任务族 (n=64, 全阶段池化, {e['n_records']} 条记录): "
-                       f"r_eps10 主口径均值 {e['main'][0]:.2f}，bd 口径均值 {e['bd'][0]:.2f}，"
-                       f"差值 {e['diff'][0]:+.2f}"
-                       + ("" if e["pct"] is None else f" ({e['pct']:+.1f}%)") + "。")
+        bullets.append(f"{e['family']} task family (n=64, pooled over all stages, {e['n_records']} records): "
+                       f"r_eps10 main-measure mean {e['main'][0]:.2f}, bd-measure mean {e['bd'][0]:.2f}, "
+                       f"difference {e['diff'][0]:+.2f}"
+                       + ("" if e["pct"] is None else f" ({e['pct']:+.1f}%)") + ".")
     all_c = [e for e in table_c if e["family"] == "all" and e["n_records"]]
     if all_c:
         e = all_c[0]
-        bullets.append(f"全部任务 (n=64, {e['n_records']} 条记录): r_eps10 主口径均值 "
-                       f"{e['main'][0]:.2f} vs bd 口径均值 {e['bd'][0]:.2f}，差值 "
+        bullets.append(f"All tasks (n=64, {e['n_records']} records): r_eps10 main-measure mean "
+                       f"{e['main'][0]:.2f} vs bd-measure mean {e['bd'][0]:.2f}, difference "
                        f"{e['diff'][0]:+.2f}" + ("" if e["pct"] is None else
-                                                  f" ({e['pct']:+.1f}%)") + "。")
+                                                  f" ({e['pct']:+.1f}%)") + ".")
     if not bullets:
-        bullets = ["尚无任何已完成的结果文件，无法生成数值要点。"]
+        bullets = ["No completed result files yet, so no numeric summary can be generated."]
     return "\n".join(f"- {b}" for b in bullets)
 
 
 # --------------------------------------------------------------------------------------
-# figures (reuses paper/figures/gen/regen_all.py style: Okabe-Ito palette, per-task
+# figures (reuses the figstyle.py style: Okabe-Ito palette, per-task
 # colour/dash/marker, print-physical-size figures, legend-outside-axes)
 # --------------------------------------------------------------------------------------
 EXTRA_TASK_STYLE = {}     # filled in _init_styles() once `ra` is imported
@@ -639,9 +651,9 @@ EXTRA_TASK_LABEL = {"henon": "henon", "mackeyglass": "mackey-glass", "lorenz": "
 
 
 def _init_styles(ra):
-    """henon/mackeyglass/lorenz/sunspot/laser aren't in regen_all.TASK_STYLE (only the 4
+    """henon/mackeyglass/lorenz/sunspot/laser aren't in figstyle.TASK_STYLE (only the 4
     diagnostic tasks + rotrecall24 are); give them the remaining Okabe-Ito colours so all
-    9 D1 tasks stay visually distinct (colour AND marker AND, mostly, linestyle differ)."""
+    9 D1 tasks stay visually distinct (colour, marker and, mostly, linestyle differ)."""
     global EXTRA_TASK_STYLE
     EXTRA_TASK_STYLE = {
         "henon":       (ra.OI["sky"],    (0, (4, 2, 1, 2)),        "d"),
@@ -696,7 +708,7 @@ def fig_spectrum_stage(ra, plt, runs, figdir):
     tasks_with_data = [t for t in ALL_TASKS if runs.get((t, 64))]
     if not tasks_with_data:
         return name, "no n=64 D1 results found"
-    fs.register(ra, name, height=2.10)      # printed width from the .tex (Figure-5 rule)
+    fs.register(ra, name, height=2.10)      # printed width as in the paper (Figure-5 rule)
     fig, (axL, axR) = plt.subplots(1, 2, figsize=ra.figsize(name))
     for t in tasks_with_data:
         rows = runs[(t, 64)]
@@ -740,7 +752,7 @@ def fig_spectrum_width(ra, plt, runs, figdir):
     have = [t for t in DIAGNOSTIC if any(runs.get((t, n)) for n in WIDTHS)]
     if not have:
         return name, "no diagnostic-task D1 results at any width"
-    fs.register(ra, name, height=2.10)      # printed width from the .tex (Figure-5 rule)
+    fs.register(ra, name, height=2.10)      # printed width as in the paper (Figure-5 rule)
     fig, (axL, axR) = plt.subplots(1, 2, figsize=ra.figsize(name))
     for t in have:
         c, ls, mk = ra.TASK_STYLE.get(t, (ra.OI["grey"], "-", "o"))
@@ -800,7 +812,7 @@ def fig_spectrum_age(ra, plt, runs, figdir):
     rows = runs.get(("rotation", 64), [])
     if not rows:
         return name, "no rotation_n64_s*.json in D1 results"
-    fs.register(ra, name, height=2.05)      # printed width from the .tex (Figure-5 rule)
+    fs.register(ra, name, height=2.05)      # printed width as in the paper (Figure-5 rule)
     fig, (axL, axR) = plt.subplots(1, 2, figsize=ra.figsize(name))
     c, ls, mk = ra.TASK_STYLE.get("rotation", (ra.OI["blue"], "-", "o"))
     xs, m, s = age_series(rows, "r_eps10_over_n")
@@ -831,7 +843,7 @@ def make_figures(runs, figdir):
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-        import regen_all as ra
+        import figstyle as ra
         import fig_style_r1 as fs
         globals()["fs"] = fs
         fs.bind(ra)
@@ -864,7 +876,7 @@ def main():
     ap.add_argument("--smoke", action="store_true",
                     help="shortcut for --indir results/r2/d1_smoke (dev/testing)")
     ap.add_argument("--outmd", default=None, help="default: <indir>/D1_SUMMARY.md")
-    ap.add_argument("--figdir", default=os.path.join(HERE, "..", "paper", "figures"))
+    ap.add_argument("--figdir", default=os.path.join("results", "figures"))
     args = ap.parse_args()
 
     indir = os.path.join("results", "r2", "d1_smoke") if args.smoke else args.indir
@@ -882,20 +894,20 @@ def main():
 
     wrote, skipped_figs = make_figures(runs, args.figdir)
 
-    lines = ["# D1 残差谱实验 (R2, Reviewer #3 point 1) —— 聚合报告", ""]
+    lines = ["# D1 residual-spectrum experiment — aggregated report", ""]
     if os.path.basename(os.path.normpath(indir)) == "d1_smoke":
-        lines.append("**注：本报告基于 smoke 输出生成，仅用于验证聚合/作图流程，"
-                     "不代表正式结果。**")
+        lines.append("Note: this report was generated from smoke output. It only checks the "
+                     "aggregation and plotting pipeline and does not show final results.")
         lines.append("")
-    lines.append(f"数据目录: `{indir}`  |  已完成 {n_have}/{n_expected} 项 roster "
-                 f"({len(missing)} 项缺失)  |  tagged 文件（未参与聚合）: {len(tagged)}  |  "
-                 f"解析失败/无记录: {len(bad)}")
+    lines.append(f"Data directory: `{_show(indir)}`  |  roster done: {n_have}/{n_expected} "
+                 f"({len(missing)} missing)  |  tagged files (not aggregated): {len(tagged)}  |  "
+                 f"unreadable/no records: {len(bad)}")
     lines.append("")
 
-    lines.append("## 缺失清单")
+    lines.append("## Missing files")
     lines.append("")
     if not missing:
-        lines.append("roster 全部完成，无缺失。")
+        lines.append("The roster is complete; nothing is missing.")
     else:
         by_task = defaultdict(list)
         for t, n, s in missing:
@@ -907,13 +919,13 @@ def main():
             lines.append(f"- **{t}**: {items}")
     if tagged:
         lines.append("")
-        lines.append("Tagged 文件（文件名含后缀，如 `_r1cmp`，跳过聚合，仅作对照参考；"
-                     "逐文件数值见下方表 B'）:")
+        lines.append("Tagged files (file name with a suffix such as `_r1cmp`; left out of the "
+                     "aggregation and kept for reference only; per-file numbers in Table B' below):")
         for p, t, n, s, tag, _d in tagged:
             lines.append(f"- `{os.path.basename(p)}`")
     if bad:
         lines.append("")
-        lines.append("解析失败 / 无 records 的文件（可能仍在写入中）:")
+        lines.append("Files that failed to parse or have no records (possibly still being written):")
         for p, err in bad:
             lines.append(f"- `{os.path.basename(p)}`: {err}")
     lines.append("")
@@ -930,12 +942,12 @@ def main():
     lines.append(render_table_c(table_c))
     lines.append("")
 
-    lines.append("## 要点（自动生成，仅陈述数字）")
+    lines.append("## Key numbers (auto-generated, numbers only)")
     lines.append("")
     lines.append(render_summary(table_a, table_b, table_c))
     lines.append("")
 
-    lines.append("## 图")
+    lines.append("## Figures")
     lines.append("")
     for name in wrote:
         fp = os.path.join(args.figdir, name + ".pdf")
@@ -943,9 +955,9 @@ def main():
             fp = os.path.relpath(fp)
         except ValueError:
             fp = os.path.abspath(fp)
-        lines.append(f"- `{fp}` — 已生成")
+        lines.append(f"- `{_show(fp)}` — written")
     for name, why in skipped_figs:
-        lines.append(f"- `{name}` — 跳过：{why}")
+        lines.append(f"- `{name}` — skipped: {why}")
     lines.append("")
 
     os.makedirs(os.path.dirname(outmd) or ".", exist_ok=True)

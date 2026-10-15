@@ -1,11 +1,10 @@
-"""Regenerate the two R1-era tables the W1 writing pass left behind: the certificate
-tightness table (`tab:tightness`, Table 6) and the adaptive-versus-fixed rank table
-(`tab:adaptive`, Table 9).
+"""Rebuild the certificate tightness table (`tab:tightness`, Table S5) and the
+adaptive-versus-fixed rank table (`tab:adaptive`, Table 8).
 
-Both tables previously read narrow run sets: the tightness table came from the two-seed
-`results/c2sweep` sub-sweep on a single task, and the adaptive table from a five-seed run that
-predates the ceiling diagnosis.  This script rebuilds both over the full task set from the R2
-trees:
+In the first round both tables read narrow run sets: the tightness table came from the
+two-seed `results/c2sweep` sub-sweep on a single task, and the adaptive table from a five-seed
+run that predates the ceiling diagnosis.  This script rebuilds both over the full task set from
+the second-round trees:
 
   tab:tightness  <- results/r2/d2_clip   (9 tasks x clip {0.35,0.7,0.9} x 5 seeds = 135 runs)
   tab:adaptive   <- results/r2/d3_diag   (rotation and a^nb^n, n=64, clip 0.5, 3 seeds;
@@ -26,20 +25,24 @@ E_t exactly zero, because the task's episodic reset zeroes the sketch error at t
 logger happens to visit, and 0/0 is not a tightness.  Those steps are counted and reported
 rather than silently dropped.  We bin the surviving steps by rhobar_t, report the median
 measured ratio per task family, and evaluate the prediction at the bin's pooled mean
-rhobar.  The median is the statistic of record because the top bin has a heavy right tail
+rhobar.  The median is reported because the top bin has a heavy right tail
 (a handful of steps just below rhobar = 1 dominate any mean); both are printed to the
 console so the text can say so.
 
-Usage:  python make_r2_w1b_tables.py [--root .] [--texdir ../paper/secs]
+Usage:  python make_r2_w1b_tables.py [--root .] [--texdir results/tables]
 """
 import argparse
 import glob
 import json
 import math
 import os
+import sys
 import time
 
 import numpy as np
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tex_captions  # noqa: E402
 
 FAMILY = {"copy": "diagnostic", "adding": "diagnostic", "rotation": "diagnostic",
           "anbn": "diagnostic", "henon": "chaotic", "lorenz": "chaotic",
@@ -48,8 +51,9 @@ TASK_ORDER = ["copy", "adding", "rotation", "anbn", "henon", "lorenz", "mackeygl
               "laser", "sunspot"]
 FAM_ORDER = ["diagnostic", "chaotic", "real"]
 # Bin edges on the certified spectral bound.  The earlier table indexed five nominal
-# rhobar values (0.17 ... 0.80) produced by a clip sweep that targeted them directly; the R2
-# clip sweep does not target rhobar, so we bin the realised values instead and print the
+# rhobar values (0.17 ... 0.80) produced by a clip sweep that targeted them directly; the
+# second-round clip sweep does not target rhobar, so we bin the realised values instead and
+# print the
 # bin's mean rhobar, which is what the geometric prediction has to be evaluated at.
 RHO_EDGES = [0.0, 0.25, 0.40, 0.55, 0.70, 0.85, 1.00]
 # Tasks whose logged `metric` is an accuracy; the tables report 1 - accuracy so that every
@@ -179,7 +183,7 @@ def write_tightness_tex(rows, meta, path):
     L.append(r"\end{tabular}")
     L.append(r"\end{table}")
     L.append("")
-    open(path, "w", encoding="utf-8").write("\n".join(L))
+    open(path, "w", encoding="utf-8", newline="\n").write(tex_captions.apply("\n".join(L)))
     print("  wrote", path)
 
 
@@ -287,7 +291,7 @@ def write_adaptive_tex(data, path, printed_ranks=(4, 8, 16, 32, 64)):
     L.append(r"\end{tabular}")
     L.append(r"\end{table*}")
     L.append("")
-    open(path, "w", encoding="utf-8").write("\n".join(L))
+    open(path, "w", encoding="utf-8", newline="\n").write(tex_captions.apply("\n".join(L)))
     print("  wrote", path)
 
 
@@ -295,7 +299,7 @@ def main():
     here = os.path.dirname(os.path.abspath(__file__))
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=here)
-    ap.add_argument("--texdir", default=os.path.join(here, "..", "paper", "secs"))
+    ap.add_argument("--texdir", default=os.path.join("results", "tables"))
     args = ap.parse_args()
     d2 = os.path.join(args.root, "results", "r2", "d2_clip")
     d3 = os.path.join(args.root, "results", "r2", "d3_diag")

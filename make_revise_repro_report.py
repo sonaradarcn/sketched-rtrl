@@ -1,4 +1,4 @@
-"""Revision data-provenance report (F-10): compare the 2026-08 local re-runs under
+"""Data-provenance report: compare the 2026-08 local re-runs under
 results/revise_repro/ against (a) the original raw JSONs under code/results/ and
 (b) the values quoted in the manuscript.
 
@@ -99,7 +99,7 @@ def main():
         L.append(f"| {r['clip']} | {r['seed']} | {fmt(r['paper'])} | {fmt(r['original'])} | "
                  f"{fmt(r['repro'])} | {d} | {fmt(r['orig_peak_MB'],1)} / {fmt(r['repro_peak_MB'],1)} |")
 
-    L.append("\n## Fig. 9 memory benchmark -- anbn, seed 0, batch 8, 1500 steps, shadow OFF\n")
+    L.append("\n## Fig. 6 (right) memory benchmark -- anbn, seed 0, batch 8, 1500 steps, shadow OFF\n")
     L.append("\n| algo | n | paper (MB) | original (MB) | re-run (MB) | identical? | wall s (orig / repro) |")
     L.append("|---|---|---|---|---|---|---|")
     for r in mem:

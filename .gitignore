@@ -1,5 +1,5 @@
-# Experiment outputs. Scratch/working run trees are ignored; the trees that back the
-# paper's tables and figures are published (see REPRODUCIBILITY.md, "Released result trees").
+# Experiment outputs. Scratch run trees are ignored; the trees behind the paper's tables and
+# figures are committed (REPRODUCIBILITY.md, section 3).
 results/*
 !results/round1/
 !results/membench/
@@ -18,6 +18,37 @@ results/*
 !results/cor3_timing.json
 !results/m1_spectrum_*.json
 !results/TIMESERIES_TABLES.md
+# Table fragments written by the generators (results/figures/ and results/_check/ stay ignored)
+!results/tables/
+
+# Round-2 (final manuscript) result trees: the thirteen formal run directories and the
+# reports and selection files built from them. Smoke, probe, timing, svd_equiv and figs_dev
+# directories, superseded report versions and partial run copies stay ignored.
+!results/r2/
+results/r2/*
+!results/r2/d1_spectrum/
+!results/r2/d2_noreset/
+!results/r2/d2_clip/
+!results/r2/d3_diag/
+!results/r2/d3_oat/
+!results/r2/d4_tune/
+!results/r2/d4_stage2/
+!results/r2/d4_eval/
+!results/r2/d4_holdout/
+!results/r2/d5_gated/
+!results/r2/rl/
+!results/r2/rl_clip05/
+!results/r2/e4b/
+!results/r2/*.md
+!results/r2/D4_STATS.json
+!results/r2/D4_SELECT_stage1.json
+!results/r2/D4_SELECT_stage2.json
+results/r2/**/*.prev*
+results/r2/**/*.localpartial.json
+results/r2/D2_SUMMARY_noreset.md
+results/r2/D3_SUMMARY.3task.md
+results/r2/D3_SUMMARY.diag_only.md
+results/r2/D3_SUMMARY_dev.md
 
 # Python caches / build
 __pycache__/

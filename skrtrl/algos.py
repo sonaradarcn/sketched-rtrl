@@ -39,7 +39,7 @@ def _svd_stats_reset():
 
 
 def svd_fallbacks():
-    """Counts of SVD calls that were NOT served by the first-choice driver."""
+    """Counts of SVD calls that were not served by the first-choice driver."""
     return {k: SVD_STATS[k] for k in FALLBACK_KEYS}
 
 
@@ -60,22 +60,23 @@ def _svd_call(M, driver=None):
 def _robust_svd_ex(M, driver: str = "gesvd"):
     """Batched thin SVD with a fallback chain.  Returns ``(U, S, Vh, path)``.
 
-    ``driver="gesvd"`` (default, kernel of record): gesvd (QR-based, robust) ->
+    ``driver="gesvd"`` (default, released kernel): gesvd (QR-based, robust) ->
     jitter + gesvd -> CPU.  The default cuSOLVER Jacobi driver can fail to
     converge on ill-conditioned / repeated-singular-value batches at larger n;
-    gesvd is slower but stable, and every R1 number was produced with it.
+    gesvd is slower but stable, and every first-round run used it.
 
     ``driver="auto"``: try the library default driver first (gesvdj on CUDA,
     LAPACK gesdd on CPU), accept it only if it did not raise and returned finite
     factors, and otherwise fall through the *same* chain as above.  Factors are
     mathematically identical up to sign/rotation of the singular subspaces; the
     call sites only use them through subspace projections and squared singular
-    values, so the estimator is unchanged to floating-point accuracy.
+    values, so the estimator is unchanged to floating-point accuracy.  Every
+    second-round run used ``driver="auto"``.
 
     ``path`` is one of the SVD_STATS keys and tells the caller which link served
-    the call.  **This matters for the certificate**: on the ``"jitter"`` path the
+    the call.  This matters for the certificate: on the ``"jitter"`` path the
     returned factors belong to M + Delta, not to M, so the tail singular values
-    are NOT the discarded mass of M and must not be used as eta_t -- the caller
+    are not the discarded mass of M and must not be used as eta_t -- the caller
     has to measure the discarded mass against the original matrix.  Every other
     path (default / gesvd / cpu) factorises M itself.
     """

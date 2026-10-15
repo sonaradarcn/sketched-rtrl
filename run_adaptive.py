@@ -1,4 +1,4 @@
-"""R2b: certificate-guided adaptive-rank SK-RTRL.
+"""Certificate-guided adaptive-rank SK-RTRL.
 
 A controller reads a normalized signal c_t every K steps and grows/shrinks the sketch rank r:
   if c_t > tau_high and r < r_max:      r <- min(2r, r_max)

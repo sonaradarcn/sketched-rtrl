@@ -1,14 +1,14 @@
-"""Build paper/revise_r2/FIG_STYLE_CHECK.pdf -- the side-by-side style audit page.
+"""Build FIG_STYLE_CHECK.pdf (path set by --out), the side-by-side style audit page.
 
-Figure 5 (fig_fidelity_bars + fig_rinterp_rotation) is the style of record for the
-manuscript's data figures; this page puts it next to every second-round figure so an
-external reviewer can check, without reading any code, that they now share it.
+Figure 3 (fig_fidelity_bars + fig_rinterp_rotation) is the reference style for the
+paper's data figures; this page puts it next to every second-round figure so a reader
+can check, without reading any code, that they share it.
 
 For each figure it prints
   * the size the PDF was authored at (read from the PDF MediaBox, not from the source),
   * the width it is printed at (from the \\includegraphics slot in the .tex),
   * the resulting scale factor and the on-page size of the 7.5 pt axis label and the
-    6.8 pt tick label -- the number the R1 revision was actually about,
+    6.8 pt tick label, which is what decides legibility in print,
   * the figure's panel grid and whether its key sits outside the plotting rectangle.
 
 Usage:  python make_fig_style_check.py [--figdir <paper/figures>] [--out <pdf path>]
@@ -30,9 +30,9 @@ import fig_style_r1 as fs                                          # noqa: E402
 
 # (name, role, panel grid, legend placement) -- role drives the banner colour.
 SHEET = [
-    ("fig_fidelity_bars", "REFERENCE -- Figure 5 (left)", "1 x 1", "above axes"),
-    ("fig_rinterp_rotation", "REFERENCE -- Figure 5 (right)", "1 x 1", "below axes"),
-    ("fig_fidelity_vs_error", "unchanged R1 panel (Fig. 11 right)", "1 x 1", "below axes"),
+    ("fig_fidelity_bars", "REFERENCE -- Figure 3 (left)", "1 x 1", "above axes"),
+    ("fig_rinterp_rotation", "REFERENCE -- Figure 3 (right)", "1 x 1", "below axes"),
+    ("fig_fidelity_vs_error", "unchanged R1 panel (Fig. S6 right)", "1 x 1", "below axes"),
     ("fig_r2_spectrum_stage", "R2, restyled", "1 x 2", "below axes"),
     ("fig_r2_spectrum_width", "R2, restyled", "1 x 2", "below axes"),
     ("fig_r2_spectrum_age", "R2, restyled (not yet cited)", "1 x 2", "none (1 series)"),
@@ -61,8 +61,8 @@ def pdf_size(path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--figdir", default=os.path.join(HERE, "..", "paper", "figures"))
-    ap.add_argument("--out", default=os.path.join(HERE, "..", "paper", "revise_r2",
+    ap.add_argument("--figdir", default=os.path.join(HERE, "results", "figures"))
+    ap.add_argument("--out", default=os.path.join(HERE, "results", "figures",
                                                   "FIG_STYLE_CHECK.pdf"))
     a = ap.parse_args()
     figdir, out = os.path.abspath(a.figdir), os.path.abspath(a.out)
@@ -101,7 +101,7 @@ def _page_sheet(pdf, rows):
     fig.text(0.06, 0.975, "SK-RTRL figure style audit", fontsize=15, weight="bold",
              va="top")
     fig.text(0.06, 0.955,
-             "Reference = Figure 5 (secs/6_experiments.tex, \\label{fig:fidelity}).  "
+             "Reference = Figure 3 (secs/6_experiments.tex, \\label{fig:fidelity}).  "
              "Sizes are read from each PDF's /MediaBox;\nprinted widths from the "
              "\\includegraphics slot in the .tex.  The R1 rule is drawn size == printed "
              "size, so that\nthe 7.5 pt axis label reaches the page at 7.5 pt.",
@@ -134,7 +134,7 @@ def _page_sheet(pdf, rows):
     y -= 0.016
     notes = [
         "label / tick = the on-page size in points of the 7.5 pt axis label and the",
-        "6.8 pt tick label, i.e. nominal x scale.  Figure 5's own panels run at",
+        "6.8 pt tick label, i.e. nominal x scale.  Figure 3's own panels run at",
         "scale 1.05-1.07, so 1.00-1.12 is the band this audit accepts.",
         "",
         "TW = \\textwidth of cas-dc.cls (494.5 pt = 6.87 in, a figure* spanning both",

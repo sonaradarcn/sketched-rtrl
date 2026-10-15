@@ -1,0 +1,691 @@
+{
+ "args": {
+  "task": "mackeyglass",
+  "algo": "exact",
+  "steps": 20000,
+  "n": 64,
+  "cell": "tanh",
+  "batch": 8,
+  "lr": 0.0003,
+  "seed": 3,
+  "log_every": 250,
+  "shadow": 1,
+  "shadow_max_n": 256,
+  "tbptt_k": 25,
+  "tbptt_window": 25,
+  "device": "cuda",
+  "outdir": "results/r2/d4_eval",
+  "tag": "lr3e-04",
+  "clip": 0.0,
+  "horizon": 1,
+  "causal": 0,
+  "washout": 200,
+  "holdout_frac": 0.0,
+  "svd_driver": "auto",
+  "cert_warmup": 200,
+  "cert_min_age": 1,
+  "cert_every": 1,
+  "cert_stages": 3,
+  "cert_age_span": 0,
+  "sketch_ckpts": "0.01,0.05,0.25,0.5,0.75,1.0",
+  "sketch_defer": 50,
+  "cert_age_span_used": 200
+ },
+ "records": [
+  {
+   "step": 0,
+   "metric": 0.2638776898384094,
+   "grad_cos": null,
+   "delta_norm": 0.07316617667675018,
+   "ghat_norm": 0.08048771321773529,
+   "diag_step": 0
+  },
+  {
+   "step": 250,
+   "metric": 0.14441401046467944,
+   "grad_cos": null,
+   "delta_norm": 0.048168934881687164,
+   "ghat_norm": 0.18362990021705627,
+   "diag_step": 250
+  },
+  {
+   "step": 500,
+   "metric": 0.05268743219785392,
+   "grad_cos": null,
+   "delta_norm": 0.05064181610941887,
+   "ghat_norm": 0.2890911102294922,
+   "diag_step": 500
+  },
+  {
+   "step": 750,
+   "metric": 0.02631692711496726,
+   "grad_cos": null,
+   "delta_norm": 0.016447769477963448,
+   "ghat_norm": 0.02313738688826561,
+   "diag_step": 750
+  },
+  {
+   "step": 1000,
+   "metric": 0.018508500835159793,
+   "grad_cos": null,
+   "delta_norm": 0.11180682480335236,
+   "ghat_norm": 0.13242869079113007,
+   "diag_step": 1000
+  },
+  {
+   "step": 1250,
+   "metric": 0.01942428757669404,
+   "grad_cos": null,
+   "delta_norm": 0.024266835302114487,
+   "ghat_norm": 0.04950563609600067,
+   "diag_step": 1250
+  },
+  {
+   "step": 1500,
+   "metric": 0.015742745643947273,
+   "grad_cos": null,
+   "delta_norm": 0.013523244298994541,
+   "ghat_norm": 0.025504466146230698,
+   "diag_step": 1500
+  },
+  {
+   "step": 1750,
+   "metric": 0.020467854805174282,
+   "grad_cos": null,
+   "delta_norm": 0.025239795446395874,
+   "ghat_norm": 0.019132744520902634,
+   "diag_step": 1750
+  },
+  {
+   "step": 2000,
+   "metric": 0.013803208663011901,
+   "grad_cos": null,
+   "delta_norm": 0.07779040932655334,
+   "ghat_norm": 0.08718189597129822,
+   "diag_step": 2000
+  },
+  {
+   "step": 2250,
+   "metric": 0.012012229463725816,
+   "grad_cos": null,
+   "delta_norm": 0.025874776765704155,
+   "ghat_norm": 0.0662662535905838,
+   "diag_step": 2250
+  },
+  {
+   "step": 2500,
+   "metric": 0.011096315186587163,
+   "grad_cos": null,
+   "delta_norm": 0.012461072765290737,
+   "ghat_norm": 0.029681378975510597,
+   "diag_step": 2500
+  },
+  {
+   "step": 2750,
+   "metric": 0.011620923472801224,
+   "grad_cos": null,
+   "delta_norm": 0.018060753121972084,
+   "ghat_norm": 0.044522274285554886,
+   "diag_step": 2750
+  },
+  {
+   "step": 3000,
+   "metric": 0.008918543425097595,
+   "grad_cos": null,
+   "delta_norm": 0.04248423129320145,
+   "ghat_norm": 0.030239328742027283,
+   "diag_step": 3000
+  },
+  {
+   "step": 3250,
+   "metric": 0.007858292062883266,
+   "grad_cos": null,
+   "delta_norm": 0.014221461489796638,
+   "ghat_norm": 0.010040342807769775,
+   "diag_step": 3250
+  },
+  {
+   "step": 3500,
+   "metric": 0.0076356813905294986,
+   "grad_cos": null,
+   "delta_norm": 0.011887351982295513,
+   "ghat_norm": 0.018729694187641144,
+   "diag_step": 3500
+  },
+  {
+   "step": 3750,
+   "metric": 0.0051797818869818,
+   "grad_cos": null,
+   "delta_norm": 0.013371918350458145,
+   "ghat_norm": 0.03294258564710617,
+   "diag_step": 3750
+  },
+  {
+   "step": 4000,
+   "metric": 0.004816266799607547,
+   "grad_cos": null,
+   "delta_norm": 0.04399619996547699,
+   "ghat_norm": 0.04964076727628708,
+   "diag_step": 4000
+  },
+  {
+   "step": 4250,
+   "metric": 0.006821658530971036,
+   "grad_cos": null,
+   "delta_norm": 0.00937147531658411,
+   "ghat_norm": 0.005359534174203873,
+   "diag_step": 4250
+  },
+  {
+   "step": 4500,
+   "metric": 0.004270024837460369,
+   "grad_cos": null,
+   "delta_norm": 0.010726787149906158,
+   "ghat_norm": 0.008435949683189392,
+   "diag_step": 4500
+  },
+  {
+   "step": 4750,
+   "metric": 0.0064207986337714825,
+   "grad_cos": null,
+   "delta_norm": 0.006480523385107517,
+   "ghat_norm": 0.010091697797179222,
+   "diag_step": 4750
+  },
+  {
+   "step": 5000,
+   "metric": 0.004930853478144854,
+   "grad_cos": null,
+   "delta_norm": 0.07473471760749817,
+   "ghat_norm": 0.08176383376121521,
+   "diag_step": 5000
+  },
+  {
+   "step": 5250,
+   "metric": 0.003782079147058539,
+   "grad_cos": null,
+   "delta_norm": 0.012497681193053722,
+   "ghat_norm": 0.019379224628210068,
+   "diag_step": 5250
+  },
+  {
+   "step": 5500,
+   "metric": 0.005338022440264467,
+   "grad_cos": null,
+   "delta_norm": 0.0070067644119262695,
+   "ghat_norm": 0.00569888623431325,
+   "diag_step": 5500
+  },
+  {
+   "step": 5750,
+   "metric": 0.0041124338144436475,
+   "grad_cos": null,
+   "delta_norm": 0.008614173159003258,
+   "ghat_norm": 0.008592980913817883,
+   "diag_step": 5750
+  },
+  {
+   "step": 6000,
+   "metric": 0.003321036699344404,
+   "grad_cos": null,
+   "delta_norm": 0.06713464856147766,
+   "ghat_norm": 0.07092521339654922,
+   "diag_step": 6000
+  },
+  {
+   "step": 6250,
+   "metric": 0.003714643394050654,
+   "grad_cos": null,
+   "delta_norm": 0.011882832273840904,
+   "ghat_norm": 0.015689384192228317,
+   "diag_step": 6250
+  },
+  {
+   "step": 6500,
+   "metric": 0.005272499390412122,
+   "grad_cos": null,
+   "delta_norm": 0.014606159180402756,
+   "ghat_norm": 0.01602034643292427,
+   "diag_step": 6500
+  },
+  {
+   "step": 6750,
+   "metric": 0.0021449307681177744,
+   "grad_cos": null,
+   "delta_norm": 0.0062004802748560905,
+   "ghat_norm": 0.0046890839003026485,
+   "diag_step": 6750
+  },
+  {
+   "step": 7000,
+   "metric": 0.0037038054860022386,
+   "grad_cos": null,
+   "delta_norm": 0.1241355687379837,
+   "ghat_norm": 0.14503607153892517,
+   "diag_step": 7000
+  },
+  {
+   "step": 7250,
+   "metric": 0.004682565529656131,
+   "grad_cos": null,
+   "delta_norm": 0.014964189380407333,
+   "ghat_norm": 0.018287597224116325,
+   "diag_step": 7250
+  },
+  {
+   "step": 7500,
+   "metric": 0.003858531159348786,
+   "grad_cos": null,
+   "delta_norm": 0.010758643969893456,
+   "ghat_norm": 0.005326102487742901,
+   "diag_step": 7500
+  },
+  {
+   "step": 7750,
+   "metric": 0.003639562570169801,
+   "grad_cos": null,
+   "delta_norm": 0.008649714291095734,
+   "ghat_norm": 0.006611103657633066,
+   "diag_step": 7750
+  },
+  {
+   "step": 8000,
+   "metric": 0.002595819719717838,
+   "grad_cos": null,
+   "delta_norm": 0.06132771447300911,
+   "ghat_norm": 0.055467430502176285,
+   "diag_step": 8000
+  },
+  {
+   "step": 8250,
+   "metric": 0.003299887550456333,
+   "grad_cos": null,
+   "delta_norm": 0.013083544559776783,
+   "ghat_norm": 0.027784299105405807,
+   "diag_step": 8250
+  },
+  {
+   "step": 8500,
+   "metric": 0.003619335525945644,
+   "grad_cos": null,
+   "delta_norm": 0.006896301172673702,
+   "ghat_norm": 0.0042541795410215855,
+   "diag_step": 8500
+  },
+  {
+   "step": 8750,
+   "metric": 0.003288445316211437,
+   "grad_cos": null,
+   "delta_norm": 0.011254779063165188,
+   "ghat_norm": 0.01023871824145317,
+   "diag_step": 8750
+  },
+  {
+   "step": 9000,
+   "metric": 0.002864675757227815,
+   "grad_cos": null,
+   "delta_norm": 0.09607648104429245,
+   "ghat_norm": 0.09468290954828262,
+   "diag_step": 9000
+  },
+  {
+   "step": 9250,
+   "metric": 0.003343037807571818,
+   "grad_cos": null,
+   "delta_norm": 0.008922375738620758,
+   "ghat_norm": 0.011047142557799816,
+   "diag_step": 9250
+  },
+  {
+   "step": 9500,
+   "metric": 0.003986297405135702,
+   "grad_cos": null,
+   "delta_norm": 0.011946657672524452,
+   "ghat_norm": 0.010470039211213589,
+   "diag_step": 9500
+  },
+  {
+   "step": 9750,
+   "metric": 0.002981735992143513,
+   "grad_cos": null,
+   "delta_norm": 0.008118581026792526,
+   "ghat_norm": 0.009784785099327564,
+   "diag_step": 9750
+  },
+  {
+   "step": 10000,
+   "metric": 0.004895129435462877,
+   "grad_cos": null,
+   "delta_norm": 0.1266123354434967,
+   "ghat_norm": 0.12309044599533081,
+   "diag_step": 10000
+  },
+  {
+   "step": 10250,
+   "metric": 0.004224384306071443,
+   "grad_cos": null,
+   "delta_norm": 0.012680123560130596,
+   "ghat_norm": 0.008961115032434464,
+   "diag_step": 10250
+  },
+  {
+   "step": 10500,
+   "metric": 0.003049517882827786,
+   "grad_cos": null,
+   "delta_norm": 0.014745962806046009,
+   "ghat_norm": 0.02141181193292141,
+   "diag_step": 10500
+  },
+  {
+   "step": 10750,
+   "metric": 0.004110110020119464,
+   "grad_cos": null,
+   "delta_norm": 0.00938298087567091,
+   "ghat_norm": 0.00885223038494587,
+   "diag_step": 10750
+  },
+  {
+   "step": 11000,
+   "metric": 0.0031049703065946233,
+   "grad_cos": null,
+   "delta_norm": 0.14997707307338715,
+   "ghat_norm": 0.22053493559360504,
+   "diag_step": 11000
+  },
+  {
+   "step": 11250,
+   "metric": 0.003967073777748738,
+   "grad_cos": null,
+   "delta_norm": 0.018401242792606354,
+   "ghat_norm": 0.024304181337356567,
+   "diag_step": 11250
+  },
+  {
+   "step": 11500,
+   "metric": 0.0024930944872176043,
+   "grad_cos": null,
+   "delta_norm": 0.007502699736505747,
+   "ghat_norm": 0.0063172150403261185,
+   "diag_step": 11500
+  },
+  {
+   "step": 11750,
+   "metric": 0.002840645877731731,
+   "grad_cos": null,
+   "delta_norm": 0.008114315569400787,
+   "ghat_norm": 0.008953073062002659,
+   "diag_step": 11750
+  },
+  {
+   "step": 12000,
+   "metric": 0.0027616384802968243,
+   "grad_cos": null,
+   "delta_norm": 0.08695727586746216,
+   "ghat_norm": 0.10294155031442642,
+   "diag_step": 12000
+  },
+  {
+   "step": 12250,
+   "metric": 0.0023809303048619767,
+   "grad_cos": null,
+   "delta_norm": 0.011528033763170242,
+   "ghat_norm": 0.011417028494179249,
+   "diag_step": 12250
+  },
+  {
+   "step": 12500,
+   "metric": 0.002171845054617734,
+   "grad_cos": null,
+   "delta_norm": 0.009161928668618202,
+   "ghat_norm": 0.012876702472567558,
+   "diag_step": 12500
+  },
+  {
+   "step": 12750,
+   "metric": 0.00307986837135104,
+   "grad_cos": null,
+   "delta_norm": 0.012486455962061882,
+   "ghat_norm": 0.017793552950024605,
+   "diag_step": 12750
+  },
+  {
+   "step": 13000,
+   "metric": 0.0038750163486110977,
+   "grad_cos": null,
+   "delta_norm": 0.09553495049476624,
+   "ghat_norm": 0.08984672278165817,
+   "diag_step": 13000
+  },
+  {
+   "step": 13250,
+   "metric": 0.001963736771285767,
+   "grad_cos": null,
+   "delta_norm": 0.006062469445168972,
+   "ghat_norm": 0.00633588433265686,
+   "diag_step": 13250
+  },
+  {
+   "step": 13500,
+   "metric": 0.002242256431054557,
+   "grad_cos": null,
+   "delta_norm": 0.0056321206502616405,
+   "ghat_norm": 0.003845894942060113,
+   "diag_step": 13500
+  },
+  {
+   "step": 13750,
+   "metric": 0.0025420717216911724,
+   "grad_cos": null,
+   "delta_norm": 0.007575101684778929,
+   "ghat_norm": 0.00834473967552185,
+   "diag_step": 13750
+  },
+  {
+   "step": 14000,
+   "metric": 0.002013880223457818,
+   "grad_cos": null,
+   "delta_norm": 0.09273628890514374,
+   "ghat_norm": 0.07983818650245667,
+   "diag_step": 14000
+  },
+  {
+   "step": 14250,
+   "metric": 0.0025081818287435455,
+   "grad_cos": null,
+   "delta_norm": 0.011743972077965736,
+   "ghat_norm": 0.009426046162843704,
+   "diag_step": 14250
+  },
+  {
+   "step": 14500,
+   "metric": 0.0023566316020151136,
+   "grad_cos": null,
+   "delta_norm": 0.006558883003890514,
+   "ghat_norm": 0.007900404743850231,
+   "diag_step": 14500
+  },
+  {
+   "step": 14750,
+   "metric": 0.002502182286552852,
+   "grad_cos": null,
+   "delta_norm": 0.0038080336526036263,
+   "ghat_norm": 0.0024433948565274477,
+   "diag_step": 14750
+  },
+  {
+   "step": 15000,
+   "metric": 0.001487343108165078,
+   "grad_cos": null,
+   "delta_norm": 0.046054065227508545,
+   "ghat_norm": 0.036479316651821136,
+   "diag_step": 15000
+  },
+  {
+   "step": 15250,
+   "metric": 0.0026160425876878435,
+   "grad_cos": null,
+   "delta_norm": 0.03466777876019478,
+   "ghat_norm": 0.04800206050276756,
+   "diag_step": 15250
+  },
+  {
+   "step": 15500,
+   "metric": 0.0024984067452896853,
+   "grad_cos": null,
+   "delta_norm": 0.005405687727034092,
+   "ghat_norm": 0.005395230371505022,
+   "diag_step": 15500
+  },
+  {
+   "step": 15750,
+   "metric": 0.0015925121059262891,
+   "grad_cos": null,
+   "delta_norm": 0.0037414380349218845,
+   "ghat_norm": 0.004251822363585234,
+   "diag_step": 15750
+  },
+  {
+   "step": 16000,
+   "metric": 0.0018927864245051752,
+   "grad_cos": null,
+   "delta_norm": 0.08703434467315674,
+   "ghat_norm": 0.0860818475484848,
+   "diag_step": 16000
+  },
+  {
+   "step": 16250,
+   "metric": 0.004168048525534687,
+   "grad_cos": null,
+   "delta_norm": 0.011102726683020592,
+   "ghat_norm": 0.013328611850738525,
+   "diag_step": 16250
+  },
+  {
+   "step": 16500,
+   "metric": 0.002680246931340662,
+   "grad_cos": null,
+   "delta_norm": 0.008676796220242977,
+   "ghat_norm": 0.009255810640752316,
+   "diag_step": 16500
+  },
+  {
+   "step": 16750,
+   "metric": 0.0035795977851375937,
+   "grad_cos": null,
+   "delta_norm": 0.005074567161500454,
+   "ghat_norm": 0.004204441327601671,
+   "diag_step": 16750
+  },
+  {
+   "step": 17000,
+   "metric": 0.0017959234842419391,
+   "grad_cos": null,
+   "delta_norm": 0.061416491866111755,
+   "ghat_norm": 0.09066236019134521,
+   "diag_step": 17000
+  },
+  {
+   "step": 17250,
+   "metric": 0.00183502541614871,
+   "grad_cos": null,
+   "delta_norm": 0.00872194766998291,
+   "ghat_norm": 0.011282222345471382,
+   "diag_step": 17250
+  },
+  {
+   "step": 17500,
+   "metric": 0.007262393443379551,
+   "grad_cos": null,
+   "delta_norm": 0.01825246959924698,
+   "ghat_norm": 0.01402574684470892,
+   "diag_step": 17500
+  },
+  {
+   "step": 17750,
+   "metric": 0.0027836807724816027,
+   "grad_cos": null,
+   "delta_norm": 0.008655459620058537,
+   "ghat_norm": 0.008551446720957756,
+   "diag_step": 17750
+  },
+  {
+   "step": 18000,
+   "metric": 0.0021405877632059856,
+   "grad_cos": null,
+   "delta_norm": 0.11122940480709076,
+   "ghat_norm": 0.13618896901607513,
+   "diag_step": 18000
+  },
+  {
+   "step": 18250,
+   "metric": 0.002848069723622757,
+   "grad_cos": null,
+   "delta_norm": 0.004231547471135855,
+   "ghat_norm": 0.003658596659079194,
+   "diag_step": 18250
+  },
+  {
+   "step": 18500,
+   "metric": 0.0021067934787060948,
+   "grad_cos": null,
+   "delta_norm": 0.01753867045044899,
+   "ghat_norm": 0.020157894119620323,
+   "diag_step": 18500
+  },
+  {
+   "step": 18750,
+   "metric": 0.0016049234280944803,
+   "grad_cos": null,
+   "delta_norm": 0.005677248816937208,
+   "ghat_norm": 0.005320633761584759,
+   "diag_step": 18750
+  },
+  {
+   "step": 19000,
+   "metric": 0.0019074109035136643,
+   "grad_cos": null,
+   "delta_norm": 0.10235736519098282,
+   "ghat_norm": 0.08009180426597595,
+   "diag_step": 19000
+  },
+  {
+   "step": 19250,
+   "metric": 0.0026411704401107274,
+   "grad_cos": null,
+   "delta_norm": 0.010180667042732239,
+   "ghat_norm": 0.01263527199625969,
+   "diag_step": 19250
+  },
+  {
+   "step": 19500,
+   "metric": 0.0016983911752686254,
+   "grad_cos": null,
+   "delta_norm": 0.00841186661273241,
+   "ghat_norm": 0.01016582828015089,
+   "diag_step": 19500
+  },
+  {
+   "step": 19750,
+   "metric": 0.0021583780578657754,
+   "grad_cos": null,
+   "delta_norm": 0.0029453900642693043,
+   "ghat_norm": 0.0019277037354186177,
+   "diag_step": 19750
+  }
+ ],
+ "wall_s": 27.536487102508545,
+ "peak_MB": 33.83642578125,
+ "cert_summary": null,
+ "svd_stats": {
+  "default": 0,
+  "gesvd": 0,
+  "gesvd_after_default": 0,
+  "jitter": 0,
+  "cpu": 0
+ },
+ "svd_fallbacks": {
+  "gesvd_after_default": 0,
+  "jitter": 0,
+  "cpu": 0
+ }
+}

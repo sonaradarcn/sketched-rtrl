@@ -219,7 +219,7 @@ class TimeSeriesTask(StreamTask):
         self.series = ((series - mu) / sd).to(device)        # (B, L)
         self.L = self.series.shape[1] - horizon
         self.t = 64                                          # skip transient
-        # A11 time-ordered holdout: the LAST holdout_frac of the stream is never
+        # time-ordered holdout: the last holdout_frac of the stream is never
         # cycled during training; `enter_holdout()` streams it exactly once.  The
         # split is in stream order, so no future value can leak into training.
         self.t0 = 64
@@ -318,8 +318,8 @@ class RealSeriesTask(TimeSeriesTask):
     """Online next-step prediction on a REAL univariate series loaded from a data file
     (one value per line). Batch lanes are circular phase-shifts of the same series so each
     lane streams a different window; the per-seed base rotation is drawn from the RNG.
-    Set the class attribute `fname` in subclasses. No data are fabricated: if the file is
-    missing the task raises, so a missing benchmark is never silently replaced."""
+    Set the class attribute `fname` in subclasses. If the file is missing the task
+    raises, so a missing benchmark is never silently replaced."""
     fname = None
 
     def _gen(self, L):
@@ -346,7 +346,7 @@ class SunspotTask(RealSeriesTask):
     """Monthly *mean total* sunspot number, SILSO version 2.0 (real data; data/sunspot.txt).
 
     This is the SILSO ``SN_m_tot_V2.0`` product (one raw monthly mean per line, 3329 values
-    starting 1749-01), NOT the 13-month smoothed ``SN_ms_tot_V2.0`` series. Verified against
+    starting 1749-01), not the 13-month smoothed ``SN_ms_tot_V2.0`` series. Verified against
     the SILSO distribution: the first twelve values are 96.7, 104.3, 116.7, 92.8, 141.7, 139.2,
     158.0, 110.5, 126.5, 125.8, 264.3, 142.0, which is SN_m_tot for 1749-01..1749-12; the
     smoothed product is undefined for those first six months and reads 135.9 at 1749-07.

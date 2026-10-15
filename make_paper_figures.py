@@ -1,22 +1,19 @@
-"""Regenerate every data-driven figure of the SK-RTRL manuscript with a single,
-colour-blind-safe, black-and-white-legible style (Neurocomputing major revision, R1-2/R1-9/R2-3).
+"""Draw Figs 3, 6, S2, S4, S5, S6, S8 and S9 of the SK-RTRL paper in one colour-blind-safe,
+black-and-white-legible style.
 
-Design rules enforced here
---------------------------
-R1-2  Any two curves/series differ in AT LEAST TWO of {colour, line style, marker}.
-      Colours come from the Okabe-Ito colour-blind-safe palette; every method also owns a
-      unique dash pattern and a unique marker glyph, so the figures stay discriminable in
-      grey-scale print and for dichromatic readers.  Bar charts additionally carry hatches.
-R1-9  fig_memory_time_pareto: annotations are placed with explicit per-point alignment and
-      the axes are padded, so no label crosses the frame or another label.
-R2-3  Everything is written as a true vector PDF (no rasterised panels), drawn at the size it
-      is printed at so the type lands at 6.2-7.5 pt on the page instead of the 3-5 pt that
-      down-scaling used to produce.
+Style rules
+-----------
+1.  Any two curves/series differ in at least two of {colour, line style, marker}.
+    Colours come from the Okabe-Ito colour-blind-safe palette; every method also owns a
+    unique dash pattern and a unique marker glyph, so the figures stay discriminable in
+    grey-scale print and for dichromatic readers.  Bar charts additionally carry hatches.
+2.  fig_memory_time_pareto: annotations are placed with explicit per-point alignment and
+    the axes are padded, so no label crosses the frame or another label.
+3.  Everything is written as a true vector PDF (no rasterised panels), drawn at the size it
+    is printed at so the type lands at 6.2-7.5 pt on the page.
 
-Data sources.  Nothing is fabricated: a figure whose input tree is absent is SKIPPED
-loudly and no file is written for it, so a run that finishes is not the same as a run that
-produced every figure -- read the summary printed at the end.  Paths are relative to the
-repository root.
+Data sources.  A figure whose inputs are missing is skipped and listed at the end.
+Paths are relative to the repository root.
 
   fig_pilot_residual      results/m1_spectrum_*.json
   fig_fidelity_bars       results/r2/d4_eval  (--source r2, the default) or results/m3/*.json
@@ -32,12 +29,12 @@ repository root.
 Every tree above ships with this repository, so a clean clone regenerates all ten figures.
 See REPRODUCIBILITY.md ("Released result trees") for what is deliberately left out.
 
-Second round.  Three figures -- fig_fidelity_bars, fig_rinterp_rotation and
-fig_fidelity_vs_error -- were first-round panels drawn at one learning rate shared by every
-estimator, which is precisely what R3 objected to; `--source r2` (the default) redraws them
-from results/r2/d4_eval, the per-pair-tuned tree the R2 tables of record are built from, using
-make_r2_d4_tables.py's own aggregation helpers so figure and table cannot disagree.
-`--source r1` restores the first-round panels unchanged.  fig_horizon_nmse is NOT re-pointed:
+Second round.  Three figures (fig_fidelity_bars, fig_rinterp_rotation and
+fig_fidelity_vs_error) were first-round panels drawn at one learning rate shared by every
+estimator.  `--source r2` (the default) redraws them from results/r2/d4_eval, the
+per-pair-tuned runs behind Tables S6-S8, using make_r2_d4_tables.py's own aggregation helpers
+so figure and table cannot disagree.
+`--source r1` restores the first-round panels unchanged.  fig_horizon_nmse is not re-pointed:
 every run under results/r2 has horizon 1, so the h in {5, 10, 25} sweep exists only in
 results/round1/horizon (lr 1e-3, 5 seeds) and that is what the panel still shows.
 
@@ -83,11 +80,10 @@ plt.rcParams.update({
 })
 
 # ---------------------------------------------------------------------------------------
-# R2-3 / R1-2 legibility.  Each figure is drawn at the *physical size it is printed at*, so
-# the 6.8-7.5 pt type above survives into the PDF at 6.8-7.5 pt.  Previously every figure was
-# authored ~2.4x too wide and then scaled down by \includegraphics, which shrank the axis
-# labels to roughly 3-5 pt -- illegible in print and a likely contributor to the "figure
-# quality" complaint.  Widths below = (fraction in the .tex) x (\textwidth or \columnwidth).
+# Rule 3.  Each figure is drawn at the physical size it is printed at, so the 6.8-7.5 pt
+# type above survives into the PDF at 6.8-7.5 pt.  A figure authored wider and scaled down by
+# \includegraphics would shrink the axis labels to 3-5 pt.
+# Widths below = (fraction in the .tex) x (\textwidth or \columnwidth).
 #   \textwidth   = 494.5 pt = 6.87 in   (figure*, spans both columns)
 #   \columnwidth = 241   pt = 3.35 in   (figure, single column)
 # ---------------------------------------------------------------------------------------
@@ -125,7 +121,7 @@ OI = {
 
 
 def _assert_styles_distinct():
-    """R1-2 guard: any two methods must differ in >=2 of {colour, linestyle, marker}."""
+    """Rule 1 guard: any two methods must differ in >=2 of {colour, linestyle, marker}."""
     bad = []
     keys = list(STYLE)
     for i, a in enumerate(keys):
@@ -272,7 +268,7 @@ def _grayscale_legend(ax, **kw):
 
 
 # --------------------------------------------------------------------------------------
-# Legends live OUTSIDE the plotting area (revision: in-axes keys covered the data).
+# Legends live outside the plotting area (in-axes keys covered the data).
 #
 # Every data figure of the manuscript now puts its key beneath the axes rather than inside
 # them.  `legend_below` anchors the key in FIGURE coordinates just under the tight bounding
@@ -302,7 +298,7 @@ def _check_legend_outside(fig, name, leg, axes, host):
     2. it must stay inside the horizontal span of the axes it belongs to.  Because the
        figures are saved with bbox_inches='tight', a key that stuck out sideways would
        widen the exported PDF, and since the .tex fixes the printed width the whole figure
-       would then be scaled down -- shrinking the 6.8-7.5 pt type it took a revision to fix.
+       would then be scaled down, shrinking the 6.8-7.5 pt type.
     """
     fig.canvas.draw()
     r = fig.canvas.get_renderer()
@@ -379,7 +375,7 @@ def _merged_handles(axes):
 
 
 # --------------------------------------------------------------------------------------
-# Fig 3  fig_pilot_residual
+# Fig S5  fig_pilot_residual
 # --------------------------------------------------------------------------------------
 def fig_pilot_residual():
     files = sorted(glob.glob(_res("m1_spectrum_*.json")))
@@ -422,9 +418,10 @@ def fig_pilot_residual():
 
 
 # --------------------------------------------------------------------------------------
-# Fig 5 (left)  fig_fidelity_bars -- recomputed from results/m3/*.json (5 seeds)
+# Fig 3 (left)  fig_fidelity_bars -- recomputed from results/m3/*.json (5 seeds)
 # --------------------------------------------------------------------------------------
-# The published Table 3 values, kept only as a cross-check: the bars are computed from the
+# The first-round fidelity table (superseded by Table S6), kept only as a cross-check for
+# `--source r1`: the bars are computed from the
 # raw runs and the result is asserted to round to these numbers.  If results/m3/ is absent
 # the figure is skipped rather than drawn from the table.
 FIDELITY_TABLE = [
@@ -513,7 +510,7 @@ def fig_fidelity_bars():
 
 
 # --------------------------------------------------------------------------------------
-# Fig 5 (right)  fig_rinterp_rotation
+# Fig 3 (right)  fig_rinterp_rotation
 # --------------------------------------------------------------------------------------
 def _load_runs(globpats):
     runs = {}
@@ -570,7 +567,7 @@ def fig_rinterp(task="rotation"):
 
 
 # --------------------------------------------------------------------------------------
-# Fig 6  fig_cert_c2sweep
+# Fig S2  fig_cert_c2sweep
 # --------------------------------------------------------------------------------------
 def fig_cert_c2sweep():
     sweepdir = _res("c2sweep")
@@ -614,7 +611,7 @@ def fig_cert_c2sweep():
 
 
 # --------------------------------------------------------------------------------------
-# Fig 7  fig_adaptive_trajectory
+# Fig S4  fig_adaptive_trajectory
 # --------------------------------------------------------------------------------------
 def fig_adaptive_trajectory():
     path = _res("round1", "traj",
@@ -655,7 +652,7 @@ def fig_adaptive_trajectory():
 
 
 # --------------------------------------------------------------------------------------
-# Fig 8 (left)  fig_horizon_nmse
+# Fig S6 (left)  fig_horizon_nmse
 # --------------------------------------------------------------------------------------
 METHOD_ORDER = ["exact", "skrtrl-r16", "skrtrl-r4", "snap1", "rflo", "uoro", "kfrtrl"]
 
@@ -699,7 +696,7 @@ def fig_horizon(rows):
 
 
 # --------------------------------------------------------------------------------------
-# Fig 8 (right)  fig_fidelity_vs_error
+# Fig S6 (right)  fig_fidelity_vs_error
 # --------------------------------------------------------------------------------------
 def fig_scatter(rows):
     pts = [r for r in rows
@@ -726,33 +723,32 @@ def fig_scatter(rows):
 
 
 # --------------------------------------------------------------------------------------
-# R2 re-points: the three figures that used to be drawn from first-round runs
+# Second-round versions of the three figures that were drawn from first-round runs
 # --------------------------------------------------------------------------------------
-# Three figures above -- fig_fidelity_bars, fig_rinterp_rotation and fig_fidelity_vs_error --
+# Three figures above (fig_fidelity_bars, fig_rinterp_rotation and fig_fidelity_vs_error)
 # were computed from the first-round trees (results/m3, results/m31, results/m32,
-# results/round1/real, results/ts), every run of which used ONE learning rate shared by every
-# estimator.  R3 objected to exactly that, so the second round re-measured all nine tasks with
-# a learning rate tuned per (task, estimator) pair, and the tables of record (Tables 3/6/7
-# replacements) are now built from results/r2/d4_eval alone.  A figure drawn from the old tree
-# next to a table drawn from the new one would show two different experiments, so the three
-# functions below redraw the same three panels, with the same semantics and the same print
-# sizes, from d4_eval.
+# results/round1/real, results/ts), every run of which used one learning rate shared by every
+# estimator.  The second round re-measured all nine tasks with a learning rate tuned per
+# (task, estimator) pair, and Tables S6-S8 are built from results/r2/d4_eval alone.  A figure
+# drawn from the old tree next to a table drawn from the new one would show two different
+# experiments, so the three functions below redraw the same three panels, with the same
+# semantics and the same print sizes, from d4_eval.
 #
-# The R1 functions are deliberately left in place and still work: `--source r1` reproduces the
-# old panels byte-for-byte, which is what the frozen first-round submission is checked against.
+# The first-round functions are left in place and still work: `--source r1` reproduces the
+# old panels byte-for-byte.
 # `--source r2` (the default) writes the same file names, so no \includegraphics changes.
 #
 # Aggregation is not re-implemented here.  make_r2_d4_tables.py is imported and its own
 # helpers do the loading, the per-run window mean, the stage-2 learning-rate selection and the
 # cross-seed statistics, because a figure that disagreed with the table next to it would be
-# worse than no figure: the two cannot drift apart if there is only one implementation.  That
-# implementation's conventions are, for the record:
+# worse than no figure: the two cannot drift apart if there is only one implementation.  Its
+# conventions:
 #   per run     mean of the field over every record with step >= 0.8 * args.steps (last 20 %)
-#   per cell    mean +/- POPULATION standard deviation (ddof=0) over the ten evaluation seeds,
+#   per cell    mean +/- population standard deviation (ddof=0) over the ten evaluation seeds,
 #               the seed being the unit of aggregation and never the pooled record set
 # Note the ddof: the published tables report a population standard deviation, so the error bars
-# here do too.  The R1 `_fidelity_from_raw` above used the sample standard deviation (ddof=1);
-# that difference is why the R1 and R2 error bars are not directly comparable.
+# here do too.  The first-round `_fidelity_from_raw` above used the sample standard deviation
+# (ddof=1); that difference is why first- and second-round error bars are not directly comparable.
 R2_EVAL_NOTE = "results/r2/d4_eval (D4 unified protocol, per-pair tuned learning rate)"
 
 # Estimators for which the gradient cosine is a defined quantity.  Both exclusions come from
@@ -807,10 +803,9 @@ def _d4():
 
 # ---------------------------------------------------------------------------- (a) bars
 # The cross-check that used to run against the hard-coded first-round FIDELITY_TABLE now runs
-# against the R2 table of record, paper/secs/tab_r2_fidelity.tex, which make_r2_d4_tables.py
-# writes.  The .tex is parsed READ-ONLY -- the LaTeX is owned elsewhere and this script must
-# never write into paper/secs -- and every cell of the figure must reproduce it at the printed
-# three decimals.  A figure that cannot match the table is not drawn.
+# against Table S6, tab_r2_fidelity.tex, which make_r2_d4_tables.py writes.  The .tex is only
+# read, and every cell of the figure must reproduce it at the printed three decimals.  A figure
+# that cannot match the table is not drawn.
 _TEX_ROW = re.compile(r"^(?!\s*%)(?P<label>[^&]+?)\s*&\s*(?P<cells>.*?)\s*\\\\\s*$")
 _TEX_CELL = re.compile(r"\$\\?(?:mathbf\{)?(?P<mean>-?\d*\.\d+)\}?"
                        r"(?:\\pm(?P<std>-?\d*\.\d+))?")
@@ -844,8 +839,9 @@ def fig_fidelity_bars_r2(tex_path=None):
     """fig_fidelity_bars from d4_eval: grouped bars of the gradient cosine to exact RTRL on
     the four diagnostic tasks, one bar per estimator, error bar = cross-seed std.
 
-    Layout, print size and legend placement are those of the R1 panel; the only visible change
-    is a seventh series, SK-RTRL r=32, which the second round added as a table column.
+    Layout, print size and legend placement are those of the first-round panel; the only
+    visible change is a seventh series, SK-RTRL r=32, which the second round added as a table
+    column.
     """
     d = _d4()
     T, cells = d["T"], d["cells"]
@@ -867,29 +863,31 @@ def fig_fidelity_bars_r2(tex_path=None):
     if bad:
         raise SystemExit("fig_fidelity_bars: %s" % "; ".join(bad))
 
-    # cross-check against the R2 table of record, at its printed precision
-    tex_path = tex_path or os.path.join(ROOT, "..", "paper", "secs", "tab_r2_fidelity.tex")
+    # cross-check against Table S6 (results/tables/tab_r2_fidelity.tex, written by
+    # make_r2_d4_tables.py) at its printed precision
+    tex_path = tex_path or os.path.join(ROOT, "results", "tables", "tab_r2_fidelity.tex")
     pub = _parse_r2_fidelity_tex(tex_path, tasks, algos, T.LABEL)
     if pub is None:
-        raise SystemExit("fig_fidelity_bars: the R2 table of record %s is missing, so the bars "
-                         "cannot be cross-checked; run make_r2_d4_tables.py first (or pass "
-                         "--source r1 for the first-round panel)" % tex_path)
-    drift = []
-    for a, ms, ss in series:
-        for t, m, s in zip(tasks, ms, ss):
-            if (t, a) not in pub:
-                drift.append("%s/%s: absent from %s" % (t, a, os.path.basename(tex_path)))
-                continue
-            pm, ps = pub[(t, a)]
-            if abs(round(m, nd) - pm) > 0.5 * 10 ** -nd:
-                drift.append("%s/%s mean %.*f vs table %.*f" % (t, a, nd, m, nd, pm))
-            if ps is not None and abs(round(s, nd) - ps) > 0.5 * 10 ** -nd:
-                drift.append("%s/%s std %.*f vs table %.*f" % (t, a, nd, s, nd, ps))
-    if drift:
-        raise SystemExit("fig_fidelity_bars: the figure disagrees with %s:\n  %s"
-                         % (tex_path, "\n  ".join(drift)))
-    print("  fig_fidelity_bars: %d/%d cells match %s at %d decimals"
-          % (len(tasks) * len(algos), len(tasks) * len(algos), os.path.basename(tex_path), nd))
+        print("  fig_fidelity_bars: %s not found, cross-check skipped "
+              "(run make_r2_d4_tables.py to write it)" % tex_path)
+    else:
+        drift = []
+        for a, ms, ss in series:
+            for t, m, s in zip(tasks, ms, ss):
+                if (t, a) not in pub:
+                    drift.append("%s/%s: absent from %s" % (t, a, os.path.basename(tex_path)))
+                    continue
+                pm, ps = pub[(t, a)]
+                if abs(round(m, nd) - pm) > 0.5 * 10 ** -nd:
+                    drift.append("%s/%s mean %.*f vs table %.*f" % (t, a, nd, m, nd, pm))
+                if ps is not None and abs(round(s, nd) - ps) > 0.5 * 10 ** -nd:
+                    drift.append("%s/%s std %.*f vs table %.*f" % (t, a, nd, s, nd, ps))
+        if drift:
+            raise SystemExit("fig_fidelity_bars: the figure disagrees with %s:\n  %s"
+                             % (tex_path, "\n  ".join(drift)))
+        print("  fig_fidelity_bars: %d/%d cells match %s at %d decimals"
+              % (len(tasks) * len(algos), len(tasks) * len(algos),
+                 os.path.basename(tex_path), nd))
 
     x = np.arange(len(tasks), dtype=float)
     w = 0.8 / len(series)
@@ -909,7 +907,7 @@ def fig_fidelity_bars_r2(tex_path=None):
     fig.tight_layout()
     # Seven series no longer fit on one row above the axes at 7.5 pt without widening the
     # exported figure (and a wider export is scaled down by the fixed \includegraphics width,
-    # which is what shrank the type before the revision), so the key is two rows of four and
+    # which would shrink the type), so the key is two rows of four and
     # goes through the same hard check as every other externalised key.
     h, l = ax.get_legend_handles_labels()
     legend_above(fig, ax, h, l, ncol=4, name="fig_fidelity_bars", fontsize=6.6,
@@ -981,8 +979,9 @@ def fig_scatter_r2():
     """fig_fidelity_vs_error from d4_eval: gradient cosine against task error, one point per
     (task, estimator, seed).
 
-    Why the y axis is normalised.  The R1 panel read results/round1/real + results/ts, i.e.
-    the five time-series tasks, all of which report an NMSE -- one axis, one unit.  d4_eval
+    Why the y axis is normalised.  The first-round panel read results/round1/real +
+    results/ts, i.e. the five time-series tasks, all of which report an NMSE: one axis, one
+    unit.  d4_eval
     spans all nine D4 tasks, and their metrics are not commensurable: adding and rotation are
     an MSE, the five series tasks an NMSE, and copy and a^nb^n are ACCURACIES, which are
     higher-is-better and would be upside down on a "task error" axis.  Two ways out were
@@ -1080,7 +1079,7 @@ def _spearman(x, y):
 
 
 # --------------------------------------------------------------------------------------
-# Fig 9  fig_scaling
+# Fig 6  fig_scaling
 # --------------------------------------------------------------------------------------
 def fig_scaling():
     fid_dirs = [_res(d) for d in ("m3", "scale", "scale256")]
@@ -1152,7 +1151,7 @@ def fig_scaling():
 
 
 # --------------------------------------------------------------------------------------
-# Fig 10  fig_memory_time_pareto   (R1-9: no label may overflow the frame or overlap another)
+# Fig S8  fig_memory_time_pareto   (rule 2: no label may overflow the frame or overlap another)
 # --------------------------------------------------------------------------------------
 def fig_pareto(rows):
     pts = [r for r in rows if r["peak_MB"] and r["wall_s"]]
@@ -1178,7 +1177,7 @@ def fig_pareto(rows):
     ax.set_xlabel(r"peak memory (MB) at $n=%d$" % n_target)
     ax.set_ylabel("wall-clock (s, 1.5k steps)")
 
-    # -- R1-9 --------------------------------------------------------------------------
+    # -- rule 2 ------------------------------------------------------------------------
     # Head-room so no annotation can cross the top frame, and explicit per-point text
     # alignment so the two SK-RTRL labels sit on opposite sides of their markers.
     ymax = max(y for _, y in coords.values())
@@ -1227,7 +1226,7 @@ def fig_pareto(rows):
 
 
 # --------------------------------------------------------------------------------------
-# Fig 11 (appendix)  fig_rl_curves
+# Fig S9  fig_rl_curves
 # --------------------------------------------------------------------------------------
 def fig_rl_curves(env_lens=(10, 20, 40)):
     m5_dir = _res("m5iso")
@@ -1288,16 +1287,16 @@ def main():
     ap.add_argument("--out", default=os.path.join(here, "results", "figures"),
                     help="directory to write the figures into")
     ap.add_argument("--gray", default="")
-    # Three panels exist in two versions; see the R2 re-points block above.  r2 is the default
-    # because the tables of the revision are built from d4_eval and a figure from the other
-    # tree beside them would be a different experiment.
+    # Three panels exist in two versions; see the second-round block above.  r2 is the default
+    # because Tables S6-S8 are built from d4_eval and a figure from the other tree beside them
+    # would be a different experiment.
     ap.add_argument("--source", choices=["r1", "r2"], default="r2",
                     help="which runs fig_fidelity_bars / fig_rinterp_rotation / "
                          "fig_fidelity_vs_error are drawn from (default: r2 = "
                          "results/r2/d4_eval, the D4 unified protocol)")
     ap.add_argument("--fidelity-tex", default="",
-                    help="R2 fidelity table to cross-check the bars against, read-only "
-                         "(default: <root>/../paper/secs/tab_r2_fidelity.tex)")
+                    help="Table S6 fragment to cross-check the bars against, read-only "
+                         "(default: <root>/results/tables/tab_r2_fidelity.tex)")
     # Selective regeneration.  When --out points at paper/figures/ (the directory the
     # manuscript's \includegraphics actually reads) a full run would rewrite all ten files,
     # including panels whose input tree has not changed since they were last approved -- and a
@@ -1340,7 +1339,7 @@ def main():
     if want("fig_adaptive_trajectory"):
         fig_adaptive_trajectory()
     if want("fig_horizon_nmse"):
-        # Not re-pointed at results/r2: every R2 run has horizon 1 (the only exception under
+        # Not re-pointed at results/r2: every second-round run has horizon 1 (the only exception under
         # results/r2 is a 200-step adaptive-eta smoke run at h=3), so the h in {5, 10, 25}
         # sweep exists only in results/round1/horizon, at the shared lr of the first round.
         fig_horizon(_scan([_res("round1", "horizon"), _res("ts")]))

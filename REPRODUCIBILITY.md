@@ -1,256 +1,277 @@
-# Reproducibility — SK-RTRL (Neurocomputing submission)
+# Reproducing the paper
 
-Most experiments use synthetic / standard chaotic-system data generated deterministically from
-the run seed; the two *real* benchmarks (SILSO monthly mean total sunspot number and the Santa Fe
-laser series) are redistributed as text files under `skrtrl/data/` and are never fabricated
-— the loader raises if a file is missing. See `THIRD_PARTY_DATA.md` for each series' source,
-checksum and terms. A single 12 GB GPU covers every training and scaling run (the largest,
-exact RTRL at n=512 with batch 8, peaks at 8.3 GB of allocated tensors). The one exception is
-the isolated per-step benchmark of Table 8: its factored-exact path allocates 14.7 GB at n=512
-and was measured on a 20 GB RTX 3080, as the table's own row records.
+This guide follows the final manuscript: main paper Tables 1-14 and Figures 1-6, supplementary
+material Tables S1-S10 and Figures S1-S9. Section numbers (§) refer to the main paper, S-numbers to
+the supplement.
 
-> **Path note.** In the manuscript and in the authors' working tree this repository sits in a
-> `code/` subdirectory next to `paper/`. Here it *is* the repository root, so every `code/…` path
-> quoted in the paper maps to the same path without the `code/` prefix: `code/skrtrl/data/` →
-> `skrtrl/data/`, `code/results/round1/` → `results/round1/`, and so on. All commands below are
-> run from the repository root.
+Every number in the paper was produced with the implementation at commit `109e698`. This release
+(tag `v1.0-neurocomputing`) adds the result records, the launch manifests, this guide and the
+release check. It leaves the implementation unchanged: `git diff 109e698 -- skrtrl/ run_*.py`
+shows comments, docstrings, help text and two error messages only.
 
-## Environments
+All commands run from the repository root. The manuscript cites paths as `code/...`; here the
+repository is the root, so `code/results/r2/` is `results/r2/`.
 
-Two environments are involved; they are reported separately rather than merged.
+## 1. Environments
 
-| | Python | PyTorch | Hardware | Used for |
-|---|---|---|---|---|
-| **Paper environment** (results reported in the manuscript) | 3.10 | 2.3.0 + CUDA 12.1 | 5 remote GPUs (TITAN Xp ×3, T4, RTX 3060) for the round-1 campaign (E1/E2/E6/E7); 2 local RTX 3080 for E3/E5/F3 and the clean `results/membench` sweep | every training, scaling and certificate result: Tables 3–7 and 9, and Figs. 2, 5–11 |
-| **Revision re-measurement environment** (2026-08) | 3.10.20 | 2.6.0 + CUDA 12.4 | 2 × RTX 3080 (20 GB) | independent re-run of the E6 rank/clip ablation and the Fig. 9 memory benchmark, archived under `results/revise_repro/`; the Table 8 timing re-measurement (`results/revise_timing/`) and the amortised-kernel benchmark (`results/revise_kernel/`) | the revision-phase measurements: Table 8, the §4.3 kernel benchmark, and the `results/revise_repro/` re-run |
+The runs come from two campaigns and one re-measurement.
 
-`requirements.txt` pins the paper environment, with one stated exception: SciPy was not recorded
-at run time, so it carries a tested floor (`scipy>=1.11`) rather than a false pin. Note also that
-`pip install -r requirements.txt` alone installs `torch==2.3.0` from PyPI, not the CUDA 12.1
-build; take `pip install torch==2.3.0 --index-url https://download.pytorch.org/whl/cu121` first if
-you want that build. Its Python minor version is recorded only
-indirectly — the byte-compiled modules left by the local RTX 3080 runs are all
-`*.cpython-310.pyc` — so it is stated as 3.10 rather than a full patch version, and the remote
-pool's patch version was not captured.
+| Batch | Machine | Software | Blocks |
+|---|---|---|---|
+| First campaign | Pool of NVIDIA TITAN Xp (12 GB) x3, T4, RTX 3060, plus two RTX 3080 (20 GB) | Python 3.10 (patch not recorded), PyTorch 2.3.0 + CUDA 12.1, NumPy 1.26.4, Matplotlib 3.9.0; cuDNN not recorded | `docs/legacy_round1.md` except its last section: Fig 6, Figs S2, S4, S5, S6 (left), S8, S9, Table S10, and the runs cited in §4.2, §6.3, §6.6, §7.4 and S9.3 |
+| Re-measurement | Windows 10 workstation, one RTX 3080 (20 GB), driver 560.94 | Python 3.10.20, PyTorch 2.6.0+cu124, CUDA 12.4, cuDNN 9.1.0, NumPy 1.26.4 | Table 10 and the exact-path check (`results/revise_timing/`), the kernel benchmark of §4.3 (`results/revise_kernel/`), the re-run in `results/revise_repro/` |
+| Second campaign, workstation | Same Windows 10 workstation, two RTX 3080 (20 GB) as GPU0 and GPU1, driver 560.94 | Python 3.10.20, PyTorch 2.6.0+cu124, CUDA 12.4, cuDNN 9.1.0, NumPy 1.26.4 | see section 5, column "ran on" |
+| Second campaign, Linux | Ubuntu 24.04, one RTX 3080 (10 GB), driver 595.84 | Python 3.12.3, PyTorch 2.6.0+cu124, CUDA 12.4, cuDNN 9.1.0, NumPy 1.26.4 | see section 5 |
+| Second campaign, rented | AutoDL node, two RTX 3080 (10 GB) | PyTorch 2.5.1+cu124; Python, NumPy and driver not recorded | five runs of `results/r2/rl_clip05` (corridor 20 seeds 1-2, corridor 40 seeds 0-2) |
 
-The revision re-measurement deliberately used a newer PyTorch to check that the reported numbers
-are not an artefact of one toolchain. Outcome: the numerics tests reproduce to the same digits
-(exact RTRL ≡ BPTT at 4.409e-16, SK-RTRL(r=n) ≡ exact at 1.585e-15, 0 certificate violations),
-and every peak-memory figure is bit-identical, since `torch.cuda.max_memory_allocated()` counts
-allocator-tracked tensor bytes and is therefore independent of the GPU model. Wall-clock times
-differ, as expected. See `results/revise_repro/COMPARISON.md` for the point-by-point table.
-NumPy 1.26.4 and SciPy 1.15.3 in the revision environment; Matplotlib is needed only by the
-`make_*.py` figure scripts, not by any run script.
+Sources: the first-campaign versions are the pinned environment of the first submission; the
+workstation and Linux versions were read from the interpreters the job queue used
+(`D:\Anaconda\envs\multilingual_lora` and `env/` on the Linux machine, both installed before the
+runs); the rented node's PyTorch version is in the launch log. Which machine ran which run was read
+from the per-job queue logs, which are not part of the release. Every second-campaign run peaks
+below 4.3 GB of GPU memory.
 
-## Layout
-```
-skrtrl/               library: cells, algos (SKRTRL/ExactRTRL/baselines), tasks, train, envs, rl
-skrtrl/algos_amortised.py  amortised-rotation kernel of §4.3 (deferred rotations). O(n^2 r) is the
-                      amortised rotation term under c=Theta(r) with r=O(sqrt n) (or c=O(1)); the
-                      shipped kernel caps the deferred width at w <= 5r, so it runs at K=O(1) and
-                      the released configuration is still O(n^3+n^2 r^2) per step (Sec. 4.2)
-skrtrl/data/          REAL benchmark series: sunspot.txt (SILSO monthly *mean total*, SN_m_tot_V2.0,
-                        3329 values 1749-01..2026-05), laser.txt (Santa Fe set A, 1000 points)
-run_m3.py             fidelity + time-series online runs (gradient cosine vs exact shadow, NMSE; --horizon/--causal)
-run_arch.py           forecasting-architecture baselines (GRU/LSTM via TBPTT, ESN ridge readout)
-run_adaptive.py       certificate-guided adaptive-rank controller + fixed-r baselines (--ctrl eta|e_t|oracle)
-run_m5.py             online RL (T-maze actor-critic)
-run_m0_profile.py     memory/time profile across n
-run_cor3_timing.py    factored-exact (r=n) vs textbook-exact timing (original round-1 measurement)
-run_cor3_timing_revise.py    hardened re-measurement of the same (CUDA events, 20 warmup, 5 repeats)
-run_amortised_kernel_bench.py  naive vs amortised kernel, svd and randproj pre-projection modes
-make_paper_figures.py   the single script behind the paper's data figures: one colour-blind-safe
-                      style, print-size axes, a hard check that any two methods differ in >=2
-                      visual attributes, and a loud skip when an input tree is absent
-make_figures.py       older/plainer figure entry point, kept for reference
-make_round1_figures.py  horizon / fidelity-vs-error / adaptive-trajectory / memory-time-pareto / scaling
-make_timeseries_tables.py  rebuilds tab:timeseries and tab:realts from the raw runs and checks
-                      every cell against the published value
-run_width_sweep.py    extended width sweep of Sec. 4.2 -> results/scale_large.json
-make_stats.py         paired bootstrap CI + Wilcoxon signed-rank + Holm + Cohen d_z for the tables
-make_kernel_table.py  renders results/revise_kernel/*.json into SUMMARY.md
-make_revise_repro_report.py  builds results/revise_repro/COMPARISON.{md,json}
-tests/                numerics unit tests (exact RTRL == BPTT; SK-RTRL(r=n) == exact; certificate validity)
-tests/test_amortised_kernel.py  A1–A10 equivalence of the amortised kernel vs the kernel of record
-results/              one JSON per run (args + per-step records + wall_s + peak_MB)
-```
+`requirements.txt` pins the versions that regenerate this release exactly (the second-campaign
+environment, with SciPy 1.15.3 and Matplotlib 3.10.9 for the reports and figures). Install the
+CUDA build of PyTorch with `pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124`.
 
-## Released result trees
+## 2. Check the release
 
-The `results/` tree ships with the code. It covers Tables 3, 4, 6, 7, 8, 9, the amortised-kernel
-benchmark and all ten data figures, so those numbers can be recomputed without re-running
-anything. It does **not** cover everything the paper reports; the exceptions are listed below the
-table. What is in it:
-
-| Tree | Files | Backs |
-|---|---|---|
-| `results/round1/` | 515 run JSON + 2 stats MD + 2 stats JSON | the round-1 campaign: `horizon/`, `real/`, `ablate_rank/`, `ablate_norm/`, `adapt_ablate/`, `arch/`, `traj/`, plus `STATS_gradcos.*` / `STATS_nmse.*` |
-| `results/ts/` | 240 JSON | the chaotic time-series campaign (Table 6, Figs. 7 and 8) and, with `round1/real`, the paired statistics |
-| `results/m3/` | 202 JSON | diagnostic-task gradient fidelity: Table 3 and Fig. 5 |
-| `results/membench/` | 16 JSON | the clean shadow-OFF memory/time sweep behind Fig. 9 and the scaling/Pareto figures |
-| `results/m5iso/` | 54 JSON | the online T-maze study: Table 9 and Fig. 11 |
-| `results/c2sweep/`, `results/c2/` | 12 + 18 JSON | the two halves of the spectral-clip certificate sweep: 1192 + 2148 = 3340 logged points with zero violations (§6.5, §7.4, §8). `c2sweep` alone gives Table 4 and Fig. 6 |
-| `results/scale/`, `results/scale256/` | 23 + 24 JSON | the n=128 / n=256 fidelity points of Fig. 9 (left) |
-| `results/m1_spectrum_*.json` | 4 JSON | the residual-spectrum pilot of Fig. 2 |
-| `results/scale_large.json` | 1 JSON | the extended width sweep n ∈ {384, 512, 768, 1024} quoted in §4.2 |
-| `results/m0_profile.json`, `results/cor3_timing.json` | 2 JSON | round-1 memory/time profile; original Cor.-3 timing |
-| `results/revise_timing/` | 2 JSON | re-measurement of Table 8 (Cor. 3 factored-exact vs textbook exact); the `rel_err_grad` field quoted in §6.6 lives here |
-| `results/revise_kernel/` | 3 JSON + SUMMARY.md + equivalence_test.txt | naive vs amortised-rotation kernel benchmark of §4.3 |
-| `results/revise_repro/` | 22 JSON + 5 logs + COMPARISON.{md,json} | the 2026-08 independent re-run of E6 (rank×clip) and the Fig. 9 memory benchmark on a newer toolchain, with the point-by-point comparison against the manuscript |
-
-`results/round1/` + `results/membench/` = **533 JSON files** — 531 run records plus the two
-aggregate `STATS_*.json` — the figure quoted in the response letter. Every other run tree
-(scratch sweeps, local smoke tests, figure output) is git-ignored.
-
-**What is not released, and why.**
-
-- *Table 5 (adaptive vs fixed rank).* Those runs are not in this tree. The command that
-  reproduces the block is listed below; the neighbouring controller ablation it is discussed with
-  (η_t vs e_t vs oracle) *is* released, under `results/round1/adapt_ablate/` and
-  `results/round1/traj/`.
-- *Nothing from the certificate sweep.* Both halves of it are released: `results/c2sweep/`
-  (clips 0.2/0.35/0.5/0.7 at 25k steps, one seed each, 1192 logged points) and `results/c2/`
-  (clip 0.9 at 30k steps, three tasks x three estimators x two seeds, 2148 logged points).
-  Together they are the 3340 logged points over which §6.5, §7.4 and §8 report zero certificate
-  violations; `results/c2sweep/` alone supplies the five (rho_bar, tightness) points of Table 4
-  and Fig. 6.
-- *Longer-horizon diagnostic reruns* (60k / 200k steps, and a `rotrecall` variant). These are
-  separate experiments from Table 3's 20k-step block and are not reported in the paper. What is
-  released, `results/m3/`, is the 20k-step block itself: the nine estimators of Table 3 at five
-  seeds on four tasks, plus the additional ranks and the randomised-pre-projection variants that
-  the rank-interpolation panel of Fig. 5 draws on.
-- *The remote orchestration wrappers*, for the reason given in the next section.
-
-**JSON shape.** Most run JSONs have four top-level keys: `args` (the full argument namespace of
-the run), `records` (the per-step log), `wall_s`, and `peak_MB`
-(`torch.cuda.max_memory_allocated()`). Three groups differ:
-
-- the `run_arch.py` baselines in `results/round1/arch/` (75 files) carry `final_nmse` instead of
-  `peak_MB`, plus `esn_res` for the 25 ESN runs;
-- the `run_adaptive.py` runs in `results/round1/adapt_ablate/` and `results/round1/traj/` (19
-  files) add `avg_rank`, `cert_violations` and `cert_checks_with_shadow`;
-- runs logged without a CUDA device, or from before `peak_MB` was recorded, carry only `args`,
-  `records` and `wall_s`: the `tbptt` runs in `results/ts/`, all of `results/m5iso/`,
-  `results/c2sweep/`, `results/c2/`, `results/m1_spectrum_*.json`, and 134 of the 202 files in
-  `results/m3/`.
-
-**Statistical convention.** The tables take, per run, the mean of the last five logged records,
-then mean ± *population* standard deviation across seeds. `make_timeseries_tables.py`,
-`make_fidelity_bars.py` and `make_m5_report.py` follow it. `make_m3_report.py` and
-`make_ts_report.py` are older browsing aids on a 20%-tail mean and a sample standard deviation;
-their numbers differ slightly from the tables by construction and should not be read as table
-reproductions.
-
-`results/scale_large.json`, `results/m0_profile.json` and `results/cor3_timing.json` are flat
-lists of measurement rows rather than run records, and `STATS_*.json`, `COMPARISON.json`,
-`cor3_timing_revise*.json` and `kernel_bench_*.json` are report/benchmark files with their own
-schemas. Every released script reads the shape it needs and ignores the rest.
-
-## Remote orchestration scripts
-
-The round-1 campaign was dispatched to five rented GPUs by a set of `launch_*.sh` / `run_*.sh` /
-`run_*_local.ps1` wrappers. Those wrappers are **not published**: they hard-code machine-specific
-endpoints, ports and working directories, which carry no scientific content and would only
-mislead a reader trying to re-run anything. Each one is a thin loop around the `python run_*.py …` commands listed below, which are
-the complete and sufficient description of what was run.
-
-## Numerical correctness (run first)
 ```bash
-python -m tests.test_numerics           # exact RTRL ≡ BPTT (4e-16); SK-RTRL(r=n) ≡ exact (1.6e-15); certificate 0 violations
-python -m tests.test_m5_traces          # diagonal-cell (LRU/RTU) eligibility traces vs autograd
-python -m tests.test_amortised_kernel   # amortised kernel ≡ kernel of record (A1–A10)
+python check_release.py                                  # about one minute, no GPU
+python -m pytest tests -q --import-mode=importlib       # 16 tests, about one minute on CPU
 ```
 
-## Core experiment commands (one block each)
+`check_release.py` has two layers. Layer 1 re-runs every report and table generator on the released
+trees into `results/_check/` and compares the output with the committed reports in `results/r2/`
+and table fragments in `results/tables/`, ignoring timestamp lines and tex comments. It also checks
+that every input tree is present with its released run count, that no generator skips a figure,
+and, when `../paper/secs` exists next to the repository, that the table bodies match the
+manuscript. Layer 2 recomputes the numbers listed in `paper_numbers.json` from the run JSON and
+compares them with the printed values: the 108 of 108 fidelity wins, the win-tie-loss records
+24-18-3 / 26-16-3 / 30-12-3, the certificate counters, the cells of Tables 5, 6, 9 and 11, the
+adaptive mean ranks of Table 8, the 13.5x memory ratio and the §6.3 random-projection cosines.
+Each entry stores its source line in the manuscript and its tolerance.
+
+## 3. Tables and figures
+
+"Manifest" is the launch file in `jobs/`; "legacy" means the command is in
+`docs/legacy_round1.md`. Generators write to `results/figures/` and `results/tables/` unless told
+otherwise.
+
+### Main paper
+
+| Float | Result tree | Manifest | Generator (output) |
+|---|---|---|---|
+| Table 1 unified comparison | none | none | analytic |
+| Table 2 notation | none | none | none |
+| Table 3 per-step cost | none | none | analytic |
+| Fig 1 overview, Fig 2 decomposition | none | none | hand-drawn |
+| Fig 3 fidelity bars, rank interpolation | `results/r2/d4_eval` | `d4_eval.txt` | `make_paper_figures.py` (`fig_fidelity_bars`, `fig_rinterp_rotation`) |
+| Table 4 residual spectrum | `results/r2/d1_spectrum` | `d1_spectrum.txt` | `make_r2_d1_report.py` (`d1_spectrum/D1_SUMMARY.md`, tables A-C) |
+| Fig 4 residual spectrum | `results/r2/d1_spectrum` | `d1_spectrum.txt` | `make_r2_d1_report.py` (`fig_r2_spectrum_stage`, `fig_r2_spectrum_width`) |
+| Table 5 certificate vs clip | `d4_eval` (r=16), `d2_noreset`, `d2_clip`, `rl`, `rl_clip05` | `d4_eval.txt`, `d2_noreset.txt`, `d2_clip.txt`, `rl.txt` | `make_r2_d2_report.py` (`D2_SUMMARY.md` table B), `make_r2_rl_report.py` (`RL_SUMMARY.md` table RL-C) |
+| Table 6 certificate per task | `d4_eval` (r=16), `d2_noreset`, `d2_clip` | as Table 5 | `make_r2_d2_report.py` (`D2_SUMMARY.md` table A) |
+| Table 7 clip cost | `d4_eval` (r=16, seeds 0-4), `d2_clip` | `d4_eval.txt`, `d2_clip.txt` | `make_r2_clipcost_table.py` (`tab_r2_clipcost.tex`) |
+| Table 8 adaptive rank | `results/r2/d3_diag` | `d3_diag.txt` | `make_r2_w1b_tables.py` (`tab_r2_adaptive.tex`) |
+| Fig 5 adaptive diagnosis, sensitivity | `d3_diag`, `d3_oat` | `d3_diag.txt`, `d3_oat.txt`, `d3_oat_extra.txt` | `make_r2_d3_report.py` (`fig_r2_adaptive_diag`, `fig_r2_adaptive_oat`, `D3_SUMMARY.md`) |
+| Table 9 temporal hold-out | `results/r2/d4_holdout` | `d4_holdout.txt` | `make_r2_holdout_report.py` (`HOLDOUT_SUMMARY.md`) |
+| Table 10 factored vs textbook exact | `results/revise_timing` | legacy | values read from the two JSON files |
+| Fig 6 scaling | `results/m3` (rotation), `scale`, `scale256`, `membench` | legacy | `make_paper_figures.py` (`fig_scaling`) |
+| Table 11 gated cells | `results/r2/d5_gated` (+ `d4_eval` for the tanh reference) | `d5_gated.txt` | `make_r2_d5_report.py` (`D5_SUMMARY.md`) |
+| Table 12 protocol | all manifests | all | run counts, section 5 |
+| Table 13 selected learning rates | `d4_tune`, `d4_stage2` via `D4_SELECT_stage2.json` | section 4 | `make_r2_d4_tables.py` (`tab_r2_lr.tex`) |
+| Table 14 gated-cell constants | none | none | analytic |
+
+### Supplement
+
+| Float | Result tree | Manifest | Generator (output) |
+|---|---|---|---|
+| Tables S1-S3 paired statistics | `results/r2/d4_eval` | `d4_eval.txt` | `make_r2_d4_tables.py` (`tab_r2_stats.tex`, `D4_STATS.md`, `D4_STATS.json`) |
+| Table S4 notation | none | none | none |
+| Table S5 certificate tightness | `results/r2/d2_clip` | `d2_clip.txt` | `make_r2_w1b_tables.py` (`tab_r2_tightness.tex`) |
+| Table S6 diagnostic fidelity | `results/r2/d4_eval` | `d4_eval.txt` | `make_r2_d4_tables.py` (`tab_r2_fidelity.tex`) |
+| Table S7 chaotic series | `results/r2/d4_eval` | `d4_eval.txt` | `make_r2_d4_tables.py` (`tab_r2_timeseries.tex`) |
+| Table S8 real series | `results/r2/d4_eval` | `d4_eval.txt` | `make_r2_d4_tables.py` (`tab_r2_realts.tex`) |
+| Table S9 T-maze residual spectrum | `rl`, `rl_clip05` | `rl.txt` | `make_r2_rl_spectrum_report.py` (`RL_SPECTRUM_SUMMARY.md`) |
+| Table S10 T-maze success | `results/m5iso` | legacy | `make_m5_report.py results/m5iso` |
+| Fig S1 pipeline | none | none | hand-drawn |
+| Fig S2 older tightness sweep | `results/c2sweep` | legacy | `make_paper_figures.py` (`fig_cert_c2sweep`) |
+| Fig S3 certificate vs clip | `d4_eval`, `d2_clip`, `d2_noreset` | `d4_eval.txt`, `d2_clip.txt`, `d2_noreset.txt` | `make_r2_d2_report.py` (`fig_r2_cert_frac_vs_clip`, `fig_r2_cert_cdf`) |
+| Fig S4 adaptive trajectory | `results/round1/traj` | legacy | `make_paper_figures.py` (`fig_adaptive_trajectory`) |
+| Fig S5 residual pilot | `results/m1_spectrum_*.json` | legacy | `make_paper_figures.py` (`fig_pilot_residual`) |
+| Fig S6 left horizons | `results/round1/horizon`, `results/ts` (h=1) | legacy | `make_paper_figures.py` (`fig_horizon_nmse`) |
+| Fig S6 right cosine vs error | `results/r2/d4_eval` | `d4_eval.txt` | `make_paper_figures.py` (`fig_fidelity_vs_error`) |
+| Fig S7 T-maze spectrum | `rl`, `rl_clip05`, `d1_spectrum` | `rl.txt` | `make_r2_rl_spectrum_report.py` (`fig_r2_spectrum_rl`) |
+| Fig S8 memory-time trade-off | `results/membench` | legacy | `make_paper_figures.py` (`fig_memory_time_pareto`) |
+| Fig S9 T-maze curves | `results/m5iso` | legacy | `make_paper_figures.py` (`fig_rl_curves`) |
+
+Regenerate everything without a GPU:
+
 ```bash
-# Gradient fidelity (diagnostic tasks, 5 seeds, exact shadow; tab:fidelity, fig:fidelity)
-for t in copy adding rotation anbn; do for a in exact skrtrl-r4 skrtrl-r16 skrtrl-r64 snap1 uoro kfrtrl rflo tbptt; do for s in 0 1 2 3 4; do
-  python run_m3.py --task $t --algo $a --seed $s --steps 20000 --n 64 --outdir results/m3; done; done; done
-# Four released runs (copy/adding x kfrtrl/uoro, seed 0) come from an earlier pass logged at
-# --steps 8000. Table 3 averages the tail of the logged cosine, which has plateaued long before
-# then; `python make_fidelity_bars.py` recomputes all 24 cells from results/m3 and fails if any
-# of them disagrees with the published value, so the effect is checkable rather than asserted.
-
-# Online chaotic time-series (Henon/Mackey-Glass/Lorenz, 10 seeds; tab:timeseries)
-for t in henon mackeyglass lorenz; do for a in exact skrtrl-r4 skrtrl-r16 snap1 uoro kfrtrl rflo; do for s in 0 1 2 3 4 5 6 7 8 9; do
-  python run_m3.py --task $t --algo $a --seed $s --steps 15000 --n 64 --shadow 1 --outdir results/ts; done; done; done
-# (skrtrl-r32 and tbptt at 5 seeds: same loop with `for s in 0 1 2 3 4` and those algos)
-
-# Real benchmarks: Sunspot + Santa Fe laser (10 seeds, causal normalization; tab:realts)
-# requires skrtrl/data/{sunspot.txt, laser.txt}; the task raises if absent (no fabrication)
-for t in sunspot laser; do for a in exact skrtrl-r4 skrtrl-r16 snap1 uoro rflo; do for s in 0 1 2 3 4 5 6 7 8 9; do
-  python run_m3.py --task $t --algo $a --seed $s --steps 15000 --n 64 --shadow 1 --causal 1 --outdir results/round1/real --tag real; done; done; done
-# KF-RTRL sits at 5 seeds in tab:realts, and at 5 seeds in the released tree:
-for t in sunspot laser; do for s in 0 1 2 3 4; do
-  python run_m3.py --task $t --algo kfrtrl --seed $s --steps 15000 --n 64 --shadow 1 --causal 1 --outdir results/round1/real --tag real; done; done
-
-# Multi-step horizons h in {5,10,25} (h=1 = the runs above; fig:horizon)
-for t in henon mackeyglass lorenz; do for h in 5 10 25; do for a in exact snap1 skrtrl-r4 skrtrl-r16 rflo; do for s in 0 1 2 3 4; do
-  python run_m3.py --task $t --algo $a --seed $s --horizon $h --steps 15000 --n 64 --outdir results/round1/horizon --tag h$h; done; done; done; done
-
-# Forecasting-architecture baselines (GRU/LSTM via TBPTT, ESN ridge; context only)
-for t in henon mackeyglass lorenz sunspot laser; do for arch in gru lstm esn; do for s in 0 1 2 3 4; do
-  python run_arch.py --task $t --arch $arch --seed $s --steps 15000 --n 64 --outdir results/round1/arch --tag arch; done; done; done
-
-# Adaptive-controller ablation: eta (ours) vs e_t (naive) vs oracle (hindsight)
-for t in rotation anbn; do for c in eta e_t oracle; do for s in 0 1 2; do
-  python run_adaptive.py --task $t --ctrl $c --seed $s --steps 20000 --n 64 --shadow 1 --outdir results/round1/adapt_ablate --tag e5; done; done; done
-
-# Certificate validity/tightness sweep (spectral clip; tab:tightness, fig:cert). Two halves,
-# 3340 logged points together -- the count quoted for "zero violations" in Sec. 6.5, 7.4 and 8.
-for clip in 0.2 0.35 0.5 0.7; do for t in adding anbn rotrecall24; do
-  python run_m3.py --task $t --algo skrtrl-r16 --seed 0 --steps 25000 --clip $clip --outdir results/c2sweep --tag clip$clip; done; done
-for t in adding anbn rotrecall; do for a in skrtrl-r4 skrtrl-r16 snap1; do for s in 0 1; do
-  python run_m3.py --task $t --algo $a --seed $s --steps 30000 --clip 0.9 --outdir results/c2; done; done; done
-
-# Certificate-guided adaptive rank vs fixed r (tab:adaptive). NOT in the released tree.
-# --steps 12000 must be passed: run_adaptive.py's default is 20000, which is not the protocol.
-for t in rotation anbn; do for s in 0 1 2 3 4; do
-  python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --r_min 4 --r_max 32 --outdir results/adaptive
-  for fr in 4 16 32; do python run_adaptive.py --task $t --seed $s --steps 12000 --n 64 --clip 0.5 --shadow 1 --fixed_r $fr --outdir results/adaptive; done; done; done
-
-# Memory/time scaling and Corollary-3 timing
-python run_m0_profile.py                       # peak memory + ms/step across n in {64..512}
-python run_cor3_timing.py                      # factored-exact vs textbook-exact across n (round-1)
-# Hardened re-measurement behind tab:cor3 -- two invocations, small then large widths:
-python run_cor3_timing_revise.py
-python run_cor3_timing_revise.py --ns 256,320,384,512 --steps 20 --warmup 10 --repeats 3   --out results/revise_timing/cor3_timing_revise_large.json
-
-# Clean (shadow-OFF) memory/time benchmark for fig:scaling and fig:pareto (n in {128,256,384,512})
-for n in 128 256 384 512; do for a in exact snap1 skrtrl-r4 skrtrl-r16; do
-  python run_m3.py --task anbn --algo $a --seed 0 --n $n --steps 1500 --shadow 0 --outdir results/membench --tag n$n; done; done
-
-# Amortised-rotation kernel benchmark (Sec. 4.3), both pre-projection modes
-python run_amortised_kernel_bench.py --mode svd      --out results/revise_kernel/kernel_bench_svd.json
-python run_amortised_kernel_bench.py --mode randproj --out results/revise_kernel/kernel_bench_randproj.json
-
-# Online RL case study (iso-width n=64, 3 seeds; tab:rl, fig:rlcurves). The step budget grows
-# with the corridor and must be passed: run_m5.py's default is 300k, which is not the protocol.
-for s in 0 1 2; do for a in rtu lru snap1 skrtrl-r16 exact tbptt; do
-  python run_m5.py --env_len 10 --steps 60000  --algo $a --seed $s --n 64 --outdir results/m5iso
-  python run_m5.py --env_len 20 --steps 100000 --algo $a --seed $s --n 64 --outdir results/m5iso
-  python run_m5.py --env_len 40 --steps 150000 --algo $a --seed $s --n 64 --outdir results/m5iso; done; done
+python make_r2_d4_tables.py --outdir results/r2       # Tables 13, S1-S3, S6-S8
+python make_r2_w1b_tables.py                           # Tables 8, S5
+python make_r2_clipcost_table.py                       # Table 7
+python make_r2_d1_report.py                            # Table 4, Fig 4
+python make_r2_d2_report.py                            # Tables 5-6, Fig S3
+python make_r2_d3_report.py                            # Fig 5
+python make_r2_holdout_report.py                       # Table 9
+python make_r2_d5_report.py                            # Table 11
+python make_r2_rl_report.py                            # RL rows of Table 5
+python make_r2_rl_spectrum_report.py                   # Table S9, Fig S7
+python make_r2_e4b_report.py                           # common-trajectory control, §6.2
+python make_paper_figures.py                           # Figs 3, 6, S2, S4, S5, S6, S8, S9
+python make_m5_report.py results/m5iso                 # Table S10
 ```
 
-## Figures and tables
+The reports overwrite the committed copies in `results/r2/`; `git diff` should then show timestamp
+lines only. Tables 4, 5, 6, 9, 10, 11 and S9 are typeset by hand from these reports.
+Six figures drawn from first-campaign trees (Figs 6, S2, S4, S6 left, S8, S9) come out a few points
+wider or taller than the PDFs in the manuscript, which were drawn before a later layout change;
+the plotted data are the same.
+
+## 4. Learning-rate tuning (Tables 13, S1-S3, S6-S8)
+
+Every (task, estimator) pair is tuned on seeds 100 and 101 and evaluated on seeds 0-9. The chain:
+
+1. Stage-1 grid. `jobs/d4_tune.txt`: 9 tasks x 9 estimators x lr {1e-4, 3e-4, 1e-3, 3e-3} x
+   seeds {100, 101}, 6,000 steps; TBPTT also over windows {25, 50}. 720 runs, written by
+   `make_r2_jobs.py --stage d4_tune`.
+2. Stage-1 selection. `python make_r2_d4_select.py select --stage 1` scores the mean task metric
+   over the last 20% of each run, averaged over the two seeds (never the gradient cosine), and
+   writes `results/r2/D4_SELECT_stage1.{md,json}`.
+3. Boundary extensions. A winner at a grid edge gets one more rung on the 1-3 ladder, at most
+   twice. `jobs/d4_boundary.round1.txt` (39 configs, 78 runs) and `jobs/d4_boundary.round2.txt`
+   (13 configs, 26 runs) were emitted by `make_r2_d4_select.py emit --what boundary`; the third
+   emission, `jobs/d4_boundary.txt`, has no jobs. The round-2 file was rebuilt from the arguments
+   recorded in its 26 run files, because the launch copy was overwritten by the third emission.
+   All boundary runs write into `results/r2/d4_tune`, which therefore holds 824 runs
+   (412 configs x 2 seeds), and step 2 is repeated after each extension.
+4. Stage 2. `jobs/d4_stage2.txt`: the best two stage-1 configs of every pair, 20,000 steps, seeds
+   {100, 101}; 324 runs in `results/r2/d4_stage2`.
+5. Stage-2 selection. `python make_r2_d4_select.py select --stage 2` writes
+   `results/r2/D4_SELECT_stage2.{md,json}`, the winner of each of the 81 pairs.
+6. Evaluation. `make_r2_d4_select.py emit --what eval` writes `jobs/d4_eval.txt`: the selected rate
+   (and TBPTT window) of each pair x seeds 0-9 x 20,000 steps, shadow on; 810 runs in
+   `results/r2/d4_eval`. The tuning seeds never appear in it.
+7. Tables. `python make_r2_d4_tables.py --outdir results/r2` reads `d4_eval` and
+   `D4_SELECT_stage2.json` and writes Table 13 (`tab_r2_lr.tex`), Tables S6-S8 and Tables S1-S3
+   (`tab_r2_stats.tex`, `D4_STATS.md`, `D4_STATS.json`).
+
+The temporal hold-out (`jobs/d4_holdout.txt`) and the clip sweep (`jobs/d2_clip.txt`) read their
+rates from the same `D4_SELECT_stage2.json`.
+
+## 5. Second-campaign blocks (rows of Table 12)
+
+All blocks use a tanh cell (except the gated block), n=64, batch 8, Adam, `--svd_driver auto` and
+no spectral clip unless the row says otherwise. "Ran on": W0/W1 = workstation GPU0/GPU1, L = Linux
+machine, A = rented node; counts are runs.
+
+| Block (Table 12 row) | Manifest | Runs | Steps | Seeds | lr | Other settings | Ran on |
+|---|---|---|---|---|---|---|---|
+| Estimator comparison | `d4_eval.txt` | 810 | 20,000 | 0-9 | tuned | 9 tasks x 9 estimators, shadow on | W0 324, L 486 |
+| LR tuning, stage 1 | `d4_tune.txt`, `d4_boundary.round1.txt`, `d4_boundary.round2.txt` | 824 | 6,000 | 100-101 | grid | section 4 | W0 295, L 529 |
+| LR tuning, stage 2 | `d4_stage2.txt` | 324 | 20,000 | 100-101 | top two | section 4 | W0 92, L 232 |
+| Temporal hold-out | `d4_holdout.txt` | 50 | 20,000 | 0-4 | tuned | Sunspot, laser; exact, SK-RTRL r=16/32, SnAp-1, TBPTT; `--holdout_frac 0.2` | L 50 |
+| Residual spectrum | `d1_spectrum.txt` (+ `d1_adding512_extra.txt`, `d1_adding512_s0long.txt`) | 63 (+7) | 20,000 (two at 40,000) | 0-2 (+3-7) | 1e-3 | exact-RTRL training, passive SnAp-1; n=64 on 9 tasks and n=128/256/512 on 4; batch 4 at n=512 | W1 63, L 7 |
+| Certificate clip sweep | `d2_clip.txt` | 135 | 20,000 | 0-4 | tuned r=16 rate | SK-RTRL r=16, clip {0.35, 0.7, 0.9}, 9 tasks | L 135 |
+| Certificate, no resets | `d2_noreset.txt` | 15 | 20,000 | 0-2 | 1e-3 | SK-RTRL r=16, `--washout 0`, 5 series | W1 15 |
+| Adaptive rank, ceiling | `d3_diag.txt` | 72 | 12,000 | 0-2 | 1e-3 | clip 0.5; rotation, a^nb^n; 5 controller variants (30) + fixed r in {4,8,16,24,32,48,64} (42); variant C at n=128 | W1 72 |
+| Controller sensitivity | `d3_oat.txt`, `d3_oat_extra.txt` | 90 + 60 | 12,000 | 0-2 | 1e-3 | clip 0.5; 10 one-at-a-time settings x 5 tasks | W0 60, W1 90 |
+| Gated cells | `d5_gated.txt` | 168 | 20,000 | 0-2 | 1e-3 | `--cell gru` and `--cell lstm`; rotation, a^nb^n, Henon, Sunspot; 7 estimators | GRU W1 84, LSTM L 84 |
+| Common-trajectory control | `e4b_common.txt` | 27 | 20,000 | 0-2 | 1e-3 | exact-RTRL trainer, 7 passive trackers, 9 tasks | L 27 |
+| Online RL, certificate | `rl.txt` | 27 | 60k / 100k / 60k | 0-2 | 3e-4 | T-maze 10/20/40, batch 16, shadow on; SK-RTRL r=16 at clip 0 and 0.5, SnAp-1 at clip 0 | W0/W1 22, A 5 |
+
+Two rates differ from the tuned rate of Table 13: the no-reset block ran at 1e-3 on all five series
+(the tuned r=16 rate is 3e-4 on Lorenz and Mackey-Glass and 1e-4 on Sunspot), and the
+common-trajectory trainer ran at 1e-3 on all nine tasks. The paper states both.
+
+Run one manifest line, for example the first r=16 evaluation run:
+
 ```bash
-python make_paper_figures.py                   # all ten data figure files -> results/figures/
-python make_fidelity_bars.py                   # fig_fidelity_bars alone, with the tab:fidelity check
-python make_timeseries_tables.py               # tab:timeseries and tab:realts, every cell checked
-python make_m5_report.py results/m5iso         # RL success-rate table (tab:rl)
-python make_m3_report.py results/m3            # diagnostic browsing aid on a 20%-tail mean and a
-                                               #   sample s.d.; NOT the statistic the tables use
-python c2sweep_points.py results/c2sweep       # certificate tightness points (tab:tightness)
-python make_kernel_table.py                    # results/revise_kernel/SUMMARY.md (Sec. 4.3 kernel table)
-python make_revise_repro_report.py             # results/revise_repro/COMPARISON.{md,json}
-# Paired statistics for tab:timeseries / tab:realts (bootstrap CI + Wilcoxon + Holm + Cohen d_z)
-python make_stats.py --dirs results/round1/real results/ts --metric grad_cos --higher_better 1 --out results/round1/STATS_gradcos
-python make_stats.py --dirs results/round1/real results/ts --metric metric   --higher_better 0 --out results/round1/STATS_nmse
+python run_m3.py --task adding --algo skrtrl-r16 --seed 0 --lr 0.003 --steps 20000 --n 64 \
+  --batch 8 --log_every 250 --shadow 1 --svd_driver auto --outdir results/rerun/d4_eval --tag lr3e-03
 ```
 
-## Notes
-- `run_m3.py`/`run_m5.py`/`run_adaptive.py` skip a run if its output JSON already exists (safe restart / multi-worker split by seed).
-  Since the released `results/` tree is already populated, delete (or redirect with `--outdir`) the target
-  directory before re-running, or every run will be skipped.
-- Reported `metric` for time-series tasks is the running normalized MSE (series scaled to unit variance ⇒ MSE ≈ NMSE).
-- The exact shadow (for gradient cosine) is enabled for `n ≤ 256`; beyond that only memory/NMSE are recorded.
+Run a whole manifest into a fresh directory (the runners skip a run whose output file exists, so
+pointing them at the released tree does nothing):
+
+```bash
+grep -v '^#' jobs/d4_eval.txt | sed -e 's/  # out=.*//' -e 's/^python //' \
+  -e 's#results/r2/#results/rerun/#' | while read -r cmd; do python $cmd; done
+```
+
+Change `d4_eval` for any other manifest. Lines in `rl.txt` start with `python`, which the `sed`
+removes. `run_r2_queue.sh` and `run_r2_queue.ps1` split a manifest across GPUs
+(`run_r2_queue.sh WORKER NWORKERS DEV JOBS LOGDIR [TIMEOUT_S] [PY]`); they skip a job whose
+`# out=` file exists. The per-worker splits we used are in `jobs/shards/`; `jobs/dev/` holds smoke
+tests, timing runs and the SVD-driver check; their outputs stay out of the repository.
+
+On the real series, `--causal 1` selects the one-off window normalisation of S2.7 (the flag name is
+older than that description).
+
+## 6. First-campaign blocks
+
+`docs/legacy_round1.md` lists the commands for the floats still drawn from first-campaign trees
+(Table 10, Table S10, Figs 6, S2, S4, S5, S6 left, S8, S9) and for the runs cited in the text
+(§4.2 width sweep, §4.3 kernel benchmark, §6.3 random-projection control, §6.6 control-signal
+ablation, §7.4 and S9.3 rank x clip and normalisation ablations). These runs used
+`--svd_driver gesvd`, the default of `run_m3.py`, `run_m5.py` and `run_adaptive.py`.
+
+## 7. The certificate counts
+
+Three statements, kept apart in the paper and here.
+
+- Theorem 1 bounds the gradient bias in exact arithmetic, under its assumptions.
+- In fp32, the gradient inequality ||g_t - ghat_t|| <= ||delta_t|| e_t was checked on every counted
+  step of the 267 certified runs (the 240 supervised runs of `d4_eval` r=16, `d2_clip` and
+  `d2_noreset`, and the 27 runs of `rl`/`rl_clip05`): 0 failures over 5,589,060 counted steps. On
+  2,575,736 of the 3,614,460 counted supervised steps the fp32 bound was finite; on the others it
+  had overflowed and holds trivially. The RL runs do not record finiteness.
+- The intermediate Lemma-1 inequality ||E_t||_F <= e_t (1 + 1e-4) fails on 93 of the 1,980 counted
+  steps of one unclipped run, copy r=16 seed 2 (`d4_eval/copy_skrtrl-r16_s2_*.json`).
+
+The counters are `cert_summary.n_steps`, `n_bound_finite`, `n_bound_violation` (Theorem 1) and
+`n_cert_invalid` (Lemma 1) in each run file; `make_r2_d2_report.py` tabulates them (table E) and
+`check_release.py` recounts them. The "0 violations" line printed by `tests/test_numerics.py` is a
+different check: the Lemma-1 inequality on a small float64 problem.
+
+## 8. Gated cells and the GRU/LSTM baselines
+
+Two scripts run GRU and LSTM cells, for different purposes.
+
+- `run_m3.py --cell gru|lstm` runs SK-RTRL and the other online estimators on a gated cell
+  (`skrtrl/cells_gated.py`). This is the block of Table 11 (`jobs/d5_gated.txt`). KF-RTRL and TBPTT
+  are refused for gated cells.
+- `run_arch.py` trains GRU, LSTM and ESN forecasters with truncated BPTT or a ridge readout. These
+  are first-submission baselines in `results/round1/arch`; the final paper does not use them.
+
+## 9. Result files
+
+Each run file holds `args` (the full argument vector), `records` (the logged steps), `wall_s` and,
+where a GPU was used, `peak_MB`. Second-campaign files add `cert_summary`, `svd_stats` (how many
+SVD calls each driver served) and block-specific fields
+(`checkpoints`, `spectrum`, `metric_holdout`, `avg_rank`); no released run that records
+`svd_stats` needed a fallback driver. `results/scale_large.json`,
+`results/revise_timing/*.json` and `results/revise_kernel/*.json` are lists of measurement rows.
+
+The per-run value in every table is the mean over the records in the last 20% of the run; seeds
+are the unit of aggregation. Tables 5, 6 and 8 report the sample s.d. over runs; Tables 9, 11
+and S6-S8 the population s.d.
+
+Directories under `results/` that are not in the tables above (`round1/real`, `round1/arch`, `c2`,
+`round1/STATS_*`, `TIMESERIES_TABLES.md`, `m0_profile.json`, `cor3_timing.json`) are kept from the
+first submission and are not used by the final paper.
+
+## 10. Notes
+
+- `--svd_driver auto` (every second-campaign run) calls the library's default SVD driver first and
+  falls back to gesvd, a jittered gesvd and a CPU SVD only if that call fails or returns non-finite
+  factors; `gesvd` starts at gesvd. `run_svd_driver_equiv.py` and `results/r2/svd_driver_equivalence.md`
+  compare the two.
+- Fig S2 plots `results/c2sweep` (12 runs, 1,192 logged points). `results/c2` is not plotted.
+- The §6.3 random-projection runs are seeds 0-2 (`results/m3/*skrtrl-rp*`).
+- Table 10 rounds three cells at the last digit (n=192 factored 133.45 ms printed 133.5; s.d.
+  0.0075 and 0.0135 printed 0.008 and 0.014).
+- Re-running a training block on another card or library version gives the same numbers only up
+  to floating-point nondeterminism; the release check compares the released records, not new runs.

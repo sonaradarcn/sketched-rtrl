@@ -1,9 +1,8 @@
-"""D4 (unified protocol) result tables and paired statistics for the second-round revision.
+"""D4 (unified protocol) result tables and paired statistics: Tables S6-S8, 13 and S1-S3.
 
-Rebuilds, from `results/r2/d4_eval/` alone, the three result tables that the revision
-replaces, plus the learning-rate appendix table and the all-pairs statistics demanded by
-R3r1-10 ("reporting confidence intervals and effect sizes for all principal comparisons,
-rather than only selected comparisons against SnAp-1").
+Rebuilds, from `results/r2/d4_eval/` alone, the three result tables (Tables S6-S8), the
+learning-rate table (Table 13) and the all-pairs statistics (Tables S1-S3): confidence
+intervals and effect sizes for all principal comparisons, not only those against SnAp-1.
 
 Protocol -- identical to the one `make_r2_d4_select.py` used to pick the learning rates, and
 imported from that module so the two cannot disagree:
@@ -11,9 +10,9 @@ imported from that module so the two cannot disagree:
   per-run value     mean of the field over every logged record with `step >= frac*args.steps`
                     (the last-20 % window, `--agg window20`, the default).  `--agg tail5`
                     switches to the mean of the last five logged records, the convention of
-                    `make_timeseries_tables.py` and of published Tables 6-7, for a
-                    like-for-like comparison against the earlier numbers.
-  across seeds      mean +/- POPULATION standard deviation (`--ddof 0`, the convention of the
+                    `make_timeseries_tables.py` and of the first-round time-series tables,
+                    for a like-for-like comparison against the earlier numbers.
+  across seeds      mean +/- population standard deviation (`--ddof 0`, the convention of the
                     published tables), the seed being the unit of aggregation -- never the
                     pooled record set.
   direction         `metric` is accuracy for the cross-entropy tasks (copy, anbn) and the MSE
@@ -33,7 +32,7 @@ and Cliff's delta.  The seed is the pairing unit; the Holm family size is the nu
 whose runs are missing is reported as n/a while still costing family size (conservative).
 180 planned, 162 applicable.
 
-Statistics, part 2 -- the FULL MATRIX (`--full-matrix`, on by default; `D4_STATS.md`,
+Statistics, part 2 -- the full matrix (`--full-matrix`, on by default; `D4_STATS.md`,
 `D4_STATS.json`, `tab_r2_stats.tex`): all three ranks (r=4/16/32) against all six other
 estimators (exact, SnAp-1, KF-RTRL, RFLO, UORO, TBPTT) on all nine tasks and both metrics, which
 is 3x6x9x2 = 324 planned cells and 270 structurally applicable ones (the gradient cosine is
@@ -46,7 +45,7 @@ comparison and both are written out, because the choice changes what is signific
 `--holm-family task-metric` (default, the manuscript's declared convention) gives families of 18
 on the task metric and 12 on the cosine, so the smallest attainable corrected p at ten seeds is
 18 x 0.001953 = 0.0352 and 12 x 0.001953 = 0.0234; `--holm-family rank-metric` gives families of
-54 and 36, whose floors (0.105 and 0.0703) lie above 0.05, so with ten paired seeds NOTHING can
+54 and 36, whose floors (0.105 and 0.0703) lie above 0.05, so with ten paired seeds nothing can
 be Holm-significant in a family that size, whatever the effect.  The three rank-vs-rank
 comparisons are reported as an auxiliary block and are not counted in the 270.  A "claim audit"
 section at the end of `D4_STATS.md` re-derives every count the body quotes, under four
@@ -56,21 +55,21 @@ Outputs (all written, none read, by this script)
   results/r2/D4_TABLES.md        the three tables + LR table + the assertion report
   results/r2/D4_STATS.md         all-pairs statistics, human-readable
   results/r2/D4_STATS.json       the same numbers, machine-readable
-  <texdir>/tab_r2_fidelity.tex   replaces Table 3 (diagnostic grad_cos)
-  <texdir>/tab_r2_timeseries.tex replaces Table 6 (chaotic NMSE + grad cosine)
-  <texdir>/tab_r2_realts.tex     replaces Table 7 (Sunspot / laser)
-  <texdir>/tab_r2_lr.tex         selected learning rate per (task, estimator)
-  <texdir>/tab_r2_stats.tex      the statistics appendix tables (three table* blocks, one per
+  <texdir>/tab_r2_fidelity.tex   Table S6 (diagnostic grad_cos)
+  <texdir>/tab_r2_timeseries.tex Table S7 (chaotic NMSE + grad cosine)
+  <texdir>/tab_r2_realts.tex     Table S8 (Sunspot / laser)
+  <texdir>/tab_r2_lr.tex         Table 13, selected learning rate per (task, estimator)
+  <texdir>/tab_r2_stats.tex      Tables S1-S3, the statistics tables (three table* blocks, one per
                                  rank under --full-matrix, one per task block otherwise)
 
 Usage
   python make_r2_d4_tables.py                                # the real run, once d4_eval lands
   python make_r2_d4_tables.py --strict                       # non-zero exit on any violation
   python make_r2_d4_tables.py --indir results/m3 results/ts results/round1/real \
-      --outdir /tmp/demo --texdir /tmp/demo                  # R1 stand-in dry run
+      --outdir /tmp/demo --texdir /tmp/demo                  # first-round stand-in dry run
 
-Relative paths are resolved against this script's directory (code/), like the rest of the R2
-tooling.  This script never launches anything and never writes anything but the outputs above.
+Relative paths are resolved against this script's directory (code/), like the rest of the
+second-round tooling.  This script never launches anything and never writes anything but the outputs above.
 """
 from __future__ import annotations
 
@@ -92,6 +91,7 @@ if HERE not in sys.path:
 
 import make_r2_d4_select as sel        # noqa: E402  protocol + direction, single source of truth
 import make_r2_jobs as mj              # noqa: E402  filename / tag conventions
+import tex_captions                    # noqa: E402  manuscript captions
 
 _REQUIRED = ["TASKS", "ALGOS", "HIGHER_IS_BETTER", "EVAL_DIR", "REPORT_DIR", "WINDOW_FRAC",
              "window_score", "is_tbptt", "tag_for", "lr_of_tag", "out_path",
@@ -107,8 +107,8 @@ ALGOS = list(sel.ALGOS)
 HIGHER_IS_BETTER = set(sel.HIGHER_IS_BETTER)        # task-metric direction (accuracy tasks)
 EVAL_DIR = sel.EVAL_DIR
 REPORT_DIR = sel.REPORT_DIR
-SELECT_JSON = os.path.join(REPORT_DIR, "D4_SELECT_stage2.json")
-TEX_DIR = os.path.join("..", "paper", "secs")
+SELECT_JSON = REPORT_DIR + "/D4_SELECT_stage2.json"
+TEX_DIR = os.path.join("results", "tables")
 
 SEEDS_EVAL = list(range(10))
 STEPS_EVAL = 20000
@@ -117,7 +117,7 @@ DIAG_TASKS = ["copy", "adding", "rotation", "anbn"]
 CHAOS_TASKS = ["henon", "mackeyglass", "lorenz"]
 REAL_TASKS = ["sunspot", "laser"]
 
-# display order of the estimators, as in published Tables 3/6/7
+# display order of the estimators, as in Tables S6-S8
 ORDER = ["exact", "skrtrl-r32", "skrtrl-r16", "skrtrl-r4", "snap1", "kfrtrl", "rflo",
          "uoro", "tbptt"]
 _unknown = sorted(set([a for a in ORDER if a not in ALGOS] + [a for a in ALGOS if a not in ORDER]))
@@ -142,20 +142,19 @@ TASK_TEX = {"copy": "copy", "adding": "adding", "rotation": "rotation", "anbn": 
 NO_COS = {"exact", "tbptt"}
 
 REF = "skrtrl-r16"
-# Holm families are fixed HERE, before any data are read (R2 plan, D4: "seed is the unit;
-# Holm families fixed in advance").  One family = one (task, metric).
+# Holm families are fixed here, before any data are read.  One family = one (task, metric).
 PLANNED = [(REF, o) for o in ORDER if o != REF] + [("skrtrl-r4", "snap1"),
                                                    ("skrtrl-r32", "snap1")]
 
 # ---------------------------------------------------------------------------
-# FULL MATRIX (R2 second-round gap fix).  The set above is the pre-registered
-# R1-revision set: it covers r=16 against everything and r=4 / r=32 against
+# Full matrix.  The set above is the pre-registered
+# first-revision set: it covers r=16 against everything and r=4 / r=32 against
 # SnAp-1 only, which is 10 comparisons per (task, metric), 180 planned and 162
 # structurally applicable.  The body of the paper, however, quotes records that
-# range over ALL THREE ranks against ALL SIX non-SK-RTRL estimators -- the
+# range over all three ranks against all six non-SK-RTRL estimators -- the
 # "108 of 108" gradient-cosine sweep (3 ranks x 4 approximate estimators x 9
 # tasks) and the 31-5-9 / 32-6-7 / 35-6-4 win-tie-loss records (per rank, the 5
-# approximate estimators x 9 tasks).  Those numbers are NOT readable from the
+# approximate estimators x 9 tasks).  Those numbers are not readable from the
 # 10-per-family set, so the full matrix below is computed as well:
 #
 #     3 ranks x 6 opponents x 9 tasks x 2 metrics          = 324 planned cells
@@ -335,7 +334,7 @@ def load_runs(indirs, agg, frac, tail):
                 problems.append(r)
                 continue
             if r["task"] not in TASKS or r["algo"] not in ALGOS:
-                continue                       # the R1 stand-in dirs carry extra algos
+                continue                       # the first-round stand-in dirs carry extra algos
             runs.append(r)
     return runs, problems
 
@@ -464,7 +463,7 @@ def build_cells(kept, seeds, require_seeds, require_steps, ddof):
 
 
 def pooled_cos(kept, tasks, algo, seeds, require_steps, ddof):
-    """The published Tables 6/7 grad-cosine column: one per-run value, pooled over every
+    """The grad-cosine column of Tables S7-S8: one per-run value, pooled over every
     seed and every system of the block at once."""
     if algo in NO_COS:
         return {"defined": False, "mean": None, "std": None, "n": 0, "flags": []}
@@ -981,7 +980,7 @@ def proto_sentence(meta, short=False):
                             round((1.0 - meta["frac"]) * 100))
     if meta["agg"] == "tail5":
         per_run = ("the mean of the last %d logged records of the run (the convention of "
-                   "published Tables~6--7)" % meta["tail"])
+                   "the first-round time-series tables)" % meta["tail"])
     else:
         per_run = ("the mean over every record logged in the last %d\\%% of the run"
                    % round((1.0 - meta["frac"]) * 100))
@@ -1024,6 +1023,15 @@ def tex_header(title, meta, provisional):
                     "the dagger list in results/r2/D4_TABLES.md). Do not \\input this file into "
                     "a submitted build until the report is clean.")
     return L
+
+
+def _relpath(p):
+    """Path relative to the working directory, with forward slashes, for the json record."""
+    try:
+        p = os.path.relpath(p)
+    except ValueError:                      # another drive on Windows
+        pass
+    return p.replace("\\", "/")
 
 
 def tex_table(header_lines, caption, label, colspec, head_row, body, wide=True, size="small",
@@ -1321,7 +1329,7 @@ def md_pooled(pooled, algos, title):
 
 
 def write_tables_md(path, meta, cells, pooled_ts, pooled_real, configs, checks, limit):
-    L = ["# D4 unified-protocol result tables (replacements for Tables 3, 6 and 7)", "",
+    L = ["# D4 unified-protocol result tables (Tables S6-S8)", "",
          "Generated %s by `code/make_r2_d4_tables.py`. Every number here comes from the run "
          "json files alone; nothing is copied from the submitted paper." % meta["generated"], "",
          "- input directories: %s" % ", ".join("`%s`" % d for d in meta["indirs"]),
@@ -1424,7 +1432,7 @@ def write_tables_md(path, meta, cells, pooled_ts, pooled_real, configs, checks, 
         L += ["- `%s`: %s" % (p.get("file"), p.get("error", p.get("status")))
               for p in checks["problems"][:limit]] + [""]
 
-    L += ["## Table 3 replacement -- gradient fidelity on the diagnostic tasks", ""]
+    L += ["## Table S6 -- gradient fidelity on the diagnostic tasks", ""]
     L += md_matrix(cells, DIAG_TASKS, [a for a in ORDER if a not in NO_COS], "grad_cos",
                    "grad_cos, last-window mean per run, mean +/- std over seeds",
                    "LaTeX: `tab_r2_fidelity.tex` (`tab:r2fidelity`). Exact RTRL and TBPTT are "
@@ -1435,7 +1443,7 @@ def write_tables_md(path, meta, cells, pooled_ts, pooled_real, configs, checks, 
                    "MSE (lower better). Provided because the statistics table reports paired "
                    "tests on this metric as well as on the cosine.")
 
-    L += ["## Table 6 replacement -- chaotic systems", ""]
+    L += ["## Table S7 -- chaotic systems", ""]
     L += md_matrix(cells, CHAOS_TASKS, ORDER, "metric",
                    "NMSE (lower better)",
                    "LaTeX: `tab_r2_timeseries.tex` (`tab:r2timeseries`).")
@@ -1443,7 +1451,7 @@ def write_tables_md(path, meta, cells, pooled_ts, pooled_real, configs, checks, 
                    "grad_cos per system (the LaTeX table pools these into one column)")
     L += md_pooled(pooled_ts, ORDER, "grad cosine pooled over the three systems and all seeds")
 
-    L += ["## Table 7 replacement -- Sunspot and Santa Fe laser", ""]
+    L += ["## Table S8 -- Sunspot and Santa Fe laser", ""]
     L += md_matrix(cells, REAL_TASKS, ORDER, "metric", "NMSE (lower better)",
                    "LaTeX: `tab_r2_realts.tex` (`tab:r2realts`).")
     L += md_matrix(cells, REAL_TASKS, [a for a in ORDER if a not in NO_COS], "grad_cos",
@@ -1656,7 +1664,7 @@ def md_full_section(meta, full_res, audit):
 
 def write_stats_md(path, meta, stats_res, cells, full_res=None, audit=None):
     L = ["# D4 all-pairs paired statistics", "",
-         "Generated %s by `code/make_r2_d4_tables.py`. Answers R3r1-10: confidence intervals "
+         "Generated %s by `code/make_r2_d4_tables.py`. Confidence intervals "
          "and effect sizes for **all** principal comparisons, not only those against SnAp-1."
          % meta["generated"], "",
          "- comparisons, fixed in advance: `%s` against each of the eight other estimators, "
@@ -1878,9 +1886,9 @@ def main(argv=None):
         for name, body in files:
             p = os.path.join(texdir, name)
             with io.open(p, "w", encoding="utf-8", newline="\n") as fh:
-                fh.write(body)
+                fh.write(tex_captions.apply(body))
             written.append(p)
-    meta["tex_written"] = [p.replace("\\", "/") for p in written]
+    meta["tex_written"] = [_relpath(p) for p in written]
 
     checks = {"direction": direction, "bad_cells": bad_cells, "n_cells": n_cells,
               "lr_bad": lr_bad, "score_bad": score_bad, "missing": missing,

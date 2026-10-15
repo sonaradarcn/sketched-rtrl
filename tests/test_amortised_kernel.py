@@ -6,7 +6,7 @@ reconstructed product L_t R_t^T, the full estimate, the gradient read-out and th
 quantities -- the individual factors are defined only up to the orthogonal gauge of the basis,
 so A5 checks orthonormality rather than factor equality.
 
-Checked here, step by step, against the kernel of record (skrtrl.algos.SKRTRL):
+Checked here, step by step, against the released kernel (skrtrl.algos.SKRTRL):
   A1  reconstruction L_t R_t^T          (basis-convention independent)
   A2  full estimate S_t + L_t R_t^T
   A3  gradient read-out ghat_t
@@ -99,7 +99,7 @@ def compare_run(n=16, m=4, B=2, T=30, r=4, dtype=torch.float64, seed=0,
         worst["ortho"] = max(worst["ortho"], _ortho_err(amort))
         ortho_naive = max(ortho_naive, _ortho_err(naive))
         h = h.detach()
-    # the invariant R^T R = I is only asserted up to what the kernel of record
+    # the invariant R^T R = I is only asserted up to what the released kernel
     # itself achieves on the same stream
     worst["ortho"] = max(0.0, worst["ortho"] - ortho_naive)
     return worst

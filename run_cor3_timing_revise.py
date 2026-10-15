@@ -1,4 +1,4 @@
-"""Revision re-measurement for Table 8 (tab:cor3): factored-exact (Cor. 3, r=n)
+"""Re-measurement for Table 10 (tab:cor3): factored-exact (Cor. 3, r=n)
 vs textbook exact RTRL, per-step time and peak memory.
 
 Hardened vs the original code/run_cor3_timing.py:

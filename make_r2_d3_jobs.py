@@ -1,4 +1,4 @@
-"""Generate R2 plan D3 (adaptive-rank sensitivity) job files for run_r2_queue.ps1.
+"""Generate the D3 (adaptive-rank sensitivity, Table 8, Fig. 5) job files for run_r2_queue.ps1.
 
 Same line format as make_r2_jobs.py / jobs/d4_tune.txt: bare script name + flags,
 terminated by a `# out=<path>` annotation the queue uses for exists-skip. Jobs run
@@ -7,9 +7,8 @@ run_adaptive.py, whose output path is
 (see run_adaptive.py's `base`/`out` construction) -- reproduced here as
 adapt_out_path() so this generator and the runner cannot disagree.
 
-Stages (R2_EXPERIMENT_PLAN.md D3, revised in sec. 4: saturation diagnosis first,
-then a narrower one-at-a-time sweep)
-------------------------------------
+Stages (saturation diagnosis first, then a narrower one-at-a-time sweep)
+------------------------------------------------------------------------
   d3_diag  rotation, anbn (diagnostic tasks, no washout/horizon) x
            5 kernel variants (A-E, all --ctrl eta, one-at-a-time around the c(r)
            rule / pre-projection / ceiling) x seeds 0-2 x 12000 steps, shadow on,
@@ -44,7 +43,7 @@ STEPS_D3 = 12000
 
 N_DEFAULT = 64
 DEFAULT_LR = 1e-3          # run_adaptive.py's own --lr default; not ablated in D3
-MS_PER_STEP = 30.0         # run_adaptive ~ same order of magnitude as skrtrl-r16 (sec. 2)
+MS_PER_STEP = 30.0         # run_adaptive ~ same order of magnitude as skrtrl-r16
 
 # controller defaults (must match run_adaptive.py argparse defaults)
 R_MIN_DEFAULT = 4

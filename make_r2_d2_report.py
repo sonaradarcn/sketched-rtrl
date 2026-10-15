@@ -1,26 +1,26 @@
-"""D2 (certificate informativeness, R3-2) aggregation + figures for the R2 revision.
+"""Certificate-informativeness report and figures (Tables 5-6 and Fig. S3 of the paper).
 
-Answers plan question D2 directly: *how informative is the certificate at each
-spectral-clip level, and what does that clip cost the task?*
+How informative is the certificate at each spectral-clip level, and what does that clip
+cost the task?
 
-Definitions (R2_EXPERIMENT_PLAN.md D2 + section 4, renamed after the plan review)
----------------------------------------------------------------------------------
+Definitions
+-----------
   rho^g_t = ||delta_t|| e_t / ||ghat_t||   < 1  =>  "direction-certifiable"
             (then g . ghat >= ||ghat||^2 (1 - rho^g) > 0; rho^g < 0.5 is the
             strengthened bin, which also gives ||g-ghat||/||g|| <= rho/(1-rho))
   T_t     = e_t / ||E_t||_F                <= 10 = the tightness bin
   rho_bar_t < 1                            = the step does not inflate e_t
 Steps with no gradient signal (||delta_t|| = 0 or ||ghat_t|| = 0) are counted in
-`n_no_signal` and are NEVER in the denominator of a fraction -- exactly the
-counting rule of skrtrl.rl.CertCounters, which both runners share.
+`n_no_signal` and are never in the denominator of a fraction, the same
+counting rule as skrtrl.rl.CertCounters, which both runners share.
 
-Aggregation rule (plan section 4, D2): *the seed is the unit*.  Every fraction is
+Aggregation rule: the seed is the unit.  Every fraction is
 computed inside a run by the runner (`cert_summary`), and this script only ever
 averages those per-run fractions across seeds (mean +- s.d., n_seeds stated), then
 across seeds within a task family.  Steps are never pooled across runs.
 
-Inputs (all configurable; defaults follow the plan)
----------------------------------------------------
+Inputs (all configurable)
+-------------------------
   results/r2/d4_eval     "no clip" level, taken from the D4 evaluation logs
                          (filtered to --d4-algo / --d4-clip so the level is one
                          estimator at one clip, not a mixture)
@@ -28,7 +28,7 @@ Inputs (all configurable; defaults follow the plan)
   results/r2/d2_noreset  washout = 0 with the exact shadow on
   results/r2/rl          RL (run_m5.py), clip 0.0
   results/r2/rl_clip05   RL, clip 0.5
-The clip value is ALWAYS read from `args.clip` in the json, never guessed from a
+The clip value is always read from `args.clip` in the json, never guessed from a
 file name.  run_m3 files are named <task>_<algo>_s<seed>[_tag].json and run_m5
 files tmaze<len>_<algo>_s<seed>.json; the runner is detected from the args keys
 (`env_len` = m5, `task` = m3), so a naming change cannot silently mislabel a run.
@@ -37,23 +37,21 @@ Outputs
 -------
   results/r2/D2_SUMMARY.md   tables A-E (+ F when present) and auto-generated
                              numeric bullet points
-  paper/figures/fig_r2_cert_frac_vs_clip.{pdf,png}
-  paper/figures/fig_r2_cert_cdf.{pdf,png}
-  paper/figures/fig_r2_cert_stage.{pdf,png}
+  <figdir>/fig_r2_cert_frac_vs_clip.{pdf,png}     (figdir default: results/figures)
+  <figdir>/fig_r2_cert_cdf.{pdf,png}
+  <figdir>/fig_r2_cert_stage.{pdf,png}
 Figure style, the >=2-visual-attributes guard and the legend-placement checks are
-imported from paper/figures/gen/regen_all.py, so the D2 figures cannot drift from
-the rest of the manuscript.
+imported from figstyle.py, so these figures cannot drift from the rest of the paper.
 
-Missing data is never invented: every absent directory, unreadable file, run
-without a certificate and missing `cert_summary` field is listed in the
-"Data coverage" section at the top of the report, and a figure with no input is
-skipped loudly.
+Every absent directory, unreadable file, run without a certificate and missing
+`cert_summary` field is listed in the "Data coverage" section at the top of the
+report.  A figure whose inputs are missing is skipped and listed.
 
 Usage
 -----
-  D:/Anaconda/python.exe make_r2_d2_report.py                     # defaults
-  D:/Anaconda/python.exe make_r2_d2_report.py --no-figs           # tables only
-  D:/Anaconda/python.exe make_r2_d2_report.py --extra-dir tag=DIR # e.g. a smoke dir
+  python make_r2_d2_report.py                     # defaults
+  python make_r2_d2_report.py --no-figs           # tables only
+  python make_r2_d2_report.py --extra-dir tag=DIR # e.g. a smoke dir
 """
 import argparse
 import glob
@@ -118,13 +116,13 @@ M5_FNAME = re.compile(r"^tmaze(?P<len>\d+)_(?P<algo>[a-z0-9\-_]+)_s(?P<seed>\d+)
                       r"(?:_(?P<tag>.+))?\.json$")
 
 # cert_summary keys this report reads.  Everything outside REQUIRED is optional: it
-# was added to skrtrl.rl.CertCounters during R2, so archived smoke runs lack it and
+# was added to skrtrl.rl.CertCounters in the second round, so archived smoke runs lack it and
 # the corresponding cell is reported as "n/a" instead of being filled with a guess.
 REQUIRED_CERT = ("n_steps", "n_rel_lt1", "n_rel_lt05", "n_tight_checked",
                  "n_tight_le10", "n_bound_violation", "n_cert_invalid")
 OPTIONAL_CERT = ("n_no_signal", "n_rhobar_lt1", "frac_rhobar_lt1",
                  "n_bound_violation_fp", "stages")
-# Written by run_m3 only, by design -- absence is NOT a gap and is not reported as
+# Written by run_m3 only, by design: absence is not a gap and is not reported as
 # one (tables E and F say so instead).
 M3_ONLY_CERT = ("n_bound_finite", "age_buckets", "age_edges", "age_span")
 
@@ -263,8 +261,8 @@ def read_run(path, source_tag, problems):
     a = d["args"]
     records = d.get("records") or []
 
-    # --- which runner wrote this?  args keys are authoritative and the file name is
-    # only cross-checked (run_m3.py's job naming is still being edited elsewhere).
+    # --- which runner wrote this?  The args keys decide; the file name is only
+    # cross-checked.
     if "env_len" in a:
         runner, task = "m5", "tmaze%s" % a.get("env_len")
         metric_key, higher = "success", True
@@ -404,8 +402,8 @@ def read_run(path, source_tag, problems):
     elif "stages" in cs:
         problems.add("stage_shape", where, "cert_summary.stages is not a non-empty list")
 
-    # --- age-since-reset buckets (plan section 4, D2: "stratify ... by age since
-    # reset").  run_m3 writes them; run_m5 does not (RL lanes reset asynchronously,
+    # --- age-since-reset buckets.  run_m3 writes them; run_m5 does not (RL lanes reset
+    # asynchronously,
     # so its counters run at every step and there is no age span to bucket by).
     ab = cs.get("age_buckets")
     r["age_buckets"], r["age_edges"] = None, cs.get("age_edges")
@@ -479,7 +477,7 @@ def scan_dirs(dirs, problems, d4_algo=None, d4_clip=None):
             continue
         files = sorted(glob.glob(os.path.join(p, "*.json")))
         # `*.localpartial.json` is a mid-run snapshot the local runner leaves next to
-        # the finished file (same task/algo/seed, fewer records).  It is NOT a run and
+        # the finished file (same task/algo/seed, fewer records).  It is not a run and
         # would double-count a seed, so it is dropped here and only reported.
         partial = [f for f in files if f.endswith(PARTIAL_SUFFIX)]
         files = [f for f in files if not f.endswith(PARTIAL_SUFFIX)]
@@ -805,7 +803,7 @@ def section_e(runs):
 
 
 def section_f(runs):
-    """Optional appendix table: age since the last reset (plan section 4, D2)."""
+    """Optional appendix table: age since the last reset."""
     rs_all = [r for r in cert_runs(runs) if r.get("age_buckets")]
     L = ["## Table F -- age since the last reset (run_m3 only)", "",
          "`cert_summary.age_buckets` splits the same counters by how many steps have "
@@ -950,12 +948,12 @@ def _fit_notes_above_data(fig, noted, top_data=1.0, cap=12.0):
 
 
 def load_regen():
-    """Import paper/figures/gen/regen_all.py by path (it is not a package)."""
-    p = os.path.join(ROOT, "paper", "figures", "gen", "regen_all.py")
+    """Import figstyle.py (next to this file) by path."""
+    p = os.path.join(HERE, "figstyle.py")
     if not os.path.isfile(p):
-        return None, "regen_all.py not found at %s" % p
+        return None, "figstyle.py not found at %s" % p
     try:
-        spec = importlib.util.spec_from_file_location("regen_all_d2", p)
+        spec = importlib.util.spec_from_file_location("figstyle_d2", p)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)        # module level = rcParams + style tables only
     except Exception as e:                                          # noqa: BLE001
@@ -974,7 +972,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
     sys.path.insert(0, HERE)                 # fig_style_r1.py lives next to this file
     R, err = load_regen()
     if R is None:
-        problems.add("figures", "regen_all.py",
+        problems.add("figures", "figstyle.py",
                      err + " -- figures skipped, the manuscript style cannot be "
                            "guaranteed without it")
         return [], [("all figures", err)]
@@ -993,7 +991,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
 
     R.OUT, R.GRAY = outdir, gray
     R.WROTE, R.SKIPPED, R.LEGEND_ISSUES = [], [], []
-    # R1-2 guard on the shared method table (imported unchanged) ...
+    # Distinct-style guard on the shared method table (imported unchanged) ...
     if not R._assert_styles_distinct():
         print("  style table OK: every method pair differs in >=2 visual attributes")
     OI = R.OI
@@ -1018,7 +1016,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
     }
 
     def _pairs_distinct(table, what):
-        """Same >=2-attribute rule as regen_all._assert_styles_distinct (R1-2)."""
+        """Same >=2-attribute rule as figstyle._assert_styles_distinct."""
         bad = []
         keys = list(table)
         for i, a in enumerate(keys):
@@ -1038,7 +1036,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
     _pairs_distinct(FAM_STYLE, "family")
     _pairs_distinct(CLIP_STYLE, "clip")
 
-    # Authored at the size they are PRINTED at (R2-3 / the Figure-5 rule).  The widths
+    # Authored at the size they are printed at (the rule of Figure 3).  The widths
     # come from fig_style_r1.TEX_WIDTH, i.e. from the \includegraphics slots in
     # secs/6_experiments.tex, not from a hand-typed fraction: frac_vs_clip and cert_cdf
     # sit in 0.49\linewidth minipages of a figure* (3.37 in), and the 0.92 x \textwidth
@@ -1096,7 +1094,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
         return dict(color=c, linestyle=ls, marker=mk, label="clip %s" % ck)
 
     def _fig_frac_vs_clip():
-        # ---------------- Fig 1: informative fraction vs clip level
+        # ---------------- fig_r2_cert_frac_vs_clip: informative fraction vs clip level
         name = "fig_r2_cert_frac_vs_clip"
         if not any(finite(r["frac_rel_lt1"]) or finite(r["frac_tight_le10"]) for r in rs_all):
             R._skip(name, "no run carries frac_rel_lt1 / frac_tight_le10")
@@ -1109,7 +1107,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
             # one was 2.16 in, and the centred minipages left it floating in ~0.6 in
             # of white space top and bottom.  Stacked it is the same height as its
             # neighbour and each panel gets the full 3.37 in of width instead of
-            # 1.45 in, which is also the healthier aspect ratio (Figure 5's panels
+            # 1.45 in, which is also the healthier aspect ratio (Figure 3's panels
             # are 1.1-1.8 wide-to-tall; 1 x 2 put these at 0.7).  The x axis is
             # shared, so "spectral clip" is drawn once.
             fig, axs = plt.subplots(2, 1, sharex=True, figsize=PRINT_SIZE[name])
@@ -1150,7 +1148,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
 
 
     def _fig_cdf():
-        # ---------------- Fig 2: empirical CDF of rho^g, one panel per family
+        # ---------------- fig_r2_cert_cdf: empirical CDF of rho^g, one panel per family
         #
         # rho^g spans ~35 decades once the certificate goes vacuous, which would squash the
         # only region the figure is about (the neighbourhood of 1 and 0.5) into a single
@@ -1230,9 +1228,9 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
                 ax.set_ylim(-0.03, 1.38)
                 ax.set_yticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
                 if notes:
-                    # 6.0 pt is the floor the R1 style uses for in-panel type; the
+                    # 6.0 pt is the floor the paper's style uses for in-panel type; the
                     # 5.2 pt this used to be only looked acceptable because the figure
-                    # was about to be scaled DOWN, which would have printed it at 2.9 pt.
+                    # was about to be scaled down, which would have printed it at 2.9 pt.
                     t = ax.text(0.03, 0.99, "\n".join(notes), transform=ax.transAxes,
                                 va="top", ha="left", fontsize=6.0,
                                 bbox=dict(boxstyle="round,pad=0.2", facecolor="white",
@@ -1273,7 +1271,7 @@ def make_figures(runs, outdir, gray, problems, stage_clip="all", fig_algo=None,
         return [a for a, _ in pairs], [b for _, b in pairs]
 
     def _fig_stage():
-        # ---------------- Fig 3: three training stages.
+        # ---------------- fig_r2_cert_stage: three training stages.
         #
         # Grid = 2 criteria x task families, bars grouped by CLIP inside each panel.  Bars
         # are never pooled across clip levels: the clip is the dominant factor of D2, so a
@@ -1381,7 +1379,7 @@ def main():
     ap.add_argument("--out", "--outmd", dest="out",
                     default="results/r2/D2_SUMMARY.md",
                     help="report path (`--outmd` is the make_r2_d1_report.py spelling)")
-    ap.add_argument("--figdir", default=os.path.join(HERE, "..", "paper", "figures"),
+    ap.add_argument("--figdir", default=os.path.join("results", "figures"),
                     help="same default as make_r2_d1_report.py")
     ap.add_argument("--gray", default="", help="extra grey-scale self-check renderings")
     ap.add_argument("--stage-clip", default="all",
@@ -1438,7 +1436,7 @@ def main():
 
     out = rel(args.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    L = ["# D2 -- certificate informativeness (R2 revision, plan D2 / R3-2)", "",
+    L = ["# D2 -- certificate informativeness (Tables 5-6, Fig. S3)", "",
          "Generated by `code/make_r2_d2_report.py`.  Criteria: `rho^g_t < 1` = "
          "*direction-certifiable* (`< 0.5` = strengthened bin), "
          "`T_t = e_t/||E_t||_F <= 10` = tightness bin, `rho_bar_t < 1` = the step does "
@@ -1469,7 +1467,8 @@ def main():
     if figs is not None:
         L += ["## Figures", "",
               "Estimator drawn: %s.  Written to `%s` as PDF + PNG."
-              % (args.fig_algo or "every estimator (lines may mix them)", args.figdir),
+              % (args.fig_algo or "every estimator (lines may mix them)",
+                 args.figdir.replace("\\", "/")),
               "",
               "- `fig_r2_cert_frac_vs_clip` -- informative fraction vs spectral clip "
               "(x includes `none`), one line per task family, error bars = s.d. over "

@@ -1,14 +1,12 @@
-"""Round-2 figures F1-F4 from merged Round-1 results.
+"""Plain first-round versions of four figures, drawn from the first-round result trees.
 
-F1  multi-step horizon curves      (NMSE vs horizon, per task, per method)
-F2  grad-cosine <-> NMSE scatter    (fidelity is not the same as task error)
-F3  adaptive-rank trajectory        (r_t, eta_t, e_t, rho_hat, rho_bar over time)
-F4  memory-time Pareto              (peak MB vs wall-clock, per method)
+F1  multi-step horizon curves      (NMSE vs horizon; now Fig. S6 left)
+F2  grad-cosine <-> NMSE scatter    (fidelity is not the same as task error; Fig. S6 right)
+F3  adaptive-rank trajectory        (r_t, eta_t, e_t, rho_hat, rho_bar over time; Fig. S4)
+F4  memory-time Pareto              (peak MB vs wall-clock, per method; Fig. S8)
 
-Each figure is written as vector PDF + 300-dpi PNG into --out (default results/figures/)
-and is skipped (with a printed note) when its inputs are absent, so no placeholder or
-fabricated data is ever drawn.  A run that finishes is therefore not the same as a run
-that produced every figure: read the skip notes.
+Each figure is written as vector PDF + 300-dpi PNG into --out (default results/figures/).
+A figure whose inputs are missing is skipped and listed.
 
 Inputs are the released result trees under results/.  The paper's figures are produced by
 make_paper_figures.py, which applies the manuscript's print sizes and colour-blind-safe

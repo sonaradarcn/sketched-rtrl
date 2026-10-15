@@ -12,14 +12,14 @@ Per env step:
 Cores implement the protocol documented in diag_cells.py (begin / features /
 advance / backward_grads / commit). TanhCore adapts TanhRNNCell + OnlineGrad.
 
-R2 shadow instrumentation -- TanhCore(shadow=True), plan D1/D2
+Shadow instrumentation (second round) -- TanhCore(shadow=True)
 --------------------------------------------------------------
-Two extra estimators ride along on the SAME cell, are fed the SAME (A_t, imm_t)
+Two extra estimators ride along on the same cell, are fed the same (A_t, imm_t)
 pair produced by advance(), and are lane-reset exactly like the main estimator,
 so they stay time-aligned with it step for step (same skeleton as run_m3.py):
   * ExactRTRL  -> the true influence matrix J_t
   * SnAp1      -> the SnAp-1 trace S_t the paper actually maintains, used as the
-                  reference for the D1 residual  R_t = J_t - S_t  (NOT blkdiag(J_t))
+                  reference for the D1 residual  R_t = J_t - S_t  (not blkdiag(J_t))
 Neither ever writes to .grad, so the learning trajectory is unchanged; the
 SnAp-1 tracker's power-iteration probe is seeded deterministically so that
 turning the shadow on does not consume any global RNG either -- a --shadow run
@@ -33,7 +33,7 @@ parameters is the batch mean returned by grad_rows(), so with
 the batch-consistent form of the Theorem-1 bound is
   ||g_t - ghat_t||_F <= (1/B) sum_b ||delta_b|| ||E_b||_F
                      <= (1/B) sum_b ||delta_b|| e_b  =:  bound_t,
-i.e. the lane-wise product is averaged (NOT mean||delta|| times mean e).  This is
+i.e. the lane-wise product is averaged (not mean||delta|| times mean e).  This is
 the same convention as run_m3.CertCounters; `delta_norm` is still reported as
 mean_b ||delta_b|| for readability, e_t as mean_b e_b and ||E_t||_F as
 mean_b ||J_b - residual_dense_b||_F, and the criteria are
@@ -89,14 +89,14 @@ def _reset_estimator_lanes(algo, mask):
 
 
 class CertCounters:
-    """Online (every-step) certificate-informativeness counters -- plan D2.
+    """Online (every-step) certificate-informativeness counters (D2).
 
-    Definitions and output keys follow run_m3.CertCounters (package A); see the
+    Definitions and output keys follow run_m3.CertCounters; see the
     module docstring for the batch aggregation.  Additions:
 
     n_no_signal      steps with no usable gradient signal (||delta_t|| = 0 or
                      ||ghat_t|| = 0 -- the m3 analogue is a y = None step).  They
-                     are counted separately and are NOT in the denominator of any
+                     are counted separately and are not in the denominator of any
                      fraction, so `n_steps` counts signal-bearing steps only and
                      e.g. frac_rel_lt1 = n_rel_lt1 / n_steps stays unpolluted.
                      With T-maze's dense reward this is expected to stay 0.

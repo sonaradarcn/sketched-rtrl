@@ -222,9 +222,16 @@ covered by it.
 ## Citation
 
 ```bibtex
-@misc{yi2026skrtrl,
-  title  = {Certified Low-Rank Real-Time Recurrent Learning for Dense Recurrent Neural Networks},
-  author = {Junfei Yi and Yuxiang Wang},
-  year   = {2026}
+@article{SK-RTRL,
+title = {Certified low-rank real-time recurrent learning for dense recurrent neural networks},
+journal = {Neurocomputing},
+pages = {135543},
+year = {2026},
+issn = {0925-2312},
+doi = {https://doi.org/10.1016/j.neucom.2026.135543},
+url = {https://www.sciencedirect.com/science/article/pii/S0925231226029413},
+author = {Junfei Yi and Yuxiang Wang},
+keywords = {Real-time recurrent learning, Online learning, Recurrent neural networks, Low-rank approximation, Gradient estimation, Chaotic time series},
+abstract = {Learning from an unbounded stream means updating weights at each observation, never revisiting the past. Real-Time Recurrent Learning (RTRL) is exact but costs quartic time and cubic memory in a dense network’s width; cheap successors add uncontrolled variance, discard cross-unit credit without an error bound, or abandon dense recurrence. We introduce Sketched RTRL (SK-RTRL), keeping the influence matrix as an exact block-diagonal part plus a deterministic low-rank sketch of the discarded residual, one rank knob spanning that part alone to exact RTRL. The same shrinkage yields, at no extra asymptotic cost, a running scalar certificate bounding the gradient bias at every step, to our knowledge the first such bound for an RTRL approximation. Truncation records its discarded mass, so the rank resizes online without breaking the bound. The sketch holds a consistent gradient-cosine advantage over four approximate estimators on all nine tasks and three ranks tested, 108 of 108 paired comparisons, and cuts online training memory 13.5 times at width 512. Task-level benefit varies: higher fidelity need not lower prediction error, no consistent advantage over tuned truncated BPTT, and rotation memory is an outright loss. The certificate holds in exact arithmetic and on every counted fp32 step, but is informative only at the clipped operating points measured, essentially vacuous without clipping (exactly zero on the chaotic and real-world tasks, 0.092 on copy) and on both gated cells. The low-rank premise holds for some task groups, not others; training-level evidence is on tanh units, the gated results structural.}
 }
 ```

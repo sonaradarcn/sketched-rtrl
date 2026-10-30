@@ -1,6 +1,6 @@
 # Sketched RTRL (SK-RTRL)
 
-[![banner](docs/奶币.png)](https://doi.org/10.1109/access.2026.3726251)
+[![banner](docs/奶币.png)](https://doi.org/10.1016/j.neucom.2026.135543)
 
 Code, result records and launch manifests for the paper *Certified Low-Rank Real-Time Recurrent
 Learning for Dense Recurrent Neural Networks*.
